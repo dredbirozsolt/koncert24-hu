@@ -54,7 +54,7 @@ jscpd-analysis-summary.md
 ecosystem.config.json
 
 # Build files
-dist/
+# dist/ - CSS dist folder is needed in production
 build/
 
 # Test files
