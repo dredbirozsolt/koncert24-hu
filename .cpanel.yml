@@ -1,0 +1,10 @@
+---
+deployment:
+  tasks:
+    # Node.js dependencies telepítése
+    - export DEPLOYPATH=/home/USERNAME/public_html
+    - /bin/cp -R * $DEPLOYPATH
+    - cd $DEPLOYPATH
+    - npm install --production
+    # PM2 restart (ha használod)
+    # - pm2 restart koncert24
