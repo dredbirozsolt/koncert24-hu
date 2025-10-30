@@ -1,8 +1,9 @@
 ---
 deployment:
   tasks:
-    # Node.js dependencies telepítése
-    - export DEPLOYPATH=/home/dmf/public_html
+    # Node.js alkalmazás deploy-olása
+    - export DEPLOYPATH=/home/dmf/koncert24-app
+    - /bin/mkdir -p $DEPLOYPATH
     - /bin/cp -R * $DEPLOYPATH
     - cd $DEPLOYPATH
     - npm install --production
