@@ -1,16 +1,12 @@
 ---
 deployment:
   tasks:
-    # Node.js alkalmazás deploy-olása
+    # Alkalmazás kódja a Node.js app könyvtárába
     - export APPPATH=/home/dmf/koncert24-app
-    - export PUBLICPATH=/home/dmf/public_html/koncert24.hu
-    # Alkalmazás kódja dedikált mappába
     - /bin/mkdir -p $APPPATH
-    - /bin/cp -R * $APPPATH
-    - cd $APPPATH
-    - npm install --production
-    # Public fájlok (CSS, JS, képek) a domain public mappájába
+    - /bin/cp -R * $APPPATH/
+    # Public fájlok a domain mappájába
+    - export PUBLICPATH=/home/dmf/public_html/koncert24.hu
     - /bin/mkdir -p $PUBLICPATH
-    - /bin/cp -R $APPPATH/public/* $PUBLICPATH/
-    # PM2 restart (ha használod)
-    # - pm2 restart koncert24
+    - /bin/cp -R public/* $PUBLICPATH/
+    # A cPanel Node.js App automatikusan kezeli az npm install-t és restart-ot
