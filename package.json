@@ -51,8 +51,8 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^7.0.6",
     "openai": "^6.1.0",
-    "pino": "^10.0.0",
-    "pino-http": "^11.0.0",
+    "pino": "^8.21.0",
+    "pino-http": "^9.0.0",
     "rotating-file-stream": "^3.2.7",
     "sequelize": "^6.37.5",
     "sequelize-cli": "^6.6.2"
