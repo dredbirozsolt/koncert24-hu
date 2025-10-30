@@ -1,0 +1,446 @@
+/**
+ * Admin Blog Routes - Blog cikkek kezelése
+ */
+
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs').promises;
+const { BlogPost, BlogCategory, BlogTag, User } = require('../models');
+const { requireAuth } = require('../middleware/auth');
+const logger = require('../config/logger');
+const { Op } = require('sequelize');
+
+// Multer konfiguráció képfeltöltéshez
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const uploadDir = path.join(__dirname, '../public/images/blog');
+    try {
+      await fs.mkdir(uploadDir, { recursive: true });
+      cb(null, uploadDir);
+    } catch (error) {
+      cb(error);
+    }
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `blog-${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB max
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Csak képfájlok engedélyezettek (jpeg, jpg, png, gif, webp)'));
+  }
+});
+
+/**
+ * GET /admin/blog - Blog cikkek listázása
+ */
+router.get('/', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const offset = (page - 1) * limit;
+    const status = req.query.status || 'all';
+    const search = req.query.search || '';
+
+    // Szűrési feltételek
+    const where = {};
+    if (status !== 'all') {
+      where.status = status;
+    }
+    if (search) {
+      where[Op.or] = [
+        { title: { [Op.like]: `%${search}%` } },
+        { excerpt: { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    const { count, rows: posts } = await BlogPost.findAndCountAll({
+      where,
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']],
+      include: [
+        { model: User, as: 'author', attributes: ['name'] },
+        { model: BlogCategory, as: 'category', attributes: ['name'] }
+      ]
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.render('admin/blog/index', {
+      title: 'Blog kezelés - Admin',
+      posts,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      status,
+      search
+    });
+  } catch (error) {
+    logger.error('Error loading admin blog list:', error);
+    res.status(500).render('error', {
+      title: 'Hiba',
+      message: 'Hiba történt a cikkek betöltése során'
+    });
+  }
+});
+
+/**
+ * GET /admin/blog/new - Új cikk létrehozása form
+ */
+router.get('/new', requireAuth, async (req, res) => {
+  try {
+    const categories = await BlogCategory.findAll({
+      order: [['displayOrder', 'ASC'], ['name', 'ASC']]
+    });
+    const tags = await BlogTag.findAll({
+      order: [['name', 'ASC']]
+    });
+
+    res.render('admin/blog/edit', {
+      title: 'Új blog cikk - Admin',
+      post: null,
+      categories,
+      tags,
+      isEdit: false
+    });
+  } catch (error) {
+    logger.error('Error loading new blog form:', error);
+    res.status(500).render('error', {
+      title: 'Hiba',
+      message: 'Hiba történt az űrlap betöltése során'
+    });
+  }
+});
+
+/**
+ * GET /admin/blog/:id/edit - Cikk szerkesztése form
+ */
+router.get('/:id/edit', requireAuth, async (req, res) => {
+  try {
+    const post = await BlogPost.findByPk(req.params.id, {
+      include: [
+        { model: BlogCategory, as: 'category' },
+        { model: BlogTag, as: 'tags' }
+      ]
+    });
+
+    if (!post) {
+      return res.status(404).render('error', {
+        title: '404',
+        message: 'A keresett cikk nem található',
+        statusCode: 404
+      });
+    }
+
+    const categories = await BlogCategory.findAll({
+      order: [['displayOrder', 'ASC'], ['name', 'ASC']]
+    });
+    const tags = await BlogTag.findAll({
+      order: [['name', 'ASC']]
+    });
+
+    res.render('admin/blog/edit', {
+      title: `${post.title} szerkesztése - Admin`,
+      post,
+      categories,
+      tags,
+      isEdit: true
+    });
+  } catch (error) {
+    logger.error('Error loading blog edit form:', error);
+    res.status(500).render('error', {
+      title: 'Hiba',
+      message: 'Hiba történt az űrlap betöltése során'
+    });
+  }
+});
+
+/**
+ * POST /admin/blog - Új cikk létrehozása
+ */
+router.post('/', requireAuth, upload.single('featuredImage'), async (req, res) => {
+  try {
+    const {
+      title,
+      slug,
+      excerpt,
+      content,
+      categoryId,
+      status,
+      metaTitle,
+      metaDescription,
+      tags
+    } = req.body;
+
+    // Kép URL
+    let featuredImage = req.body.existingImage || null;
+    if (req.file) {
+      featuredImage = `/images/blog/${req.file.filename}`;
+    }
+
+    // Slug generálás ha nincs
+    const finalSlug = slug || title.toLowerCase()
+      .replace(/[áä]/g, 'a')
+      .replace(/[éë]/g, 'e')
+      .replace(/[íî]/g, 'i')
+      .replace(/[óöő]/g, 'o')
+      .replace(/[úüű]/g, 'u')
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]/g, '')
+      .replace(/-+/g, '-');
+
+    // Blog post létrehozása
+    const post = await BlogPost.create({
+      title,
+      slug: finalSlug,
+      excerpt,
+      content,
+      featuredImage,
+      authorId: req.session.user.id, // session-ből vesszük
+      categoryId: categoryId || null,
+      status: status || 'draft',
+      metaTitle: metaTitle || title,
+      metaDescription: metaDescription || excerpt,
+      publishedAt: status === 'published' ? new Date() : null
+    });
+
+    // Olvasási idő kiszámítása
+    await post.calculateReadingTime();
+
+    // Tagek hozzárendelése
+    if (tags && tags.length > 0) {
+      const tagIds = Array.isArray(tags) ? tags : [tags];
+      await post.setTags(tagIds);
+    }
+
+    logger.info(`Blog post created: ${post.title} (ID: ${post.id})`);
+    res.redirect('/admin/blog?success=created');
+  } catch (error) {
+    logger.error('Error creating blog post:', error);
+    res.status(500).render('error', {
+      title: 'Hiba',
+      message: `Hiba történt a cikk létrehozása során: ${error.message}`
+    });
+  }
+});
+
+/**
+ * POST /admin/blog/:id - Cikk frissítése
+ */
+router.post('/:id', requireAuth, upload.single('featuredImage'), async (req, res) => {
+  try {
+    const post = await BlogPost.findByPk(req.params.id);
+
+    if (!post) {
+      return res.status(404).render('error', {
+        title: '404',
+        message: 'A keresett cikk nem található',
+        statusCode: 404
+      });
+    }
+
+    const {
+      title,
+      slug,
+      excerpt,
+      content,
+      categoryId,
+      status,
+      metaTitle,
+      metaDescription,
+      tags
+    } = req.body;
+
+    // Kép kezelés
+    let { featuredImage } = post;
+    if (req.file) {
+      // Régi kép törlése
+      if (post.featuredImage) {
+        const oldImagePath = path.join(__dirname, '../public', post.featuredImage);
+        try {
+          await fs.unlink(oldImagePath);
+        } catch (err) {
+          logger.warn('Could not delete old image:', err.message);
+        }
+      }
+      featuredImage = `/images/blog/${req.file.filename}`;
+    } else if (req.body.existingImage) {
+      featuredImage = req.body.existingImage;
+    }
+
+    // Státusz változás esetén publishedAt beállítása
+    let { publishedAt } = post;
+    if (status === 'published' && post.status !== 'published') {
+      publishedAt = new Date();
+    }
+
+    // Post frissítése
+    await post.update({
+      title,
+      slug,
+      excerpt,
+      content,
+      featuredImage,
+      categoryId: categoryId || null,
+      status: status || 'draft',
+      metaTitle: metaTitle || title,
+      metaDescription: metaDescription || excerpt,
+      publishedAt
+    });
+
+    // Olvasási idő újraszámítása
+    await post.calculateReadingTime();
+
+    // Tagek frissítése
+    if (tags) {
+      const tagIds = Array.isArray(tags) ? tags : [tags];
+      await post.setTags(tagIds);
+    } else {
+      await post.setTags([]);
+    }
+
+    logger.info(`Blog post updated: ${post.title} (ID: ${post.id})`);
+    res.redirect('/admin/blog?success=updated');
+  } catch (error) {
+    logger.error('Error updating blog post:', error);
+    res.status(500).render('error', {
+      title: 'Hiba',
+      message: `Hiba történt a cikk frissítése során: ${error.message}`
+    });
+  }
+});
+
+/**
+ * POST /admin/blog/:id/delete - Cikk törlése
+ */
+router.post('/:id/delete', requireAuth, async (req, res) => {
+  try {
+    const post = await BlogPost.findByPk(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Cikk nem található' });
+    }
+
+    // Kép törlése
+    if (post.featuredImage) {
+      const imagePath = path.join(__dirname, '../public', post.featuredImage);
+      try {
+        await fs.unlink(imagePath);
+      } catch (err) {
+        logger.warn('Could not delete image:', err.message);
+      }
+    }
+
+    await post.destroy();
+
+    logger.info(`Blog post deleted: ${post.title} (ID: ${post.id})`);
+    res.redirect('/admin/blog?success=deleted');
+  } catch (error) {
+    logger.error('Error deleting blog post:', error);
+    res.status(500).json({ success: false, message: 'Hiba történt a törlés során' });
+  }
+});
+
+/**
+ * POST /admin/blog/tags/create - Új címke létrehozása
+ */
+router.post('/tags/create', requireAuth, async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    // Validáció
+    if (!name || !name.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'A címke neve kötelező'
+      });
+    }
+
+    const tagName = name.trim();
+
+    // Ellenőrizzük, hogy létezik-e már ilyen címke
+    const existingTag = await BlogTag.findOne({
+      where: { name: tagName }
+    });
+
+    if (existingTag) {
+      return res.status(409).json({
+        success: false,
+        message: 'Ez a címke már létezik'
+      });
+    }
+
+    // Slug generálás
+    const slug = tagName
+      .toLowerCase()
+      .replace(/[áä]/g, 'a')
+      .replace(/[éë]/g, 'e')
+      .replace(/[íî]/g, 'i')
+      .replace(/[óöő]/g, 'o')
+      .replace(/[úüű]/g, 'u')
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    // Új címke létrehozása
+    const newTag = await BlogTag.create({
+      name: tagName,
+      slug
+    });
+
+    logger.info(`New blog tag created: ${newTag.name} (ID: ${newTag.id})`);
+
+    res.json({
+      success: true,
+      tag: {
+        id: newTag.id,
+        name: newTag.name,
+        slug: newTag.slug
+      }
+    });
+  } catch (error) {
+    logger.error('Error creating blog tag:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Hiba történt a címke létrehozása során'
+    });
+  }
+});
+
+/**
+ * POST /admin/blog/upload-image - Képfeltöltés a tartalom szerkesztőhöz
+ */
+router.post('/upload-image', requireAuth, upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Nincs feltöltött fájl' });
+    }
+
+    const imageUrl = `/images/blog/${req.file.filename}`;
+    res.json({ success: true, url: imageUrl });
+  } catch (error) {
+    logger.error('Error uploading image:', error);
+    res.status(500).json({ success: false, message: 'Hiba történt a kép feltöltése során' });
+  }
+});
+
+module.exports = router;

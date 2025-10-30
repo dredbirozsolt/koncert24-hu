@@ -1,0 +1,658 @@
+/**
+ * MODAL/DIALOG COMPONENT
+ * 
+ * Unified modal system for both admin and public interfaces
+ * Uses design tokens from tokens.css
+ * Compatible with universal-modal.js
+ * 
+ * Features:
+ * - Modal backdrop with blur effect
+ * - Modal container with smooth animations
+ * - Modal header/body/footer structure
+ * - Sizes: sm, md (default), lg, xl, full
+ * - Centered vs top-aligned positioning
+ * - Dismissible with close button
+ * - Animated entrance/exit
+ * - Scroll support for long content
+ * - Nested modals with z-index layering
+ * - Loading state
+ * - Confirmation dialogs
+ * - Mobile responsive
+ */
+
+/* ============================================================================
+   MODAL BACKDROP
+   ============================================================================ */
+
+.modal__backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-overlay);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  overflow-y: auto;
+  
+  /* Animation */
+  opacity: 0;
+  animation: fadeIn var(--duration-200) var(--ease-out) forwards;
+}
+
+.modal__backdrop.modal-closing {
+  animation: fadeOut var(--duration-200) var(--ease-out) forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Top-aligned (for long modals) */
+.modal__backdrop.modal-top {
+  align-items: flex-start;
+  padding-top: var(--space-12);
+}
+
+/* ============================================================================
+   MODAL CONTAINER
+   ============================================================================ */
+
+.modal {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2xl);
+  width: 100%;
+  max-width: var(--container-sm);
+  max-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  
+  /* Animation */
+  transform: scale(0.9) translateY(calc(-1 * var(--space-5)));
+  opacity: 0;
+  animation: modalSlideIn var(--duration-200) var(--ease-out) forwards;
+}
+
+.modal__backdrop.modal-closing .modal {
+  animation: modalSlideOut var(--duration-200) var(--ease-out) forwards;
+}
+
+@keyframes modalSlideIn {
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideOut {
+  to {
+    transform: scale(0.9) translateY(calc(-1 * var(--space-5)));
+    opacity: 0;
+  }
+}
+
+/* ============================================================================
+   MODAL SIZES
+   ============================================================================ */
+
+.modal--sm {
+  max-width: var(--container-xs);
+}
+
+.modal--md {
+  max-width: var(--container-sm);
+}
+
+.modal--lg {
+  max-width: var(--container-md);
+}
+
+.modal--xl {
+  max-width: var(--container-lg);
+}
+
+.modal--full {
+  max-width: calc(100vw - var(--space-8));
+  max-height: calc(100vh - var(--space-8));
+}
+
+/* ============================================================================
+   MODAL HEADER
+   ============================================================================ */
+
+.modal__header {
+  padding: var(--space-6);
+  border-bottom: var(--border-width) solid var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.modal__title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.modal__close {
+  background: none;
+  border: none;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-gray-500);
+  transition: all var(--duration-150) var(--ease-out);
+  flex-shrink: 0;
+  margin-left: var(--space-4);
+}
+
+.modal__close:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+}
+
+.modal__close:active {
+  transform: scale(0.95);
+}
+
+.modal__close::before {
+  content: '×';
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+
+/* ============================================================================
+   MODAL BODY
+   ============================================================================ */
+
+.modal__body {
+  padding: var(--space-6);
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+  min-height: 0;
+  color: var(--color-gray-700);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+.modal__body::-webkit-scrollbar {
+  width: var(--space-2);
+}
+
+.modal__body::-webkit-scrollbar-track {
+  background: var(--color-gray-100);
+  border-radius: var(--radius-md);
+}
+
+.modal__body::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: var(--radius-md);
+}
+
+.modal__body::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400);
+}
+
+/* Remove top padding if header exists */
+.modal__header + .modal__body {
+  padding-top: var(--space-6);
+}
+
+/* Remove bottom padding if footer exists */
+.modal__body + .modal__footer {
+  padding-top: 0;
+}
+
+/* ============================================================================
+   MODAL FOOTER
+   ============================================================================ */
+
+.modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-top: var(--border-width) solid var(--color-gray-200);
+}
+
+.modal__footer-end {
+  justify-content: flex-end;
+}
+
+.modal__footer-center {
+  justify-content: center;
+}
+
+/* ============================================================================
+   MODAL VARIANTS
+   ============================================================================ */
+
+/* Confirmation Dialog */
+.modal--confirm .modal__body {
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+}
+
+.modal__confirm-icon {
+  width: var(--icon-3xl);
+  height: var(--icon-3xl);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+  font-size: var(--text-3xl);
+}
+
+.modal__confirm-icon.icon-warning {
+  background-color: var(--color-warning-100);
+  color: var(--color-warning-600);
+}
+
+.modal__confirm-icon.icon-error {
+  background-color: var(--color-error-100);
+  color: var(--color-error-600);
+}
+
+.modal__confirm-icon.icon-success {
+  background-color: var(--color-success-100);
+  color: var(--color-success-600);
+}
+
+.modal__confirm-icon.icon-info {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-600);
+}
+
+.modal__confirm-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+  margin-bottom: var(--space-2);
+}
+
+.modal__confirm-message {
+  font-size: var(--text-base);
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-6);
+}
+
+/* Loading Modal */
+.modal-loading .modal__body {
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+}
+
+.modal__loading-spinner {
+  width: var(--icon-2xl);
+  height: var(--icon-2xl);
+  border: var(--border-width-heavy) solid var(--color-gray-200);
+  border-top-color: var(--color-primary-600);
+  border-radius: 50%;
+  margin: 0 auto var(--space-4);
+  animation: spin var(--duration-200) linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.modal__loading-message {
+  font-size: var(--text-base);
+  color: var(--color-gray-600);
+}
+
+/* Error Modal (for destructive actions) */
+.modal-error .modal__header {
+  background-color: var(--color-error-50);
+  border-bottom-color: var(--color-error-200);
+}
+
+.modal-error .modal__title {
+  color: var(--color-error-700);
+}
+
+/* ============================================================================
+   NESTED MODALS
+   ============================================================================ */
+
+.modal__backdrop[data-modal-level="2"] {
+  z-index: calc(var(--z-modal) + 10);
+  background-color: var(--bg-overlay-light);
+}
+
+.modal__backdrop[data-modal-level="3"] {
+  z-index: calc(var(--z-modal) + 20);
+  background-color: var(--bg-overlay-lighter);
+}
+
+/* ============================================================================
+   MODAL UTILITIES
+   ============================================================================ */
+
+/* Prevent body scroll when modal is open */
+body.modal--open {
+  overflow: hidden;
+}
+
+/* No header variant */
+.modal-no-header .modal__body {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+/* No footer variant */
+.modal-no-footer .modal__body {
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* No header and no footer */
+.modal-no-header.modal-no-footer .modal__body {
+  border-radius: var(--radius-lg);
+}
+
+/* Image in modal */
+.modal__body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+/* Form in modal */
+.modal__body form {
+  margin-bottom: 0;
+}
+
+/* Pre/Code in modal */
+.modal__body pre {
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-base);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: var(--border-width-thick) solid var(--border-base);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  max-width: 100%;
+  box-sizing: border-box;
+  max-height: var(--space-72);
+  overflow-y: auto;
+}
+
+/* Stats grid in modal */
+.modal__body .stats-grid {
+  margin-bottom: var(--space-4);
+}
+
+/* ============================================================================
+   DARK MODE SUPPORT
+   ============================================================================ */
+
+:root[data-theme="dark"] .modal__backdrop {
+  background-color: var(--bg-overlay-dark);
+}
+
+:root[data-theme="dark"] .modal {
+  background-color: var(--color-gray-800);
+  box-shadow: var(--shadow-2xl), 0 0 0 1px var(--color-gray-700);
+}
+
+:root[data-theme="dark"] .modal__header {
+  border-bottom-color: var(--color-gray-700);
+}
+
+:root[data-theme="dark"] .modal__title {
+  color: var(--color-gray-100);
+}
+
+:root[data-theme="dark"] .modal__close {
+  color: var(--color-gray-400);
+}
+
+:root[data-theme="dark"] .modal__close:hover {
+  background-color: var(--color-gray-700);
+  color: var(--color-gray-200);
+}
+
+:root[data-theme="dark"] .modal__body {
+  color: var(--color-gray-300);
+}
+
+:root[data-theme="dark"] .modal__footer {
+  border-top-color: var(--color-gray-700);
+}
+
+:root[data-theme="dark"] .modal__confirm-title {
+  color: var(--color-gray-100);
+}
+
+:root[data-theme="dark"] .modal__confirm-message {
+  color: var(--color-gray-400);
+}
+
+/* Override inline styles in dark mode for better contrast */
+:root[data-theme="dark"] .modal--confirm p[style*="color"] {
+  color: var(--color-gray-200) !important;
+}
+
+:root[data-theme="dark"] .modal__loading-message {
+  color: var(--color-gray-400);
+}
+
+:root[data-theme="dark"] .modal-error .modal__header {
+  background-color: var(--color-error-900);
+  border-bottom-color: var(--color-error-700);
+}
+
+:root[data-theme="dark"] .modal-error .modal__title {
+  color: var(--color-error-300);
+}
+
+/* Alert variants dark mode */
+:root[data-theme="dark"] .modal__alert-info {
+  background-color: var(--color-gray-800);
+}
+
+:root[data-theme="dark"] .modal__alert--success {
+  background-color: var(--color-gray-800);
+}
+
+:root[data-theme="dark"] .modal__alert--warning {
+  background-color: var(--color-gray-800);
+}
+
+:root[data-theme="dark"] .modal__alert--error {
+  background-color: var(--color-gray-800);
+}
+
+/* Pre/Code dark mode */
+:root[data-theme="dark"] .modal__body pre {
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border-color: var(--border-base);
+}
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .modal__backdrop {
+    padding: var(--space-2);
+  }
+
+  .modal {
+    max-height: calc(100vh - var(--space-4));
+  }
+
+  .modal__header {
+    padding: var(--space-4);
+  }
+
+  .modal__title {
+    font-size: var(--text-lg);
+  }
+
+  .modal__body {
+    padding: var(--space-4);
+  }
+
+  .modal__footer {
+    padding: var(--space-4);
+    flex-direction: column-reverse;
+  }
+
+  .modal__footer .btn {
+    width: 100%;
+  }
+
+  /* Make all modals nearly full-screen on mobile */
+  .modal--sm,
+  .modal--md,
+  .modal--lg,
+  .modal--xl {
+    max-width: 100%;
+  }
+
+  .modal--full {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal__backdrop.modal-top {
+    padding-top: var(--space-2);
+  }
+}
+
+@media (max-width: 640px) {
+  .modal__header {
+    padding: var(--space-3);
+  }
+
+  .modal__body {
+    padding: var(--space-3);
+  }
+
+  .modal__footer {
+    padding: var(--space-3);
+  }
+
+  .modal--confirm .modal__body {
+    padding: var(--space-6) var(--space-3);
+  }
+
+  .modal__confirm-icon {
+    width: var(--icon-2xl);
+    height: var(--icon-2xl);
+    font-size: var(--text-2xl);
+  }
+}
+
+/* ============================================================================
+   MODAL CONTENT UTILITIES
+   ============================================================================ */
+
+/**
+ * Pre-formatted text blocks in modals
+ * Used for code, JSON data, logs, etc.
+ * Automatically adapts to light/dark themes
+ */
+.modal__body pre,
+.modal__body .log-details-pre {
+  background: var(--color-gray-100);
+  color: var(--color-text);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  border: 1px solid var(--color-border);
+  margin: var(--space-2) 0;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+/* Dark mode overrides for pre elements */
+[data-theme="dark"] .modal__body pre,
+[data-theme="dark"] .modal__body .log-details-pre {
+  background: var(--color-gray-800);
+  color: var(--color-gray-100);
+  border-color: var(--color-gray-700);
+}
+
+/**
+ * Modal content wrapper for structured data
+ * Ensures consistent spacing and typography
+ */
+.modal__body .log-details-content,
+.modal__body .details-content {
+  color: var(--color-text);
+}
+
+.modal__body .log-details-content p,
+.modal__body .details-content p {
+  margin-bottom: var(--space-2);
+  line-height: 1.6;
+}
+
+.modal__body .log-details-content strong,
+.modal__body .details-content strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.modal__body .log-details-content em,
+.modal__body .details-content em {
+  color: var(--color-text-secondary);
+}
+
+/**
+ * Code blocks within modal content
+ * Inline code snippets
+ */
+.modal__body code {
+  background: var(--color-gray-100);
+  color: var(--color-primary);
+  padding: var(--space-0.5) var(--space-1.5);
+  border-radius: var(--radius-sm);
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  font-size: var(--text-sm);
+}
+
+[data-theme="dark"] .modal__body code {
+  background: var(--color-gray-800);
+  color: var(--color-primary-light);
+}

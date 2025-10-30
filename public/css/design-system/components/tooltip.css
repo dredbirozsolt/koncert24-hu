@@ -1,0 +1,396 @@
+/**
+ * Tooltip Component
+ * Contextual information on hover/focus
+ */
+
+/* ==========================================
+   TOOLTIP WRAPPER
+   ========================================== */
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+/* ==========================================
+   TOOLTIP CONTENT
+   ========================================== */
+
+.tooltip__content {
+  position: absolute;
+  z-index: var(--z-tooltip);
+  max-width: 320px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-white);
+  background-color: var(--color-gray-900);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--duration-200) var(--ease-out),
+              visibility var(--duration-200),
+              transform var(--duration-200) var(--ease-out);
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+/* Show tooltip */
+.tooltip:hover .tooltip__content,
+.tooltip:focus-within .tooltip__content,
+.tooltip__content[aria-hidden="false"],
+.tooltip__content.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ==========================================
+   TOOLTIP POSITIONS
+   ========================================== */
+
+/* Top (default) */
+.tooltip__content,
+.tooltip__content--top {
+  bottom: calc(100% + var(--space-2));
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.tooltip:hover .tooltip__content--top,
+.tooltip:focus-within .tooltip__content--top,
+.tooltip__content--top.is-visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Bottom */
+.tooltip__content--bottom {
+  top: calc(100% + var(--space-2));
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.tooltip:hover .tooltip__content--bottom,
+.tooltip:focus-within .tooltip__content--bottom,
+.tooltip__content--bottom.is-visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Left */
+.tooltip__content--left {
+  top: 50%;
+  right: calc(100% + var(--space-2));
+  transform: translateY(-50%) translateX(4px);
+}
+
+.tooltip:hover .tooltip__content--left,
+.tooltip:focus-within .tooltip__content--left,
+.tooltip__content--left.is-visible {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Right */
+.tooltip__content--right {
+  top: 50%;
+  left: calc(100% + var(--space-2));
+  transform: translateY(-50%) translateX(-4px);
+}
+
+.tooltip:hover .tooltip__content--right,
+.tooltip:focus-within .tooltip__content--right,
+.tooltip__content--right.is-visible {
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ==========================================
+   TOOLTIP ARROW
+   ========================================== */
+
+.tooltip__content::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+}
+
+/* Top arrow */
+.tooltip__content::before,
+.tooltip__content--top::before {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: var(--color-gray-900);
+}
+
+/* Bottom arrow */
+.tooltip__content--bottom::before {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: var(--color-gray-900);
+}
+
+/* Left arrow */
+.tooltip__content--left::before {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: var(--color-gray-900);
+}
+
+/* Right arrow */
+.tooltip__content--right::before {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: var(--color-gray-900);
+}
+
+/* ==========================================
+   TOOLTIP WITHOUT ARROW
+   ========================================== */
+
+.tooltip__content--no-arrow::before {
+  display: none;
+}
+
+/* ==========================================
+   TOOLTIP VARIANTS
+   ========================================== */
+
+/* Light variant */
+.tooltip__content--light {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-base);
+}
+
+.tooltip__content--light::before {
+  border-top-color: var(--bg-surface);
+  filter: drop-shadow(0 1px 1px rgba(var(--color-black-rgb), 0.1));
+}
+
+.tooltip__content--light.tooltip__content--bottom::before {
+  border-bottom-color: var(--bg-surface);
+}
+
+.tooltip__content--light.tooltip__content--left::before {
+  border-left-color: var(--bg-surface);
+}
+
+.tooltip__content--light.tooltip__content--right::before {
+  border-right-color: var(--bg-surface);
+}
+
+/* Success */
+.tooltip__content--success {
+  background-color: var(--color-success-600);
+}
+
+.tooltip__content--success::before {
+  border-top-color: var(--color-success-600);
+}
+
+/* Error */
+.tooltip__content--error {
+  background-color: var(--color-error-600);
+}
+
+.tooltip__content--error::before {
+  border-top-color: var(--color-error-600);
+}
+
+/* Warning */
+.tooltip__content--warning {
+  background-color: var(--color-warning-600);
+  color: var(--color-gray-900);
+}
+
+.tooltip__content--warning::before {
+  border-top-color: var(--color-warning-600);
+}
+
+/* ==========================================
+   TOOLTIP SIZES
+   ========================================== */
+
+/* Small */
+.tooltip__content--sm {
+  max-width: 200px;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs); /* 11px */
+}
+
+/* Large */
+.tooltip__content--lg {
+  max-width: 400px;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+}
+
+/* ==========================================
+   TOOLTIP WITH DELAY
+   ========================================== */
+
+.tooltip--delay .tooltip__content {
+  transition-delay: 500ms;
+}
+
+.tooltip--delay:hover .tooltip__content,
+.tooltip--delay:focus-within .tooltip__content {
+  transition-delay: 0ms;
+}
+
+/* ==========================================
+   INTERACTIVE TOOLTIP
+   ========================================== */
+
+.tooltip--interactive .tooltip__content {
+  pointer-events: auto;
+}
+
+.tooltip--interactive .tooltip__content:hover {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ==========================================
+   MULTILINE TOOLTIP
+   ========================================== */
+
+.tooltip__content--multiline {
+  text-align: left;
+  white-space: normal;
+}
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+
+/* Dark Mode Theme Selector */
+  .tooltip__content {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-900);
+  }
+
+  .tooltip__content::before {
+    border-top-color: var(--color-gray-200);
+  }
+
+  .tooltip__content--bottom::before {
+    border-bottom-color: var(--color-gray-200);
+  }
+
+  .tooltip__content--left::before {
+    border-left-color: var(--color-gray-200);
+  }
+
+  .tooltip__content--right::before {
+    border-right-color: var(--color-gray-200);
+  }
+
+  .tooltip__content--light {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .tooltip__content--light::before {
+    border-top-color: var(--bg-surface);
+  }
+}
+
+[data-theme="dark"] {
+  .tooltip__content {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-900);
+  }
+
+  .tooltip__content::before {
+    border-top-color: var(--color-gray-200);
+  }
+
+  .tooltip__content--bottom::before {
+    border-bottom-color: var(--color-gray-200);
+  }
+
+  .tooltip__content--left::before {
+    border-left-color: var(--color-gray-200);
+  }
+
+  .tooltip__content--right::before {
+    border-right-color: var(--color-gray-200);
+  }
+
+  .tooltip__content--light {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .tooltip__content--light::before {
+    border-top-color: var(--bg-surface);
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+
+/* Hide from screen readers if decorative */
+.tooltip__content[aria-hidden="true"] {
+  display: none;
+}
+
+/* Ensure keyboard focus works */
+.tooltip:focus-within .tooltip__content {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .tooltip__content {
+    transition: opacity var(--duration-200) var(--ease-out),
+                visibility var(--duration-200);
+    transform: none !important;
+  }
+
+  .tooltip:hover .tooltip__content,
+  .tooltip:focus-within .tooltip__content {
+    transform: none !important;
+  }
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE
+   ========================================== */
+
+@media (max-width: 640px) {
+  .tooltip__content {
+    max-width: 240px;
+    font-size: var(--text-xs); /* 11px */
+  }
+
+  /* Disable tooltips on touch devices (optional) */
+  @media (hover: none) and (pointer: coarse) {
+    .tooltip--hide-on-touch .tooltip__content {
+      display: none;
+    }
+  }
+}
+
+/* ==========================================
+   UTILITY: Show on click (requires JS)
+   ========================================== */
+
+.tooltip--click .tooltip__content {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.tooltip--click.is-active .tooltip__content {
+  opacity: 1;
+  visibility: visible;
+}

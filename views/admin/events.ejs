@@ -1,0 +1,422 @@
+<!-- Admin Events Management Page - Refactored -->
+<!-- Using Design System -->
+
+
+<div class="page-container">
+    <!-- Success/Error Messages -->
+    <% if (messages && messages.success) { %>
+    <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+    <% if (messages && messages.error) { %>
+    <div class="alert alert-error"><%= messages.error %></div>
+    <% } %>
+
+    <!-- 2 oszlopos grid -->
+    <div class="admin-two-col">
+        <!-- BAL OSZLOP: Funkciók és Táblázat -->
+        <div>
+            <!-- Statistics -->
+            <div class="card--data">
+                <h3>📊 Statisztikák</h3>
+                <div class="stats-grid">
+                    <div class="card--stat card--stat--primary">
+                        <h3>📊 Összes Esemény</h3>
+                        <div class="stat-value"><%= totalEvents %></div>
+                    </div>
+                    <div class="card--stat card--stat--success">
+                        <h3>🎉 Jövőbeli</h3>
+                        <div class="stat-value"><%= upcomingEvents %></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. Sync Settings Card -->
+                        <!-- 1. Sync Settings Card -->
+            <!-- 1. Sync Settings Card -->
+            <div class="card--data">
+        <h3 class="section-title">⚙️ Szinkronizálási Beállítások</h3>
+                <div class="flex gap-4 flex-wrap">
+                    <div class="form__group flex-1">
+                        <label class="form__label" for="syncMonthsBefore">
+                            Hány hónappal visszamenőleg?
+                        </label>
+                        <input 
+                            type="number" 
+                            name="syncMonthsBefore" 
+                            id="syncMonthsBefore"
+                            class="form__input"
+                            value="<%= syncMonthsBefore %>"
+                            min="0"
+                            max="12"
+                        >
+                        <small class="form__help">Pl: 1 = az elmúlt 1 hónap eseményeit</small>
+                    </div>
+                    
+                    <div class="form__group flex-1">
+                        <label class="form__label" for="syncMonthsAfter">
+                            Hány hónappal előre?
+                        </label>
+                        <input 
+                            type="number" 
+                            name="syncMonthsAfter"
+                            id="syncMonthsAfter" 
+                            class="form__input"
+                            value="<%= syncMonthsAfter %>"
+                            min="0"
+                            max="24"
+                        >
+                        <small class="form__help">Pl: 1 = a következő 1 hónap eseményeit</small>
+                    </div>
+                </div>
+                
+                <div class="btn__group btn__group--equal mt-4">
+                    <button type="button" id="sync-now-btn" class="btn btn--success">
+                        🔄 Szinkronizálás Indítása
+                    </button>
+                </div>
+    </div>
+
+            <!-- Events Table -->
+            <div class="card--data">
+        <% if (events.length === 0) { %>
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-title">Még nincsenek események</div>
+                <div class="empty-state-text">Futtasd a szinkronizálást a Vtiger eseményeinek betöltéséhez!</div>
+            </div>
+        <% } else { %>
+            <div class="table-responsive max-h-80vh overflow-auto">
+                <table class="table table-hover table-compact">
+                    <thead>
+                        <tr>
+                            <th>Tárgy</th>
+                            <th>Előadó</th>
+                            <th>Helyszín</th>
+                            <th class="text-center">Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% events.forEach(event => { %>
+                            <tr data-event-id="<%= event.id %>">
+                                <td class="wrap-text">
+                                    <strong><%= event.subject %></strong>
+                                </td>
+                                <td>
+                                    <% if (event.performer) { %>
+                                        <a href="/admin/performers/<%= event.performer.id %>">
+                                            <%= event.performer.name %>
+                                        </a>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td class="wrap-text">
+                                    <% if (event.performanceLocation) { %>
+                                        <%= event.performanceLocation %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td class="text-center">
+                                    <button 
+                                        onclick="deleteEvent(<%= event.id %>)" 
+                                        class="btn btn-icon-only btn-error"
+                                        title="Esemény törlése"
+                                    >
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+        </div>
+        <!-- /.bal oszlop -->
+
+        <!-- JOBB OSZLOP: Info Boxok -->
+        <div>
+            
+            <!-- Szinkronizálás -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🔄 Automatikus Szinkronizálás
+                </h3>
+                <div class="card__info-content">
+                    <p>Az események automatikusan szinkronizálódnak a Jegymester API-ból.</p>
+                    
+                    <p><strong>Hogyan működik?</strong></p>
+                    <ul>
+                        <li>Naponta automatikus szinkronizálás (cron job)</li>
+                        <li>A beállított időtartományban lévő események letöltése</li>
+                        <li>Új események hozzáadása, meglévők frissítése</li>
+                        <li>Időhatárokon kívül eső események automatikus törlése</li>
+                        <li>Duplikátumok automatikus kezelése</li>
+                    </ul>
+                    
+                    <p>
+                        ⏱️ A szinkronizálás minden nap hajnalban fut le automatikusan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Időtartomány Beállítások -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📅 Időtartomány Beállítások
+                </h3>
+                <div class="card__info-content">
+                    <p>Állítsd be, hogy mennyi ideig visszamenőleg és előre töltődjenek le az események.</p>
+                    
+                    <p><strong>Hónapok visszamenőleg:</strong></p>
+                    <p>
+                        Hány hónappal ezelőtti eseményeket töltsön le a rendszer.<br>
+                        <em>Példa: 1 hónap = az elmúlt 30 nap eseményeit</em>
+                    </p>
+                    
+                    <p><strong>Hónapok előre:</strong></p>
+                    <p>
+                        Hány hónappal előre töltődjenek le a jövőbeli események.<br>
+                        <em>Példa: 6 hónap = a következő 6 hónap eseményeit</em>
+                    </p>
+                    
+                    <p>
+                        💡 Ajánlott: 1 hónap vissza, 6-12 hónap előre
+                    </p>
+                </div>
+            </div>
+
+            <!-- Esemény Státuszok -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ✓ Esemény Státuszok
+                </h3>
+                <div class="card__info-content">
+                    <div>
+                        <strong>✅ Approved:</strong>
+                        <p>Jóváhagyott esemény, megjelenik a weboldalon</p>
+                    </div>
+                    <div>
+                        <strong>⏳ Pending:</strong>
+                        <p>Függőben lévő esemény, még nem végleges</p>
+                    </div>
+                    <div>
+                        <strong>❌ Cancelled:</strong>
+                        <p>Lemondott esemény, nem jelenik meg</p>
+                    </div>
+                    
+                    <p>
+                        ℹ️ A státusz a Jegymester rendszeréből érkezik automatikusan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Előadók és Helyszínek -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🎤 Előadók és Helyszínek
+                </h3>
+                <div class="card__info-content">
+                    <p><strong>Előadó (Performer):</strong></p>
+                    <p>
+                        Az esemény művésze vagy előadója. Ha van előadó oldal, kattintható link lesz.
+                    </p>
+                    
+                    <p><strong>Helyszín (Venue):</strong></p>
+                    <p>
+                        Az esemény pontos helyszíne (pl. Petőfi Csarnok, Budapest).
+                    </p>
+                    
+                    <p><strong>Tétel (Item):</strong></p>
+                    <p>
+                        Az esemény típusa vagy kategóriája a Jegymester rendszerében.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Szinkronizálási Eredmények -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📊 Szinkronizálási Eredmények
+                </h3>
+                <div class="card__info-content">
+                    <p>A szinkronizálás után részletes statisztikát látsz:</p>
+                    
+                    <ul>
+                        <li>
+                            <strong>Feldolgozott:</strong> Hány eseményt dolgozott fel a rendszer
+                        </li>
+                        <li>
+                            <strong>Létrehozott:</strong> Hány új esemény került hozzáadásra
+                        </li>
+                        <li>
+                            <strong>Frissített:</strong> Hány meglévő esemény frissült
+                        </li>
+                        <li>
+                            <strong>Törölve:</strong> Hány esemény került törlésre (időhatárokon kívül)
+                        </li>
+                        <li>
+                            <strong>Hibák:</strong> Hány eseménynél történt hiba
+                        </li>
+                        <li>
+                            <strong>Időtartam:</strong> Mennyi ideig tartott a szinkronizálás (milliszekundumban)
+                        </li>
+                    </ul>
+                    
+                    <p>
+                        ℹ️ A szinkronizálás után az oldal automatikusan frissül.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- /.jobb oszlop -->
+    </div>
+    <!-- /.content-grid -->
+</div>
+<!-- /.page-container -->
+
+<script>
+// Auto-save beállítások amikor változnak
+const syncInputs = ['syncMonthsBefore', 'syncMonthsAfter'];
+
+syncInputs.forEach(inputId => {
+    const inputElement = document.getElementById(inputId);
+    if (inputElement) {
+        inputElement.addEventListener('change', async function() {
+            const input = this;
+            const originalValue = input.value;
+            
+            try {
+                const data = {
+                    [inputId]: input.value
+                };
+                
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch('/admin/events/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    const labelElement = input.closest('.form__group')?.querySelector('.form__label');
+                    const label = labelElement ? labelElement.textContent.trim() : inputId;
+                    showAlert('success', '✅ Mentve: ' + label);
+                } else {
+                    throw new Error('Save failed: ' + response.status);
+                }
+            } catch (error) {
+                console.error('❌ Auto-save error:', error);
+                // Revert input value
+                input.value = originalValue;
+                showAlert('error', '❌ Mentés sikertelen');
+            }
+        });
+    }
+});
+
+// Szinkronizálás gomb
+document.getElementById('sync-now-btn').addEventListener('click', async function() {
+    const btn = this;
+    const originalBtnText = btn.innerHTML;
+    
+    try {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Szinkronizálás folyamatban...';
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const response = await fetch('/admin/events/sync', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({})
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', `✅ Szinkronizálás befejezve! ${result.message}`);
+            
+            // Oldal újratöltése 3 másodperc múlva
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        } else {
+            showAlert('error', result.message || 'Hiba történt a szinkronizálás során');
+        }
+    } catch (error) {
+        console.error('Sync error:', error);
+        showAlert('error', error.message || 'Hálózati hiba történt');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalBtnText;
+    }
+});
+
+// Esemény törlése
+async function deleteEvent(eventId) {
+    const confirmed = await Modal.confirm({
+        title: 'Esemény törlése',
+        message: 'Biztosan törölni szeretnéd ezt az eseményt?',
+        confirmText: 'Törlés',
+        cancelText: 'Mégse'
+    });
+    
+    if (!confirmed) {
+        return;
+    }
+    
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const response = await fetch('/admin/events/' + eventId, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Sor eltávolítása a táblázatból
+            const row = document.querySelector('tr[data-event-id="' + eventId + '"]');
+            if (row) {
+                row.remove();
+            }
+            Modal.alert({
+                title: 'Siker',
+                message: 'Esemény sikeresen törölve',
+                type: 'success'
+            });
+        } else {
+            Modal.alert({
+                title: 'Hiba',
+                message: result.message || 'Hiba történt a törlés során',
+                type: 'error'
+            });
+        }
+    } catch (error) {
+        Modal.alert({
+            title: 'Hiba',
+            message: 'Hálózati hiba történt',
+            type: 'error'
+        });
+        console.error('Error:', error);
+    }
+}
+
+// Oldal betöltéskor alapértelmezett dátumok beállítása
+document.addEventListener('DOMContentLoaded', () => {
+    setDefaultDates();
+});
+</script>

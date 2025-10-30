@@ -1,0 +1,518 @@
+<!-- Chat Widget Floating Button & Window -->
+<div x-data="chatWidget" x-init="init()" class="chat-widget-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+  
+  <!-- Chat Toggle Button (Floating) -->
+  <button 
+    @click="toggleChat()"
+    class="chat-toggle-btn"
+    :class="{ 'hidden': isOpen }"
+    style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent;"
+    aria-label="Chat megnyitása"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    
+    <!-- Unread Badge -->
+    <span 
+      x-show="unreadCount > 0" 
+      x-text="unreadCount"
+      style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;"
+    ></span>
+  </button>
+
+  <!-- Chat Window -->
+  <div 
+    x-show="isOpen" 
+    x-transition
+    class="chat-window"
+    style="position: fixed; bottom: 80px; right: 20px; width: min(360px, calc(100vw - 40px)); height: min(500px, calc(100vh - 120px)); max-width: 400px; max-height: calc(100vh - 100px); background: white; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; touch-action: manipulation;"
+    @click.away="false"
+  >
+    
+    <!-- Chat Header -->
+    <div class="chat-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px; display: flex; align-items: center; justify-content: space-between; min-height: 72px;">
+      <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
+        <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <div style="min-width: 0; flex: 1;">
+          <div style="font-weight: 600; font-size: 16px;">Koncert24 Chat</div>
+          <div style="font-size: 12px; opacity: 0.9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" x-show="!isLoading">
+            <span x-show="mode === 'full_service'">🤖 AI + 👤 Admin</span>
+            <span x-show="mode === 'admin_only'">👤 Admin elérhető</span>
+            <span x-show="mode === 'ai_only'">🤖 AI elérhető</span>
+            <span x-show="mode === 'offline_mode'">📧 Offline üzenet</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 8px; flex-shrink: 0;">
+        <button 
+          @click="minimizeChat()"
+          class="chat-header-btn"
+          style="background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent;"
+          aria-label="Minimalizálás"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button 
+          @click="closeChat()"
+          class="chat-header-btn"
+          style="background: rgba(255,255,255,0.2); border: none; color: white; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent;"
+          aria-label="Bezárás"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Body: Absolute positioning container -->
+    <div x-show="!isMinimized" style="position: absolute; top: 90px; left: 0; right: 0; bottom: 0;">
+      
+      <!-- Messages Container: Scrollable area with padding for input -->
+      <div 
+        x-ref="messagesContainer"
+        class="chat-messages-container"
+        style="height: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 16px; padding-bottom: 140px; background: #f9fafb; display: flex; flex-direction: column; gap: 12px;"
+      >
+        <!-- Loading State -->
+        <div x-show="isLoading && messages.length === 0" style="text-align: center; padding: 40px 20px; color: #6b7280;">
+          <div style="width: 48px; height: 48px; border: 3px solid #e5e7eb; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+          <p>Kapcsolódás...</p>
+        </div>
+
+        <!-- Messages -->
+        <template x-for="message in messages" :key="message.id">
+          <div 
+            :style="{
+              padding: '12px',
+              borderRadius: '12px',
+              maxWidth: '80%',
+              wordWrap: 'break-word',
+              overflowWrap: 'break-word',
+              wordBreak: 'break-word',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px',
+              background: message.role === 'user' ? '#667eea' : (message.role === 'system' ? '#fef3c7' : '#e5e7eb'),
+              color: message.role === 'user' ? 'white' : (message.role === 'system' ? '#92400e' : '#1f2937'),
+              marginLeft: message.role === 'user' ? 'auto' : '0',
+              marginRight: message.role === 'user' ? '0' : 'auto',
+              border: message.role === 'system' ? '1px solid #fbbf24' : 'none',
+              textAlign: message.role === 'system' ? 'center' : 'left',
+              fontSize: message.role === 'system' ? '13px' : '14px'
+            }"
+          >
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; opacity: 0.7; margin-bottom: 4px;" x-show="message.role !== 'system'">
+              <span x-text="getSenderName(message.role)" style="font-weight: 600;"></span>
+              <span x-text="formatTime(message.createdAt)"></span>
+            </div>
+            <div x-html="message.content" style="white-space: pre-wrap;"></div>
+          </div>
+        </template>
+
+        <!-- Typing Indicator: Always visible above input -->
+        <div x-show="isTyping" x-transition style="background: #e5e7eb; color: #6b7280; padding: 12px; border-radius: 12px; width: fit-content; display: flex; gap: 5px; align-items: center; justify-content: center; margin-bottom: 100px;">
+          <span style="width: 8px; height: 8px; background: #9ca3af; border-radius: 50%; display: inline-block; animation: typing 1.4s infinite both;"></span>
+          <span style="width: 8px; height: 8px; background: #9ca3af; border-radius: 50%; display: inline-block; animation: typing 1.4s infinite both; animation-delay: 0.2s;"></span>
+          <span style="width: 8px; height: 8px; background: #9ca3af; border-radius: 50%; display: inline-block; animation: typing 1.4s infinite both; animation-delay: 0.4s;"></span>
+        </div>
+      </div>
+
+      <!-- Offline Form: FIXED at bottom with absolute positioning -->
+      <div x-show="showOfflineForm" class="chat-offline-form" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; background: #fef3c7; border-top: 2px solid #fbbf24; z-index: 10; max-height: 80%; overflow-y: auto;">
+        <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px; color: #92400e;">📧 Offline Üzenet</h3>
+        <form @submit.prevent="submitOfflineForm()" style="display: flex; flex-direction: column; gap: 10px;">
+          
+          <!-- Honeypot Fields - Hidden from real users but bots will fill them -->
+          <input 
+            name="website" 
+            type="text" 
+            style="display:none !important; position:absolute !important; left:-9999px !important; width:0 !important; height:0 !important; opacity:0 !important;" 
+            tabindex="-1" 
+            autocomplete="off"
+            aria-hidden="true"
+          />
+          <input 
+            name="url" 
+            type="text" 
+            style="display:none !important; position:absolute !important; left:-9999px !important; width:0 !important; height:0 !important; opacity:0 !important;" 
+            tabindex="-1" 
+            autocomplete="off"
+            aria-hidden="true"
+          />
+          <input 
+            name="homepage" 
+            type="text" 
+            style="display:none !important; position:absolute !important; left:-9999px !important; width:0 !important; height:0 !important; opacity:0 !important;" 
+            tabindex="-1" 
+            autocomplete="off"
+            aria-hidden="true"
+          />
+          <input 
+            name="phone2" 
+            type="tel" 
+            style="display:none !important; position:absolute !important; left:-9999px !important; width:0 !important; height:0 !important; opacity:0 !important;" 
+            tabindex="-1" 
+            autocomplete="off"
+            aria-hidden="true"
+          />
+          <input 
+            name="fax" 
+            type="tel" 
+            style="display:none !important; position:absolute !important; left:-9999px !important; width:0 !important; height:0 !important; opacity:0 !important;" 
+            tabindex="-1" 
+            autocomplete="off"
+            aria-hidden="true"
+          />
+          
+          <input 
+            x-model="offlineForm.name" 
+            type="text" 
+            placeholder="Név *" 
+            required
+            class="offline-input"
+            style="padding: 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px;"
+          />
+          <input 
+            x-model="offlineForm.email" 
+            type="email" 
+            placeholder="Email *" 
+            required
+            class="offline-input"
+            style="padding: 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px;"
+          />
+          <input 
+            x-model="offlineForm.phone" 
+            type="tel" 
+            placeholder="Telefon" 
+            class="offline-input"
+            style="padding: 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px;"
+          />
+          <textarea 
+            x-model="offlineForm.message" 
+            placeholder="Üzenet *" 
+            required
+            rows="3"
+            class="offline-textarea"
+            style="padding: 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px; resize: vertical; min-height: 100px;"
+          ></textarea>
+          <button 
+            type="submit" 
+            :disabled="isLoading"
+            class="offline-submit-btn"
+            style="background: #667eea; color: white; padding: 14px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; font-size: 16px; min-height: 48px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;"
+          >
+            <span x-show="!isLoading">Küldés</span>
+            <span x-show="isLoading">Küldés...</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Input Area: FIXED at bottom with absolute positioning -->
+      <div x-show="!showOfflineForm" class="chat-input-area" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; border-top: 1px solid #e5e7eb; background: white; z-index: 10;">
+        <form @submit.prevent="sendMessage()" style="display: flex; gap: 12px; align-items: center;">
+          <textarea 
+            x-model="inputMessage"
+            @keydown.enter.prevent="!$event.shiftKey && sendMessage()"
+            placeholder="Írja be üzenetét..."
+            rows="1"
+            class="chat-textarea"
+            style="flex: 1; padding: 14px; border: 1px solid #d1d5db; border-radius: 12px; font-size: 16px; resize: none; max-height: 120px; font-family: inherit; min-height: 48px; line-height: 1.4; margin: 0;"
+          ></textarea>
+          <button 
+            type="submit" 
+            :disabled="!inputMessage.trim() || isLoading"
+            class="chat-send-btn"
+            style="background: #667eea; color: white; padding: 0; border: 0; outline: 0; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; width: 48px; height: 48px; flex-shrink: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; box-shadow: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;"
+            :style="(!inputMessage.trim() || isLoading) ? 'opacity: 0.5; cursor: not-allowed;' : ''"
+          >
+            <!-- Loading Spinner -->
+            <div x-show="isLoading" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+              <svg style="width: 22px; height: 22px; animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            <!-- Send Icon -->
+            <div x-show="!isLoading" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </div>
+          </button>
+        </form>
+        
+        <!-- Actions -->
+        <div style="display: flex; gap: 8px; margin-top: 10px; font-size: 13px; flex-wrap: wrap;">
+          <button 
+            @click="escalateToAdmin()"
+            x-show="mode === 'full_service' || mode === 'ai_only'"
+            style="color: #667eea; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 4px 8px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;"
+          >
+            👤 Beszéljek munkatárssal
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Chat Widget CSS -->
+<style>
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+}
+
+.chat-widget-container * {
+  box-sizing: border-box;
+}
+
+/* Scrollbar styling for chat messages */
+.chat-messages-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Hover effects */
+.chat-toggle-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.chat-header-btn:hover {
+  background: rgba(255,255,255,0.3) !important;
+}
+
+.chat-send-btn {
+  /* Remove any default button styling */
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border: 0 !important;
+  background-clip: padding-box !important;
+}
+
+.chat-send-btn:focus {
+  outline: 2px solid rgba(102, 126, 234, 0.5) !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+.chat-send-btn svg {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+}
+
+.chat-send-btn:hover:not(:disabled) {
+  background: #5568d3 !important;
+  transform: scale(1.05);
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+.chat-send-btn:active:not(:disabled) {
+  transform: scale(0.98);
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+/* Desktop - Dinamikus méretezés */
+@media (min-width: 769px) {
+  .chat-window {
+    /* Kis desktopokra (1024px-1366px) */
+    width: min(360px, 30vw) !important;
+    height: min(500px, 60vh) !important;
+  }
+}
+
+@media (min-width: 1367px) {
+  .chat-window {
+    /* Közepes desktopokra (1367px-1920px) */
+    width: 380px !important;
+    height: 550px !important;
+  }
+}
+
+@media (min-width: 1921px) {
+  .chat-window {
+    /* Nagy desktopokra (1920px+) */
+    width: 420px !important;
+    height: 600px !important;
+  }
+}
+
+/* Kis képernyők magasságban */
+@media (min-width: 769px) and (max-height: 700px) {
+  .chat-window {
+    height: calc(100vh - 140px) !important;
+    max-height: 450px !important;
+  }
+}
+
+@media (min-width: 769px) and (max-height: 600px) {
+  .chat-window {
+    height: calc(100vh - 160px) !important;
+    max-height: 400px !important;
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .chat-window {
+    width: calc(100vw - 40px) !important;
+    height: calc(100vh - 120px) !important;
+    max-height: calc(100vh - 120px) !important;
+    position: fixed !important;
+    bottom: 80px !important;
+    right: 20px !important;
+    left: 20px !important;
+    border-radius: 20px !important;
+  }
+  
+  .chat-toggle-btn {
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+
+/* Mobile - Full Screen Experience */
+@media (max-width: 480px) {
+  .chat-widget-container {
+    bottom: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+  }
+  
+  .chat-window {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    border-radius: 0 !important;
+  }
+  
+  .chat-toggle-btn {
+    width: 60px !important;
+    height: 60px !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    position: fixed !important;
+  }
+  
+  .chat-header {
+    padding: 20px 16px !important;
+    min-height: 80px !important;
+  }
+  
+  .chat-header-btn {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  
+  .chat-textarea {
+    font-size: 16px !important;
+    padding: 16px !important;
+    min-height: 52px !important;
+  }
+  
+  .chat-send-btn {
+    width: 52px !important;
+    height: 52px !important;
+  }
+  
+  .chat-input-area {
+    padding: 16px 20px 20px 20px !important;
+    /* Safe area for iOS notch */
+    padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+  }
+  
+  .chat-messages-container {
+    padding: 16px !important;
+    padding-bottom: 160px !important;
+  }
+  
+  .chat-offline-form {
+    padding: 20px !important;
+    max-height: 85% !important;
+    padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+  }
+  
+  .offline-input,
+  .offline-textarea {
+    font-size: 16px !important;
+    padding: 16px !important;
+  }
+  
+  .offline-submit-btn {
+    font-size: 17px !important;
+    padding: 16px !important;
+    min-height: 52px !important;
+  }
+}
+
+/* Landscape mode mobilon */
+@media (max-width: 768px) and (orientation: landscape) {
+  .chat-window {
+    height: 100vh !important;
+    max-height: 100vh !important;
+  }
+  
+  .chat-messages-container {
+    padding-bottom: 140px !important;
+  }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .chat-window {
+    /* iOS Safari viewport fix */
+    height: -webkit-fill-available !important;
+  }
+  
+  @media (max-width: 480px) {
+    .chat-window {
+      height: 100vh !important;
+      height: -webkit-fill-available !important;
+    }
+  }
+}
+</style>

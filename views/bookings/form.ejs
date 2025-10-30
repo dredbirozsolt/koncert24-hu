@@ -1,0 +1,600 @@
+<!-- Booking Form -->
+<section class="section">
+    <div class="container">
+        <div class="booking-header">
+            <h1 class="page-title">Foglalás</h1>
+            <% if (performer) { %>
+                <!-- Expanded Performer Card -->
+                <div class="performer__card-expanded">
+                    <% if (performer.imageUrl) { %>
+                        <div class="performer__image-large">
+                            <img src="<%= performer.imageUrl %>" alt="<%= performer.name %>"
+                                class="performer-detail__photo-large">
+                        </div>
+                        <% } %>
+
+                            <div class="performer-info-booking">
+                                <h1 class="performer__name-large">
+                                    <%= performer.name %>
+                                </h1>
+
+                                <!-- Performer Data Block -->
+                                <div class="performer-detail__data-block">
+                                    <h2 class="performer-detail__block-title">Előadó adatok</h2>
+
+                                    <div class="performer-detail__data-item">
+                                        <span class="performer-detail__data-label">Kategória:</span>
+                                        <span class="performer-detail__data-value category-value">
+                                            <%= performer.getCategoryDisplayName() %>
+                                        </span>
+                                    </div>
+
+                                    <% if (performer.performanceType) { %>
+                                        <div class="performer-detail__data-item">
+                                            <span class="performer-detail__data-label">Előadás típusa:</span>
+                                            <span class="performer-detail__data-value">
+                                                <%= performer.performanceType %>
+                                            </span>
+                                        </div>
+                                        <% } %>
+
+                                            <% if (performer.duration) { %>
+                                                <div class="performer-detail__data-item">
+                                                    <span class="performer-detail__data-label">Előadás hossza:</span>
+                                                    <span class="performer-detail__data-value">
+                                                        <%= performer.duration %> perc
+                                                    </span>
+                                                </div>
+                                                <% } %>
+
+                                                    <% if (performer.price) { %>
+                                                        <div class="performer-detail__data-item">
+                                                            <span class="performer-detail__data-label">Nettó ár:</span>
+                                                            <span class="performer-detail__data-value price-value">
+                                                                <%= new
+                                                                    Intl.NumberFormat('hu-HU').format(performer.price)
+                                                                    %> Ft
+                                                            </span>
+                                                        </div>
+                                                        <% } %>
+
+                                                            <% if (performer.travelCost) { %>
+                                                                <div class="performer-detail__data-item">
+                                                                    <span class="performer-detail__data-label">Utazási költség:</span>
+                                                                    <span class="performer-detail__data-value">
+                                                                        <%= new
+                                                                            Intl.NumberFormat('hu-HU').format(performer.travelCost)
+                                                                            %> Ft/km
+                                                                    </span>
+                                                                </div>
+                                                                <% } %>
+                                </div>
+                            </div>
+                </div>
+                <% } else { %>
+                    <p class="page-subtitle">
+                        Töltse ki az alábbi űrlapot a foglalás leadásához.
+                    </p>
+                    <% } %>
+        </div>
+
+        <!-- Description Section (if exists) -->
+        <% if (performer && performer.description) { %>
+            <section class="performer__description-section">
+                <div class="container">
+                    <div class="description-card">
+                        <h2 class="description-title">Előadó leírása</h2>
+                        <div class="description-content">
+                            <%- performer.description %>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <% } %>
+
+                <div class="booking-form-container">
+                    <form method="POST" class="booking-form" novalidate>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                        <% if (!performer) { %>
+                            <div class="form__group">
+                                <label for="performerId" class="form__label required">Előadó kiválasztása</label>
+                                <select name="performerId" id="performerId" class="form__select" required>
+                                    <option value="">-- Válasszon előadót --</option>
+                                    <!-- Options would be populated from database -->
+                                </select>
+                                <% if (errors.find(err=> err.param === 'performerId')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'performerId').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                            <% } else { %>
+                                <input type="hidden" name="performerId" value="<%= performer.id %>">
+                                <% } %>
+
+                                    <!-- Client Information -->
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">Kapcsolattartó adatok</h3>
+
+                                        <div class="form-row">
+                                            <div class="form__group">
+                                                <label for="clientName" class="form__label required">Teljes név</label>
+                                                <input type="text" name="clientName" id="clientName" class="form__input"
+                                                    value="<%= formData.clientName || '' %>" required maxlength="255">
+                                                <% const nameError=errors.find(err=> err.param === 'clientName'); %>
+                                                    <% if (nameError) { %>
+                                                        <div class="form__error">
+                                                            <%= nameError.msg %>
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+
+                                            <div class="form__group">
+                                                <label for="clientEmail" class="form__label required">E-mail cím</label>
+                                                <input type="email" name="clientEmail" id="clientEmail"
+                                                    class="form__input" value="<%= formData.clientEmail || '' %>"
+                                                    required maxlength="255">
+                                                <% const emailError=errors.find(err=> err.param === 'clientEmail'); %>
+                                                    <% if (emailError) { %>
+                                                        <div class="form__error">
+                                                            <%= emailError.msg %>
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form__group">
+                                                <label for="clientPhone" class="form__label required">Telefonszám</label>
+                                                <input type="tel" name="clientPhone" id="clientPhone" class="form__input"
+                                                    value="<%= formData.clientPhone || '' %>" required maxlength="50"
+                                                    placeholder="+36 70 123 4567">
+                                                <% const phoneError=errors.find(err=> err.param === 'clientPhone'); %>
+                                                    <% if (phoneError) { %>
+                                                        <div class="form__error">
+                                                            <%= phoneError.msg %>
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+
+                                            <div class="form__group">
+                                                <label for="clientCompany" class="form__label">Cégnév
+                                                    (opcionális)</label>
+                                                <input type="text" name="clientCompany" id="clientCompany"
+                                                    class="form__input" value="<%= formData.clientCompany || '' %>"
+                                                    maxlength="255">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Event Information -->
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">Esemény adatok</h3>
+
+                                        <div class="form-row">
+                                            <div class="form__group">
+                                                <label for="eventDate" class="form__label required">Esemény
+                                                    dátuma</label>
+                                                <input type="date" name="eventDate" id="eventDate" class="form__input"
+                                                    value="<%= formData.eventDate || '' %>" required
+                                                    min="<%= new Date().toISOString().split('T')[0] %>">
+                                                <% const dateError=errors.find(err=> err.param === 'eventDate'); %>
+                                                    <% if (dateError) { %>
+                                                        <div class="form__error">
+                                                            <%= dateError.msg %>
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+
+                                            <div class="form__group">
+                                                <label for="eventTime" class="form__label">Esemény időpontja
+                                                    (opcionális)</label>
+                                                <input type="time" name="eventTime" id="eventTime" class="form__input"
+                                                    value="<%= formData.eventTime || '' %>">
+                                            </div>
+                                        </div>
+
+                                        <div class="form__group">
+                                            <label for="eventLocation" class="form__label required">Esemény
+                                                helyszíne</label>
+                                            <input type="text" name="eventLocation" id="eventLocation"
+                                                class="form__input" value="<%= formData.eventLocation || '' %>" required
+                                                maxlength="500" placeholder="Város, helyszín neve, cím">
+                                            <% const locationError=errors.find(err=> err.param === 'eventLocation'); %>
+                                                <% if (locationError) { %>
+                                                    <div class="form__error">
+                                                        <%= locationError.msg %>
+                                                    </div>
+                                                    <% } %>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form__group">
+                                                <label for="eventType" class="form__label required">Esemény
+                                                    típusa</label>
+                                                <select name="eventType" id="eventType" class="form__select" required>
+                                                    <option value="">-- Válasszon típust --</option>
+                                                    <option value="wedding" <%=formData.eventType==='wedding'
+                                                        ? 'selected' : '' %>>Esküvő</option>
+                                                    <option value="corporate" <%=formData.eventType==='corporate'
+                                                        ? 'selected' : '' %>>Céges rendezvény</option>
+                                                    <option value="birthday" <%=formData.eventType==='birthday'
+                                                        ? 'selected' : '' %>>Születésnap</option>
+                                                    <option value="festival" <%=formData.eventType==='festival'
+                                                        ? 'selected' : '' %>>Fesztivál</option>
+                                                    <option value="private" <%=formData.eventType==='private'
+                                                        ? 'selected' : '' %>>Magánrendezvény</option>
+                                                    <option value="other" <%=formData.eventType==='other' ? 'selected'
+                                                        : '' %>
+                                                        >Egyéb</option>
+                                                </select>
+                                                <% const typeError=errors.find(err=> err.param === 'eventType'); %>
+                                                    <% if (typeError) { %>
+                                                        <div class="form__error">
+                                                            <%= typeError.msg %>
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+
+                                            <div class="form__group">
+                                                <label for="expectedGuests" class="form__label">Várható vendégszám
+                                                    (opcionális)</label>
+                                                <input type="number" name="expectedGuests" id="expectedGuests"
+                                                    class="form__input" value="<%= formData.expectedGuests || '' %>"
+                                                    min="1" max="10000" placeholder="Pl. 100">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Additional Information -->
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">További információk</h3>
+
+                                        <div class="form-row">
+                                            <div class="form__group">
+                                                <label for="budget" class="form__label">Tervezett költségkeret (Ft,
+                                                    opcionális)</label>
+                                                <input type="number" name="budget" id="budget" class="form__input"
+                                                    value="<%= formData.budget || '' %>" min="0" placeholder="200000">
+                                                <div class="form__help">
+                                                    A költségkeret segít nekünk a legjobb ajánlat elkészítésében.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form__group">
+                                            <label for="message" class="form__label">További üzenet, kérések
+                                                (opcionális)</label>
+                                            <textarea name="message" id="message" class="form__textarea" maxlength="2000"
+                                                placeholder="Írja le itt az esemény részleteit, speciális kéréseit..."><%= formData.message || '' %></textarea>
+                                            <div class="form__help">
+                                                Maximum 2000 karakter.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Privacy Consent -->
+                                    <div class="form-section">
+                                        <div class="form__group">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" name="privacy" value="accepted"
+                                                    class="checkbox-input" required <%=formData.privacy==='accepted'
+                                                    ? 'checked' : '' %>
+                                                >
+                                                <span class="checkbox-checkmark"></span>
+                                                <span class="checkbox-text">
+                                                    Elfogadom az <a href="<%= basePath %>info/adatkezeles"
+                                                        target="_blank" class="privacy-link">adatkezelési
+                                                        tájékoztatót</a> és hozzájárulok
+                                                    személyes adataim kezeléséhez a foglalás lebonyolítása céljából.
+                                                    <span class="required">*</span>
+                                                </span>
+                                            </label>
+                                            <% const privacyError=errors.find(err=> err.param === 'privacy'); %>
+                                                <% if (privacyError) { %>
+                                                    <div class="form__error">
+                                                        <%= privacyError.msg %>
+                                                    </div>
+                                                    <% } %>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn--primary btn-large">
+                                            Foglalási kérés elküldése
+                                        </button>
+                                        <p class="form-help-text">
+                                            A foglalási kérés elküldése után hamarosan felvesszük Önnel a kapcsolatot.
+                                        </p>
+                                    </div>
+                    </form>
+                </div>
+    </div>
+</section>
+
+<style>
+    /* Booking form styles */
+    .booking-header {
+        text-align: center;
+        margin-bottom: var(--space-12);
+    }
+
+    .performer-info {
+        background: var(--bg-secondary);
+        padding: var(--space-6);
+        border-radius: var(--radius-xl);
+        margin-top: var(--space-6);
+    }
+
+    .performer-card-expanded {
+        background: var(--color-white);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-6);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-base);
+        text-align: center;
+        margin-top: var(--space-6);
+    }
+
+    .performer-image-large {
+        margin: 0 auto var(--space-6);
+        text-align: center;
+        display: flex;
+        justify-content: center;
+    }
+
+    .performer-photo-large {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-xl);
+        border: 3px solid var(--color-primary-600);
+    }
+
+    .performer-name-large {
+        font-size: var(--text-2xl);
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: var(--space-6);
+        line-height: 1.2;
+    }
+
+    .performer-data-block {
+        background: var(--color-gray-50);
+        border-radius: var(--radius-xl);
+        padding: var(--space-6);
+        margin-bottom: var(--space-6);
+        text-align: left;
+    }
+
+    .data-block-title {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+        text-align: center;
+    }
+
+    .data-item {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        margin-bottom: var(--space-3);
+        padding-bottom: var(--space-3);
+        border-bottom: 1px solid var(--border-base);
+    }
+
+    .data-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .data-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    .data-value {
+        font-size: var(--text-lg);
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+
+    .category-value {
+        color: var(--color-primary-600);
+    }
+
+    .price-value {
+        color: var(--color-primary-600);
+        font-size: var(--text-xl);
+    }
+
+    .booking-form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .booking-form {
+        background: var(--color-white);
+        padding: var(--space-6);
+        margin: var(--space-4);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .form-section {
+        margin-bottom: var(--space-12);
+        padding-bottom: var(--space-8);
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .form-section:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .form-section-title {
+        font-size: var(--text-xl);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--space-6);
+        padding-bottom: var(--space-2);
+        border-bottom: 2px solid var(--color-primary-600);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+
+    @media (min-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-3);
+        cursor: pointer;
+        font-size: var(--text-sm);
+        line-height: var(--leading-relaxed);
+    }
+
+    .checkbox-input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkbox-checkmark {
+        width: 20px;
+        height: 20px;
+        background-color: var(--color-white);
+        border: 2px solid var(--border-base);
+        border-radius: var(--radius-md);
+        flex-shrink: 0;
+        transition: var(--transition-base);
+        position: relative;
+        margin-top: 2px;
+    }
+
+    .checkbox-checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid var(--color-white);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .checkbox-input:checked~.checkbox-checkmark {
+        background-color: var(--color-primary-600);
+        border-color: var(--color-primary-600);
+    }
+
+    .checkbox-input:checked~.checkbox-checkmark:after {
+        display: block;
+    }
+
+    .checkbox-text {
+        color: var(--text-secondary);
+    }
+
+    .privacy-link {
+        color: var(--color-primary-600);
+        text-decoration: underline;
+    }
+
+    .privacy-link:hover {
+        color: var(--color-primary-700);
+    }
+
+    .form-actions {
+        text-align: center;
+        padding-top: var(--space-8);
+    }
+
+    .form-help-text {
+        margin-top: var(--space-4);
+        color: var(--color-gray-600);
+        font-size: var(--text-sm);
+    }
+
+    /* Error states */
+    .form-input.error,
+    .form-select.error,
+    .form-textarea.error {
+        border-color: var(--color-error-600);
+        background-color: rgba(239, 68, 68, 0.05);
+    }
+
+    /* Desktop enhancement */
+    @media (min-width: 768px) {
+        .booking-form {
+            padding: var(--space-8);
+            margin: 0;
+        }
+
+        .form-section-title {
+            font-size: var(--text-xl);
+        }
+    }
+
+    @media (min-width: 769px) {
+        .performer-card-expanded {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-4);
+            text-align: left;
+            padding: var(--space-8);
+        }
+
+        .performer-image-large {
+            grid-column: 1;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .performer-photo-large {
+            width: 100%;
+            aspect-ratio: 1;
+            flex-shrink: 0;
+        }
+
+        .performer-info-booking {
+            grid-column: 2 / 4;
+            flex: 1;
+        }
+
+        .performer-name-large {
+            font-size: var(--text-4xl);
+            text-align: left;
+        }
+
+        .data-item {
+            flex-direction: row;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .data-label {
+            min-width: 150px;
+            flex-shrink: 0;
+        }
+    }
+</style>

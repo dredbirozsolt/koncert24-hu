@@ -1,0 +1,345 @@
+/**
+ * STYLEGUIDE UTILITIES
+ * Utility classes for the design system documentation page
+ * These are semantic, reusable classes for layout and presentation
+ */
+
+/* ==========================================
+   SECTION LAYOUT
+   ========================================== */
+
+.styleguide-section {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-12);
+}
+
+.styleguide-grid {
+  display: grid;
+  gap: var(--space-8);
+}
+
+/* ==========================================
+   TYPOGRAPHY SAMPLES
+   ========================================== */
+
+.typography-samples {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.text-xl-sample {
+  font-size: var(--text-xl);
+  font-weight: 500;
+}
+
+.text-lg-sample {
+  font-size: var(--text-lg);
+}
+
+.text-sm-sample {
+  font-size: var(--text-sm);
+}
+
+.text-xs-sample {
+  font-size: var(--text-xs);
+}
+
+/* ==========================================
+   COLOR SWATCHES
+   ========================================== */
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-4);
+}
+
+.color-grid--spaced {
+  margin-bottom: var(--space-6);
+}
+
+.color-swatch {
+  height: 80px;
+  border-radius: var(--radius-lg);
+}
+
+.color-swatch--bordered {
+  border: 1px solid var(--border-color);
+}
+
+.color-label {
+  font-size: var(--text-sm);
+  margin-top: var(--space-2);
+}
+
+/* Primary Colors */
+.swatch-primary-50 { background: var(--color-primary-50); }
+.swatch-primary-100 { background: var(--color-primary-100); }
+.swatch-primary-200 { background: var(--color-primary-200); }
+.swatch-primary-300 { background: var(--color-primary-300); }
+.swatch-primary-400 { background: var(--color-primary-400); }
+.swatch-primary-500 { background: var(--color-primary-500); }
+.swatch-primary-600 { background: var(--color-primary-600); }
+.swatch-primary-700 { background: var(--color-primary-700); }
+.swatch-primary-800 { background: var(--color-primary-800); }
+.swatch-primary-900 { background: var(--color-primary-900); }
+
+/* Semantic Colors */
+.swatch-success { background: var(--color-success); }
+.swatch-warning { background: var(--color-warning); }
+.swatch-danger { background: var(--color-danger); }
+.swatch-info { background: var(--color-info); }
+
+/* ==========================================
+   BUTTON GROUPS
+   ========================================== */
+
+.button-demo-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.section-spacing {
+  margin-bottom: var(--space-6);
+}
+
+.section-title {
+  margin-bottom: var(--space-4);
+}
+
+/* ==========================================
+   ICON UTILITIES
+   ========================================== */
+
+.icon-inline {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: var(--space-2);
+}
+
+.icon-inline-sm {
+  width: 1rem;
+  height: 1rem;
+  margin-right: var(--space-1);
+}
+
+/* ==========================================
+   SPACING SCALE VISUALIZATION
+   ========================================== */
+
+.spacing-demo {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.spacing-demo-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.spacing-demo-label {
+  width: 150px;
+}
+
+.spacing-demo-bar {
+  height: 20px;
+  background: var(--color-primary-600);
+}
+
+.spacing-1 { width: var(--space-1); }
+.spacing-2 { width: var(--space-2); }
+.spacing-3 { width: var(--space-3); }
+.spacing-4 { width: var(--space-4); }
+.spacing-5 { width: var(--space-5); }
+.spacing-6 { width: var(--space-6); }
+.spacing-8 { width: var(--space-8); }
+.spacing-10 { width: var(--space-10); }
+.spacing-12 { width: var(--space-12); }
+.spacing-16 { width: var(--space-16); }
+
+/* ==========================================
+   CODE EXAMPLES
+   ========================================== */
+
+.code-example {
+  margin-top: var(--space-2);
+}
+
+.code-example--spaced {
+  margin-top: var(--space-4);
+}
+
+.code-example-summary {
+  cursor: pointer;
+  color: var(--color-gray-500);
+  font-size: var(--text-sm);
+}
+
+.code-example-content {
+  background: var(--bg-secondary);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+  overflow-x: auto;
+}
+
+/* ==========================================
+   SKELETON DEMOS
+   ========================================== */
+
+.skeleton-demo-section {
+  margin-bottom: var(--space-6);
+}
+
+.skeleton-card-demo {
+  max-width: 300px;
+}
+
+.skeleton--w-80 { width: 80%; }
+.skeleton--w-90 { width: 90%; }
+.skeleton--w-70 { width: 70%; }
+.skeleton--w-60 { width: 60%; }
+.skeleton--w-100 { width: 100%; }
+
+.skeleton--h-200 { 
+  height: 200px; 
+  margin-bottom: var(--space-3);
+}
+
+.skeleton--mb-2 { margin-bottom: var(--space-2); }
+.skeleton--mb-3 { margin-bottom: var(--space-3); }
+
+/* ==========================================
+   BADGES SECTION
+   ========================================== */
+
+.badge-demo-section {
+  margin-bottom: var(--space-6);
+}
+
+/* ==========================================
+   DROPDOWN & TOOLTIP SPECIFIC
+   ========================================== */
+
+.dropdown-demo-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.tooltip-demo-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.demo-note {
+  margin-top: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+/* ==========================================
+   PAGINATION SECTION HEADERS
+   ========================================== */
+
+.pagination-section-title {
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+.pagination-section-title:first-child {
+  margin-top: 0;
+}
+
+/* ==========================================
+   DEMO CONTAINERS
+   ========================================== */
+
+.demo-container {
+  max-width: 600px;
+}
+
+.demo-container-sm {
+  max-width: 400px;
+}
+
+.demo-container-md {
+  max-width: 300px;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+/* ==========================================
+   LOADING DEMO
+   ========================================== */
+
+.loading-demo-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  align-items: center;
+}
+
+.loading-demo-item {
+  text-align: center;
+}
+
+.loading-demo-label {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.loading-demo-bg {
+  background: var(--color-gray-800);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+}
+
+.loading-overlay-demo {
+  position: relative;
+  height: 200px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ==========================================
+   DROPDOWN & TOOLTIP DEMO
+   ========================================== */
+
+.dropdown-demo-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+}
+
+.dropdown-demo-note {
+  margin-top: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+/* ==========================================
+   PROFILE HEADER (for dropdown example)
+   ========================================== */
+
+.dropdown-profile-header {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border-base);
+}
+
+.dropdown-profile-name {
+  font-weight: 600;
+}
+
+.dropdown-profile-email {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}

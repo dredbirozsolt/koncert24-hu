@@ -1,0 +1,1834 @@
+<style>
+  /* Chat Dashboard Styles */
+  .page-container {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  /* Header */
+  .admin-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .admin-header h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+  }
+
+  .admin-header .subtitle {
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  /* Quick Stats */
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .quick-stat {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .quick-stat-icon {
+    font-size: 1.5rem;
+    opacity: 0.9;
+  }
+
+  .quick-stat-label {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .quick-stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  /* Stat Cards */
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .stat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+  }
+
+  .stat-icon.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .stat-icon.danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  .stat-icon.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .stat-icon.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  .stat-info h6 {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .stat-info .value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    margin-top: 0.25rem;
+  }
+
+  .stat-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .stat-status.online {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .stat-status.offline {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .status-indicator.online {
+    background: #10b981;
+  }
+
+  .status-indicator.offline {
+    background: #ef4444;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* Sessions Card */
+  .sessions-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: #f9fafb;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .card-header h5 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-header h5 i {
+    color: #667eea;
+  }
+
+  /* Action Bar */
+  .action-bar {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    color: #374151;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+
+  .btn-action:hover {
+    border-color: #667eea;
+    color: #667eea;
+    background: #f5f7ff;
+  }
+
+  .btn-action.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+  }
+
+  .btn-action.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  /* Table Styles */
+  .table {
+    width: 100%;
+    margin: 0;
+  }
+
+  .table thead th {
+    background: #f9fafb;
+    color: #6b7280;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1rem 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .table tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.2s;
+  }
+
+  .table tbody tr:hover {
+    background: #f9fafb;
+  }
+
+  .table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .table tbody td {
+    padding: 1.25rem 1.5rem;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .user-details .name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.9375rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .user-details .time {
+    font-size: 0.75rem;
+    color: #9ca3af;
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .contact-item i {
+    width: 16px;
+    text-align: center;
+  }
+
+  .contact-item i.fa-envelope {
+    color: #667eea;
+  }
+
+  .contact-item i.fa-phone {
+    color: #10b981;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .badge-success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .badge-dark {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .badge-secondary {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  .badge-info {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  /* Message Preview */
+  .message-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  .message-avatar i {
+    font-size: 0.75rem;
+  }
+
+  .message-avatar.user i {
+    color: #667eea;
+  }
+
+  .message-avatar.admin i {
+    color: #10b981;
+  }
+
+  .message-avatar.ai i {
+    color: #f59e0b;
+  }
+
+  .message-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .message-text {
+    color: #374151;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.5;
+    margin-bottom: 0.25rem;
+  }
+
+  .message-meta {
+    font-size: 0.75rem;
+    color: #9ca3af;
+  }
+
+  /* Button */
+  .btn-open-chat {
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .btn-open-chat:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-open-chat i {
+    font-size: 0.875rem;
+  }
+
+  .session-id {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #9ca3af;
+  }
+
+  .empty-state i {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+  }
+
+  .empty-state p {
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* Info Panel Quick Links Hover */
+  .info-panel-link {
+    transition: all 0.2s;
+  }
+
+  .info-panel-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Modal Styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    outline: 0;
+  }
+
+  .modal.show {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .modal-dialog {
+    position: relative;
+    width: auto;
+    margin: 1.75rem auto;
+    max-width: 600px;
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-backdrop.fade {
+    opacity: 0;
+  }
+
+  .modal-backdrop.show {
+    opacity: 1;
+  }
+
+  body.modal-open {
+    overflow: hidden;
+  }
+
+  .modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    background: white;
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px 12px 0 0;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header .modal-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .modal-header .btn-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: white;
+    opacity: 0.8;
+    cursor: pointer;
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+  }
+
+  .modal-header .btn-close:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  .modal-header .btn-close::before {
+    content: '×';
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .btn-close-white {
+    filter: brightness(0) invert(1);
+  }
+
+  .modal-body {
+    padding: 0;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .chat-messages {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 300px;
+  }
+
+  .message-bubble {
+    padding: 0.875rem 1.125rem;
+    border-radius: 12px;
+    max-width: 75%;
+    word-wrap: break-word;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .message-bubble.user {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .message-bubble.admin {
+    background: white;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .message-bubble.system {
+    background: #fef3c7;
+    color: #92400e;
+    align-self: center;
+    font-size: 0.8125rem;
+    max-width: 90%;
+    text-align: center;
+    border-radius: 8px;
+  }
+
+  .message-time {
+    font-size: 0.6875rem;
+    opacity: 0.7;
+    margin-top: 0.375rem;
+    display: block;
+  }
+
+  .modal-footer {
+    background: #f9fafb;
+    padding: 1.25rem 1.5rem;
+    border-top: 2px solid #e5e7eb;
+  }
+
+  .modal-footer .input-group {
+    gap: 0.75rem;
+  }
+
+  .modal-footer input {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+  }
+
+  .modal-footer input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .modal-footer .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transition: all 0.2s;
+  }
+
+  .modal-footer .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  }
+
+  .btn-danger:hover {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+  }
+
+  .btn-secondary {
+    background: #6b7280 !important;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .quick-stats {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .stat-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .table {
+      font-size: 0.8125rem;
+    }
+
+    .table thead th,
+    .table tbody td {
+      padding: 0.875rem 1rem;
+    }
+
+    .btn-open-chat span {
+      display: none;
+    }
+  }
+</style>
+
+<div class="page-container">
+  <!-- Header -->
+  <div class="admin-header">
+    <h1>
+      <i class="fas fa-comments"></i>
+      Live Chat Dashboard
+    </h1>
+    <p class="subtitle">Valós idejű chat kezelés és felügyelet</p>
+    
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+      <div class="quick-stat">
+        <i class="fas fa-comments quick-stat-icon"></i>
+        <div>
+          <div class="quick-stat-label">Aktív Sessions</div>
+          <div class="quick-stat-value"><%= adminSessions.length %></div>
+        </div>
+      </div>
+      <div class="quick-stat">
+        <i class="fas fa-user-tie quick-stat-icon"></i>
+        <div>
+          <div class="quick-stat-label">Online Adminok</div>
+          <div class="quick-stat-value"><%= systemStatus.adminChat.adminCount %></div>
+        </div>
+      </div>
+      <div class="quick-stat">
+        <i class="fas fa-robot quick-stat-icon"></i>
+        <div>
+          <div class="quick-stat-label">AI Status</div>
+          <div class="quick-stat-value"><%= systemStatus.ai.available ? 'ON' : 'OFF' %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-card-header">
+        <div class="stat-icon <%= systemStatus.ai.available ? 'success' : 'danger' %>">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="stat-info">
+          <h6>AI Szolgáltatás</h6>
+          <div class="stat-status <%= systemStatus.ai.available ? 'online' : 'offline' %>">
+            <span class="status-indicator <%= systemStatus.ai.available ? 'online' : 'offline' %>"></span>
+            <%= systemStatus.ai.available ? 'Elérhető' : 'Offline' %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-header">
+        <div class="stat-icon <%= systemStatus.adminChat.available ? 'success' : 'danger' %>">
+          <i class="fas fa-user-headset"></i>
+        </div>
+        <div class="stat-info">
+          <h6>Admin Chat</h6>
+          <div class="value"><%= systemStatus.adminChat.adminCount %> admin online</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-header">
+        <div class="stat-icon primary">
+          <i class="fas fa-comments"></i>
+        </div>
+        <div class="stat-info">
+          <h6>Aktív Chat-ek</h6>
+          <div class="value"><%= adminSessions.length %> session</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-header">
+        <div class="stat-icon <%= adminAvailability && adminAvailability.isOnline ? 'success' : 'warning' %>">
+          <i class="fas fa-circle"></i>
+        </div>
+        <div class="stat-info">
+          <h6>Az Ön Státusza</h6>
+          <div class="stat-status <%= adminAvailability && adminAvailability.isOnline ? 'online' : 'offline' %>">
+            <span class="status-indicator <%= adminAvailability && adminAvailability.isOnline ? 'online' : 'offline' %>"></span>
+            <%= adminAvailability && adminAvailability.isOnline ? 'Online' : 'Offline' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fontos Tudnivalók Panel -->
+  <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left: 4px solid #0284c7; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.1);">
+    <h3 style="margin: 0 0 1rem 0; color: #0c4a6e; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fas fa-info-circle" style="color: #0284c7;"></i>
+      Fontos Tudnivalók - Chat Kezelés
+    </h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      <!-- Session Kezelés -->
+      <div>
+        <h4 style="color: #0369a1; font-size: 0.95rem; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-clock" style="font-size: 0.9rem;"></i>
+          Session Lejárat
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #0c4a6e; font-size: 0.875rem; line-height: 1.6;">
+          <li><strong>48 óra inaktivitás után</strong> automatikusan törlődik a localStorage-ből</li>
+          <li><strong>30 nap után</strong> véglegesen törlődik az adatbázisból</li>
+          <li>Az idő minden üzenettel újraindul (lastActivity frissül)</li>
+        </ul>
+      </div>
+
+      <!-- AI & Admin Mód -->
+      <div>
+        <h4 style="color: #0369a1; font-size: 0.95rem; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-robot" style="font-size: 0.9rem;"></i>
+          Chat Módok
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #0c4a6e; font-size: 0.875rem; line-height: 1.6;">
+          <li><strong>Full Service:</strong> AI + Admin (mindkettő elérhető)</li>
+          <li><strong>Admin Only:</strong> Csak admin válaszol (AI offline)</li>
+          <li><strong>AI Only:</strong> Csak AI válaszol (nincs online admin)</li>
+          <li><strong>Offline Mode:</strong> Üzenet hagyás (email form)</li>
+        </ul>
+      </div>
+
+      <!-- Real-time Frissítés -->
+      <div>
+        <h4 style="color: #0369a1; font-size: 0.95rem; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-bolt" style="font-size: 0.9rem;"></i>
+          Real-time Működés
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #0c4a6e; font-size: 0.875rem; line-height: 1.6;">
+          <li><strong>WebSocket kapcsolat:</strong> Automatikus frissítés</li>
+          <li><strong>Új üzenet:</strong> Azonnal megjelenik mindkét félnél</li>
+          <li><strong>Typing indicator:</strong> "Admin gépel..." jelzés</li>
+          <li><strong>Unread count:</strong> Piros badge az olvasatlan üzeneteken</li>
+        </ul>
+      </div>
+
+      <!-- Admin Státusz -->
+      <div>
+        <h4 style="color: #0369a1; font-size: 0.95rem; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-user-check" style="font-size: 0.9rem;"></i>
+          Admin Elérhetőség
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #0c4a6e; font-size: 0.875rem; line-height: 1.6;">
+          <li><strong>Online státusz:</strong> Automatikusan beállítódik bejelentkezéskor</li>
+          <li><strong>Offline státusz:</strong> 5 perc inaktivitás vagy kilépés után</li>
+          <li><strong>Több admin:</strong> Bármelyik válaszolhat ugyanabban a session-ben</li>
+        </ul>
+      </div>
+
+      <!-- Session Priority -->
+      <div>
+        <h4 style="color: #0369a1; font-size: 0.95rem; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-exclamation-triangle" style="font-size: 0.9rem;"></i>
+          Figyelendő
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #0c4a6e; font-size: 0.875rem; line-height: 1.6;">
+          <li><strong>Escalated session-ök:</strong> Felhasználó admin segítséget kért</li>
+          <li><strong>Olvasatlan üzenetek:</strong> Piros badge jelzi</li>
+          <li><strong>Régi session-ök:</strong> 24 óránál régebbiek ellenőrzendők</li>
+          <li><strong>Offline üzenetek:</strong> Email-ben érkeznek, külön kezelendők</li>
+        </ul>
+      </div>
+
+      <!-- Mobile & Desktop -->
+      <div>
+        <h4 style="color: #0369a1; font-size: 0.95rem; margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-mobile-alt" style="font-size: 0.9rem;"></i>
+          Mobilbarát Chat
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #0c4a6e; font-size: 0.875rem; line-height: 1.6;">
+          <li><strong>Desktop:</strong> 360×500px ablak</li>
+          <li><strong>Tablet:</strong> Központosított layout</li>
+          <li><strong>Mobile (≤480px):</strong> Full-screen (100vh)</li>
+          <li><strong>Touch targets:</strong> 44-56px (iOS/Android standard)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Gyorsgombok -->
+    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #bae6fd; display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="/admin/chat/settings" class="info-panel-link" style="background: #0284c7; color: white; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+        <i class="fas fa-cog"></i>
+        Chat Beállítások
+      </a>
+      <button onclick="location.reload()" class="info-panel-link" style="background: #64748b; color: white; padding: 0.5rem 1rem; border-radius: 8px; border: none; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+        <i class="fas fa-sync-alt"></i>
+        Frissítés
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Védelem Összefoglaló -->
+  <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);">
+    <h3 style="margin: 0 0 1rem 0; color: #78350f; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fas fa-shield-alt" style="color: #f59e0b;"></i>
+      🛡️ Bot Védelem Aktív
+    </h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+      <!-- Rate Limiting -->
+      <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #fcd34d;">
+        <h4 style="color: #b45309; font-size: 0.9rem; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-clock" style="font-size: 0.85rem;"></i>
+          Rate Limiting
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #78350f; font-size: 0.8rem; line-height: 1.5;">
+          <li><strong>Session:</strong> 3 / 15 perc</li>
+          <li><strong>Üzenet:</strong> 20 / 1 perc</li>
+          <li><strong>Offline:</strong> 2 / 1 óra</li>
+        </ul>
+      </div>
+
+      <!-- Bot Detection -->
+      <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #fcd34d;">
+        <h4 style="color: #b45309; font-size: 0.9rem; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-robot" style="font-size: 0.85rem;"></i>
+          Bot Szűrés
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #78350f; font-size: 0.8rem; line-height: 1.5;">
+          <li>User Agent blokkolás (curl, wget)</li>
+          <li>Honeypot mezők (láthatatlan)</li>
+          <li>IP blacklist (auto-lejárat)</li>
+        </ul>
+      </div>
+
+      <!-- Spam Detection -->
+      <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #fcd34d;">
+        <h4 style="color: #b45309; font-size: 0.9rem; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-filter" style="font-size: 0.85rem;"></i>
+          Spam Védelem
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #78350f; font-size: 0.8rem; line-height: 1.5;">
+          <li>Ismételt üzenetek (3+) blokkolva</li>
+          <li>URL spam (4+) szűrés</li>
+          <li>Gyanús kulcsszavak (viagra, casino)</li>
+        </ul>
+      </div>
+
+      <!-- Session Management -->
+      <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #fcd34d;">
+        <h4 style="color: #b45309; font-size: 0.9rem; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-history" style="font-size: 0.85rem;"></i>
+          Auto-Cleanup
+        </h4>
+        <ul style="margin: 0; padding-left: 1.25rem; color: #78350f; font-size: 0.8rem; line-height: 1.5;">
+          <li>30 perc inaktivitás → close</li>
+          <li>5 percenként automatikus check</li>
+          <li>9 rétegű védelem összesen</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.8); border-radius: 6px; font-size: 0.8rem; color: #78350f; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fas fa-info-circle" style="color: #f59e0b;"></i>
+      <strong>Dokumentáció:</strong> <code>/docs/CHAT_PROTECTION.md</code> és <code>/docs/CHAT_PROTECTION_TESTING.md</code>
+    </div>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="action-bar">
+    <button class="btn-action primary" onclick="location.reload()">
+      <i class="fas fa-sync-alt"></i>
+      Frissítés
+    </button>
+    <a href="/admin/chat/settings" class="btn-action">
+      <i class="fas fa-cog"></i>
+      Beállítások
+    </a>
+    <a href="/admin/chat/offline-messages" class="btn-action">
+      <i class="fas fa-envelope"></i>
+      Offline Üzenetek
+    </a>
+  </div>
+
+  <!-- Chat Sessions Table -->
+  <div class="sessions-card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="fas fa-comments"></i>
+          Aktív Chat Sessionök
+        </h5>
+        <span class="badge badge-info">
+          <%= adminSessions.length %> session
+        </span>
+      </div>
+    </div>
+    <div class="p-0">
+      <% if (adminSessions && adminSessions.length > 0) { %>
+        <div style="overflow-x: auto;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">ID</th>
+                <th style="min-width: 180px;">Felhasználó</th>
+                <th style="min-width: 200px;">Elérhetőség</th>
+                <th style="width: 120px;">Státusz</th>
+                <th style="min-width: 280px;">Utolsó Üzenet</th>
+                <th style="width: 140px;">Időpont</th>
+                <th style="width: 140px; text-align: center;">Műveletek</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% adminSessions.forEach(session => { %>
+                <tr>
+                  <td>
+                    <span class="session-id">#<%= session.id %></span>
+                  </td>
+                  <td>
+                    <div class="user-info">
+                      <div class="user-avatar">
+                        <%= (session.userName || 'V')[0].toUpperCase() %>
+                      </div>
+                      <div class="user-details">
+                        <div class="name">
+                          <%= session.userName || 'Vendég Felhasználó' %>
+                        </div>
+                        <div class="time">
+                          <%= new Date(session.createdAt).toLocaleString('hu-HU', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          }) %>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="contact-info">
+                      <% if (session.userEmail) { %>
+                        <div class="contact-item">
+                          <i class="fas fa-envelope"></i>
+                          <span><%= session.userEmail %></span>
+                        </div>
+                      <% } %>
+                      <% if (session.userPhone) { %>
+                        <div class="contact-item">
+                          <i class="fas fa-phone"></i>
+                          <span><%= session.userPhone %></span>
+                        </div>
+                      <% } %>
+                      <% if (!session.userEmail && !session.userPhone) { %>
+                        <span style="color: #9ca3af; font-style: italic; font-size: 0.875rem;">
+                          <i class="fas fa-minus-circle"></i> Nincs megadva
+                        </span>
+                      <% } %>
+                    </div>
+                  </td>
+                  <td>
+                    <% 
+                      let badgeClass = 'badge-secondary';
+                      let statusText = session.status;
+                      let statusIcon = 'circle';
+                      if (session.status === 'active') {
+                        badgeClass = 'badge-success';
+                        statusText = 'Aktív';
+                        statusIcon = 'check-circle';
+                      } else if (session.status === 'escalated') {
+                        badgeClass = 'badge-warning';
+                        statusText = 'Eszkalálva';
+                        statusIcon = 'exclamation-triangle';
+                      } else if (session.status === 'closed') {
+                        badgeClass = 'badge-dark';
+                        statusText = 'Lezárva';
+                        statusIcon = 'times-circle';
+                      }
+                    %>
+                    <span class="badge <%= badgeClass %>">
+                      <i class="fas fa-<%= statusIcon %>"></i>
+                      <%= statusText %>
+                    </span>
+                  </td>
+                  <td>
+                    <% if (session.messages && session.messages.length > 0) { %>
+                      <div class="message-preview">
+                        <div class="message-avatar <%= session.messages[0].role %>">
+                          <% if (session.messages[0].role === 'user') { %>
+                            <i class="fas fa-user"></i>
+                          <% } else if (session.messages[0].role === 'admin') { %>
+                            <i class="fas fa-user-tie"></i>
+                          <% } else { %>
+                            <i class="fas fa-robot"></i>
+                          <% } %>
+                        </div>
+                        <div class="message-content">
+                          <div class="message-text">
+                            <%= session.messages[0].content %>
+                          </div>
+                          <div class="message-meta">
+                            <%= session.messages.length %> üzenet összesen
+                          </div>
+                        </div>
+                      </div>
+                    <% } else { %>
+                      <div style="color: #9ca3af; font-style: italic;">
+                        <i class="fas fa-inbox"></i> Még nincs üzenet
+                      </div>
+                    <% } %>
+                  </td>
+                  <td>
+                    <div style="font-size: 0.875rem; color: #6b7280;">
+                      <div style="font-weight: 600; color: #111827; margin-bottom: 0.25rem;">
+                        <%= new Date(session.updatedAt || session.createdAt).toLocaleTimeString('hu-HU', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        }) %>
+                      </div>
+                      <div style="font-size: 0.75rem; color: #9ca3af;">
+                        <%= new Date(session.updatedAt || session.createdAt).toLocaleDateString('hu-HU', { 
+                          month: 'short', 
+                          day: 'numeric' 
+                        }) %>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="text-align: center;">
+                    <button 
+                      class="btn-open-chat"
+                      onclick="openChatSession(<%= session.id %>)"
+                      title="Chat megnyitása"
+                    >
+                      <i class="fas fa-comments"></i>
+                      <span>Megnyitás</span>
+                    </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <i class="fas fa-inbox"></i>
+          <p>Még nincs aktív chat session</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chat Session Modal -->
+<div class="modal fade" id="chatModal" tabindex="-1" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-comments"></i>
+          Chat Session #<span id="modalSessionId"></span>
+        </h5>
+        <button type="button" class="btn-close" onclick="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div id="chatMessages" class="chat-messages">
+          <!-- Messages will be loaded here -->
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <button class="btn btn-danger" onclick="closeSession()" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+          <i class="fas fa-times-circle"></i>
+          Beszélgetés lezárása
+        </button>
+        <div class="input-group" style="flex: 1; max-width: 600px;">
+          <input 
+            type="text" 
+            id="adminMessageInput" 
+            class="form-control" 
+            placeholder="Írja be az üzenetét..."
+          >
+          <button class="btn" onclick="sendAdminMessage()">
+            <i class="fas fa-paper-plane"></i>
+            Küldés
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmCloseModal" tabindex="-1" style="display: none;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);">
+      <div class="modal-header" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border-radius: 16px 16px 0 0; padding: 1.5rem; border: none; display: flex; justify-content: space-between; align-items: center;">
+        <h5 class="modal-title" style="display: flex; align-items: center; gap: 0.75rem; font-weight: 600; margin: 0;">
+          <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i>
+          Beszélgetés lezárása
+        </h5>
+        <button type="button" class="btn-close btn-close-white" onclick="closeConfirmModal()" style="margin: 0;"></button>
+      </div>
+      <div class="modal-body" style="padding: 2rem; text-align: center;">
+        <div style="background: #fef2f2; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <i class="fas fa-times-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+          <p style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 0.75rem;">
+            Biztosan le szeretné zárni ezt a beszélgetést?
+          </p>
+          <p style="color: #6b7280; margin: 0; font-size: 0.9375rem;">
+            A felhasználó nem tud majd több üzenetet küldeni.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 1.25rem 1.5rem; border-top: 1px solid #e5e7eb; display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          onclick="closeConfirmModal()"
+          style="padding: 0.625rem 1.5rem; border-radius: 8px; font-weight: 500; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db;"
+        >
+          <i class="fas fa-times"></i>
+          Mégse
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-danger" 
+          onclick="confirmCloseSession()"
+          style="padding: 0.625rem 1.5rem; border-radius: 8px; font-weight: 500;"
+        >
+          <i class="fas fa-check"></i>
+          Igen, lezárom
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alert Modal (Universal) -->
+<div class="modal fade" id="alertModal" tabindex="-1" style="display: none;">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);">
+      <div class="modal-header" id="alertModalHeader" style="border-radius: 16px 16px 0 0; padding: 1.25rem; border: none; display: flex; justify-content: space-between; align-items: center;">
+        <h5 class="modal-title" id="alertModalTitle" style="display: flex; align-items: center; gap: 0.75rem; font-weight: 600; margin: 0;">
+        </h5>
+        <button type="button" class="btn-close" id="alertModalClose" onclick="closeAlertModal()" style="margin: 0;"></button>
+      </div>
+      <div class="modal-body" style="padding: 1.5rem; text-align: center;">
+        <div id="alertModalIcon" style="font-size: 2.5rem; margin-bottom: 1rem;"></div>
+        <p id="alertModalMessage" style="color: #374151; margin: 0; font-size: 0.9375rem; line-height: 1.6;"></p>
+      </div>
+      <div class="modal-footer" style="padding: 1rem 1.5rem; border-top: 1px solid #e5e7eb; justify-content: center;">
+        <button 
+          type="button" 
+          class="btn" 
+          onclick="closeAlertModal()"
+          style="padding: 0.5rem 2rem; border-radius: 8px; font-weight: 500; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;"
+        >
+          <i class="fas fa-check"></i>
+          Rendben
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentSessionId = null;
+
+  // Universal Alert Modal Functions
+  function showAlertModal(message, type = 'info') {
+    const modal = document.getElementById('alertModal');
+    const header = document.getElementById('alertModalHeader');
+    const title = document.getElementById('alertModalTitle');
+    const icon = document.getElementById('alertModalIcon');
+    const messageEl = document.getElementById('alertModalMessage');
+    const closeBtn = document.getElementById('alertModalClose');
+    
+    // Set content
+    messageEl.textContent = message;
+    
+    // Set style based on type
+    if (type === 'error') {
+      header.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+      header.style.color = 'white';
+      title.innerHTML = '<i class="fas fa-exclamation-circle"></i> Hiba';
+      icon.innerHTML = '<i class="fas fa-times-circle" style="color: #ef4444;"></i>';
+      closeBtn.classList.add('btn-close-white');
+    } else if (type === 'success') {
+      header.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      header.style.color = 'white';
+      title.innerHTML = '<i class="fas fa-check-circle"></i> Siker';
+      icon.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i>';
+      closeBtn.classList.add('btn-close-white');
+    } else if (type === 'warning') {
+      header.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+      header.style.color = 'white';
+      title.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Figyelmeztetés';
+      icon.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>';
+      closeBtn.classList.add('btn-close-white');
+    } else {
+      header.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      header.style.color = 'white';
+      title.innerHTML = '<i class="fas fa-info-circle"></i> Információ';
+      icon.innerHTML = '<i class="fas fa-info-circle" style="color: #667eea;"></i>';
+      closeBtn.classList.add('btn-close-white');
+    }
+    
+    // Show modal
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    
+    // Add backdrop
+    let backdrop = document.querySelector('.modal-backdrop.alert-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop alert-backdrop fade show';
+      document.body.appendChild(backdrop);
+    }
+  }
+
+  function closeAlertModal() {
+    const modal = document.getElementById('alertModal');
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    
+    // Remove alert backdrop
+    const backdrop = document.querySelector('.modal-backdrop.alert-backdrop');
+    if (backdrop) {
+      backdrop.remove();
+    }
+  }
+
+  function closeModal() {
+    const modalElement = document.getElementById('chatModal');
+    modalElement.style.display = 'none';
+    modalElement.classList.remove('show');
+    document.body.classList.remove('modal-open');
+    
+    // Remove backdrop
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop && !backdrop.classList.contains('alert-backdrop')) {
+      backdrop.remove();
+    }
+    
+    currentSessionId = null;
+    messageCount = 0;
+  }
+
+  // Close modal on backdrop click
+  document.addEventListener('click', function(e) {
+    const modalElement = document.getElementById('chatModal');
+    if (e.target === modalElement) {
+      closeModal();
+    }
+    
+    // Close alert modal on backdrop click
+    if (e.target.classList.contains('alert-backdrop')) {
+      closeAlertModal();
+    }
+  });
+
+  // Close modal on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const modalElement = document.getElementById('chatModal');
+      if (modalElement.classList.contains('show')) {
+        closeModal();
+      }
+      
+      const alertModal = document.getElementById('alertModal');
+      if (alertModal.classList.contains('show')) {
+        closeAlertModal();
+      }
+    }
+  });
+
+  function openChatSession(sessionId) {
+    currentSessionId = sessionId;
+    document.getElementById('modalSessionId').textContent = sessionId;
+    
+    // Show modal immediately (vanilla JS)
+    const modalElement = document.getElementById('chatModal');
+    modalElement.style.display = 'block';
+    modalElement.classList.add('show');
+    document.body.classList.add('modal-open');
+    
+    // Add backdrop
+    let backdrop = document.querySelector('.modal-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      document.body.appendChild(backdrop);
+    }
+    
+    // Show loading state
+    const messagesDiv = document.getElementById('chatMessages');
+    messagesDiv.innerHTML = '<div style="text-align: center; padding: 2rem; color: #9ca3af;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i><p>Betöltés...</p></div>';
+    
+    // Load messages
+    fetch(`/admin/chat/session/${sessionId}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('Session data:', data);
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load session');
+        }
+        
+        const session = data.session;
+        const messages = session.messages || [];
+        
+        // Check if session is closed
+        const isClosed = session.status === 'closed';
+        
+        if (messages.length === 0) {
+          messagesDiv.innerHTML = '<div style="text-align: center; padding: 2rem; color: #9ca3af;"><i class="fas fa-inbox" style="font-size: 2rem;"></i><p>Még nincs üzenet ebben a beszélgetésben</p></div>';
+        } else {
+          messagesDiv.innerHTML = messages.map(msg => {
+            let msgClass = msg.role;
+            let content = msg.content || '';
+            let createdAt = msg.createdAt || msg.created_at;
+            let time = new Date(createdAt).toLocaleTimeString('hu-HU', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+            
+            return `
+              <div class="message-bubble ${msgClass}">
+                ${content}
+                <span class="message-time">${time}</span>
+              </div>
+            `;
+          }).join('');
+        }
+        
+        // Update UI based on session status
+        const messageInput = document.getElementById('adminMessageInput');
+        const closeBtn = document.querySelector('.modal-footer .btn-danger');
+        
+        if (isClosed) {
+          messageInput.disabled = true;
+          messageInput.placeholder = 'A beszélgetés lezárva';
+          if (closeBtn) {
+            closeBtn.innerHTML = '<i class="fas fa-check"></i> Lezárva';
+            closeBtn.disabled = true;
+            closeBtn.classList.remove('btn-danger');
+            closeBtn.classList.add('btn-secondary');
+          }
+        } else {
+          messageInput.disabled = false;
+          messageInput.placeholder = 'Írja be az üzenetét...';
+          if (closeBtn) {
+            closeBtn.innerHTML = '<i class="fas fa-times-circle"></i> Beszélgetés lezárása';
+            closeBtn.disabled = false;
+            closeBtn.classList.add('btn-danger');
+            closeBtn.classList.remove('btn-secondary');
+          }
+        }
+        
+        // Scroll to bottom
+        setTimeout(() => {
+          const modalBody = document.querySelector('#chatModal .modal-body');
+          if (modalBody) {
+            modalBody.scrollTop = modalBody.scrollHeight;
+          }
+        }, 100);
+      })
+      .catch(err => {
+        console.error('Error loading messages:', err);
+        messagesDiv.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: #ef4444;">
+            <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+            <p><strong>Hiba történt az üzenetek betöltésekor</strong></p>
+            <p style="font-size: 0.875rem;">${err.message}</p>
+          </div>
+        `;
+      });
+  }
+
+  function sendAdminMessage() {
+    const input = document.getElementById('adminMessageInput');
+    const message = input.value.trim();
+    
+    if (!message) {
+      showAlertModal('Kérjük, írjon be egy üzenetet!', 'warning');
+      return;
+    }
+    
+    if (!currentSessionId) {
+      showAlertModal('Nincs aktív chat session!', 'error');
+      return;
+    }
+    
+    // Disable input while sending
+    input.disabled = true;
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    fetch('/admin/chat/message/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      body: JSON.stringify({ 
+        sessionId: currentSessionId,
+        message: message
+      })
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      console.log('Send message response:', data);
+      
+      if (data.success) {
+        input.value = '';
+        input.disabled = false;
+        input.focus();
+        
+        // Add message to chat immediately for better UX
+        const messagesDiv = document.getElementById('chatMessages');
+        const time = new Date().toLocaleTimeString('hu-HU', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+        
+        const messageHtml = `
+          <div class="message-bubble admin">
+            ${message}
+            <span class="message-time">${time}</span>
+          </div>
+        `;
+        
+        messagesDiv.insertAdjacentHTML('beforeend', messageHtml);
+        
+        // Scroll to bottom
+        setTimeout(() => {
+          const modalBody = document.querySelector('#chatModal .modal-body');
+          if (modalBody) {
+            modalBody.scrollTop = modalBody.scrollHeight;
+          }
+        }, 50);
+      } else {
+        throw new Error(data.error || 'Failed to send message');
+      }
+    })
+    .catch(err => {
+      console.error('Error sending message:', err);
+      showAlertModal(`Hiba történt az üzenet küldésekor: ${err.message}`, 'error');
+      input.disabled = false;
+    });
+  }
+
+  // Enter key to send message
+  document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('adminMessageInput');
+    if (messageInput) {
+      messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendAdminMessage();
+        }
+      });
+    }
+  });
+
+  // Open confirmation modal
+  function closeSession() {
+    if (!currentSessionId) {
+      showAlertModal('Nincs aktív chat session!', 'error');
+      return;
+    }
+
+    // Show confirmation modal
+    const confirmModal = document.getElementById('confirmCloseModal');
+    confirmModal.style.display = 'block';
+    confirmModal.classList.add('show');
+    
+    // Add backdrop if not exists
+    let backdrop = document.querySelector('.modal-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'modal-backdrop fade show';
+      document.body.appendChild(backdrop);
+    }
+  }
+
+  // Close confirmation modal
+  function closeConfirmModal() {
+    const confirmModal = document.getElementById('confirmCloseModal');
+    confirmModal.style.display = 'none';
+    confirmModal.classList.remove('show');
+  }
+
+  // Confirm and close session
+  function confirmCloseSession() {
+    // Close confirmation modal
+    closeConfirmModal();
+
+    // Show loading state
+    const closeBtn = document.querySelector('.modal-footer .btn-danger');
+    const originalText = closeBtn.innerHTML;
+    closeBtn.disabled = true;
+    closeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lezárás...';
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    fetch(`/admin/chat/session/${currentSessionId}/close`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      }
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      console.log('Close session response:', data);
+      
+      if (data.success) {
+        // Show success message in chat
+        const messagesDiv = document.getElementById('chatMessages');
+        const time = new Date().toLocaleTimeString('hu-HU', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+        
+        const messageHtml = `
+          <div class="message-bubble system" style="background: #f3f4f6; color: #6b7280; text-align: center; font-style: italic;">
+            <i class="fas fa-check-circle"></i>
+            Beszélgetés lezárva
+            <span class="message-time">${time}</span>
+          </div>
+        `;
+        
+        messagesDiv.insertAdjacentHTML('beforeend', messageHtml);
+        
+        // Disable message input
+        const messageInput = document.getElementById('adminMessageInput');
+        messageInput.disabled = true;
+        messageInput.placeholder = 'A beszélgetés lezárva';
+        
+        // Update button
+        closeBtn.innerHTML = '<i class="fas fa-check"></i> Lezárva';
+        closeBtn.classList.remove('btn-danger');
+        closeBtn.classList.add('btn-secondary');
+        
+        // Scroll to bottom
+        setTimeout(() => {
+          const modalBody = document.querySelector('#chatModal .modal-body');
+          if (modalBody) {
+            modalBody.scrollTop = modalBody.scrollHeight;
+          }
+        }, 50);
+
+        // Reload page after 2 seconds to refresh session list
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+      } else {
+        throw new Error(data.error || 'Failed to close session');
+      }
+    })
+    .catch(err => {
+      console.error('Error closing session:', err);
+      showAlertModal(`Hiba történt a beszélgetés lezárásakor: ${err.message}`, 'error');
+      closeBtn.disabled = false;
+      closeBtn.innerHTML = originalText;
+    });
+  }
+
+  // Admin Heartbeat System
+  function sendHeartbeat() {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    fetch('/admin/chat/heartbeat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        console.log('✅ Heartbeat sent - Admin online');
+      }
+    })
+    .catch(err => {
+      console.error('❌ Heartbeat failed:', err);
+    });
+  }
+
+  // Send heartbeat immediately when page loads
+  sendHeartbeat();
+
+  // Send heartbeat every 30 seconds to keep admin online
+  setInterval(sendHeartbeat, 30000);
+
+  // Poll for new messages in active session
+  let messageCount = 0;
+  
+  function pollForNewMessages() {
+    if (!currentSessionId) return;
+    
+    fetch(`/admin/chat/session/${currentSessionId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const newMessages = data.session.messages || [];
+          
+          // Check if there are new messages
+          if (newMessages.length > messageCount) {
+            // Only update if modal is open
+            const modalElement = document.getElementById('chatModal');
+            if (modalElement.classList.contains('show')) {
+              // Reload messages
+              const messagesDiv = document.getElementById('chatMessages');
+              messagesDiv.innerHTML = newMessages.map(msg => {
+                let msgClass = msg.role;
+                let content = msg.content || '';
+                let createdAt = msg.createdAt || msg.created_at;
+                let time = new Date(createdAt).toLocaleTimeString('hu-HU', { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                });
+                
+                return `
+                  <div class="message-bubble ${msgClass}">
+                    ${content}
+                    <span class="message-time">${time}</span>
+                  </div>
+                `;
+              }).join('');
+              
+              // Auto-scroll to new messages
+              setTimeout(() => {
+                const modalBody = document.querySelector('#chatModal .modal-body');
+                if (modalBody) {
+                  modalBody.scrollTop = modalBody.scrollHeight;
+                }
+              }, 50);
+            }
+            
+            messageCount = newMessages.length;
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Poll error:', err);
+        // Silent fail
+      });
+  }
+
+  // Poll every 2 seconds when a session is open
+  setInterval(pollForNewMessages, 2000);
+
+  // Reset message count when opening a session
+  const originalOpenChatSession = openChatSession;
+  openChatSession = function(sessionId) {
+    messageCount = 0;
+    originalOpenChatSession(sessionId);
+  };
+
+  // Auto-refresh page every 2 minutes for dashboard data (session list, stats)
+  setInterval(() => {
+    // Only reload if modal is closed (don't interrupt active chat)
+    const modalElement = document.getElementById('chatModal');
+    if (!modalElement.classList.contains('show')) {
+      location.reload();
+    }
+  }, 120000);
+
+  // Mark admin offline when leaving page
+  window.addEventListener('beforeunload', function() {
+    // Use sendBeacon for reliable delivery during page unload
+    const data = JSON.stringify({ goingOffline: true });
+    navigator.sendBeacon('/admin/chat/heartbeat', data);
+  });
+</script>

@@ -1,0 +1,161 @@
+
+<section class="section">
+    <div class="max-w-2xl mx-auto">
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert--error mb-6">
+            <div class="alert__icon">⚠️</div>
+            <div class="alert__content">
+                <% if (error === 'validation') { %>
+                    Kérjük, töltse ki helyesen az összes mezőt.
+                <% } else if (error === 'server') { %>
+                    Hiba történt a mentés során. Kérjük, próbálja újra később.
+                <% } else { %>
+                    <%= error %>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert--success mb-6">
+            <div class="alert__icon">✅</div>
+            <div class="alert__content">Személyes adatok sikeresen módosítva!</div>
+        </div>
+    <% } %>
+
+    <!-- Basic Info Card -->
+    <div class="card mb-6">
+        <div class="card__header">
+            <h2 class="card__title">🪪 Személyes adatok</h2>
+        </div>
+        <div class="card__body">
+            <form method="POST" action="<%= basePath %>auth/profile/update-basic-info">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                
+                <div class="form__group">
+                    <label for="name" class="form__label">
+                        👤 Teljes név *
+                    </label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        class="form__input"
+                        value="<%= user.name %>"
+                        required
+                        minlength="2"
+                        maxlength="100"
+                    />
+                    <span class="form__help">Min. 2 karakter, max. 100 karakter</span>
+                </div>
+
+                <div class="form__group">
+                    <label for="phone" class="form__label">
+                        📞 Telefonszám *
+                    </label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        class="form__input"
+                        value="<%= user.phone %>"
+                        required
+                        minlength="6"
+                        maxlength="20"
+                        placeholder="+36 30 123 4567"
+                    />
+                    <span class="form__help">Magyar vagy nemzetközi formátum</span>
+                </div>
+
+                <div class="form__group">
+                    <label for="role" class="form__label">
+                        👤 Szerepkör
+                    </label>
+                    <input 
+                        type="text" 
+                        id="role" 
+                        class="form__input"
+                        value="<% if (user.role === 'admin') { %>👑 Adminisztrátor<% } else if (user.role === 'sales') { %>💼 Értékesítő<% } else if (user.role === 'performer') { %>🎤 Előadó, manager<% } else if (user.role === 'client') { %>👤 Megrendelő, szervező<% } else { %><%= user.role %><% } %>"
+                        disabled
+                    />
+                    <span class="form__help">A szerepkör nem módosítható</span>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="submit" class="btn btn--primary flex-1">
+                        💾 Mentés
+                    </button>
+                    <a href="<%= basePath %>auth/profile" class="btn btn--outline flex-1">
+                        ✖️ Mégse
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Email Change Card -->
+    <div class="card mb-6">
+        <div class="card__header">
+            <h2 class="card__title">✉️ Email cím módosítása</h2>
+        </div>
+        <div class="card__body">
+            <div class="alert alert--info mb-4">
+                <div class="alert__icon">🔐</div>
+                <div class="alert__content">
+                    <strong class="alert__title">Biztonsági figyelmeztetés:</strong>
+                    <p class="alert__message">Az email cím módosítása biztonsági okokból külön folyamatot igényel. A jelenlegi jelszavát meg kell adnia, és mindkét email címen megerősítő linket fog kapni.</p>
+                </div>
+            </div>
+
+            <div class="form__group">
+                <label class="form__label">✉️ Jelenlegi email cím</label>
+                <input 
+                    type="email" 
+                    class="form__input"
+                    value="<%= user.email %>"
+                    disabled
+                />
+            </div>
+
+            <div class="text-center">
+                <a href="<%= basePath %>auth/profile/change-email" class="btn btn--primary w-full">
+                    ✉️ Email cím módosítása
+                </a>
+            </div>
+
+            <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p class="text-sm text-gray-700"><strong>📧 Folyamat:</strong> Az email módosítás során megerősítő linket küldünk mindkét email címre a biztonság érdekében.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Change Card -->
+    
+
+    <!-- Password Change Card -->
+    <div class="card">
+        <div class="card__header">
+            <h2 class="card__title">🔒 Jelszó módosítása</h2>
+        </div>
+        <div class="card__body">
+            <div class="alert alert--info mb-4">
+                <div class="alert__icon">🔐</div>
+                <div class="alert__content">
+                    <strong class="alert__title">Biztonsági információ:</strong>
+                    <p class="alert__message">A jelszó módosítása után az összes aktív munkamenet (kivéve a jelenlegi) automatikusan ki lesz jelentkeztetve. Email értesítést fog kapni a változásról.</p>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="<%= basePath %>auth/profile/change-password" class="btn btn--primary w-full">
+                    🔑 Jelszó módosítása
+                </a>
+            </div>
+
+            <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p class="text-sm text-gray-700"><strong>💡 Tipp:</strong> Használjon erős jelszót, amely legalább 8 karakterből áll, és tartalmaz kis- és nagybetűt, valamint számot.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</section>

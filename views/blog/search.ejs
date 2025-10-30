@@ -1,0 +1,185 @@
+<!-- Blog Search Results - koncert24.hu -->
+<nav aria-label="Breadcrumb" class="container pt-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item">
+      <a href="<%= basePath %>"><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>Főoldal</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="<%= basePath %>blog">Blog</a>
+    </li>
+    <li class="breadcrumb__item" aria-current="page">Keresés: "<%= query %>"</li>
+  </ol>
+</nav>
+
+<!-- Search Results Hero -->
+<div class="page__hero">
+  <div class="container">
+    <h1 class="page__hero__title">Keresési eredmények</h1>
+    <p class="page__hero__subtitle">
+      <strong><%= totalPosts %></strong> találat a következőre: "<%= query %>"
+    </p>
+    
+    <!-- Hero Search -->
+    <div class="hero-search">
+      <form action="<%= basePath %>blog/kereses" method="GET" class="hero-search__form">
+        <div class="hero-search__input-wrapper">
+          <svg class="hero-search__icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+          <input 
+            type="text" 
+            name="q" 
+            class="hero-search__input" 
+            placeholder="Keresés a cikkek között..." 
+            value="<%= query %>"
+            aria-label="Keresés a blog cikkek között"
+          >
+          <button type="submit" class="hero-search__button">
+            <span class="hero-search__button-text">Keresés</span>
+            <svg class="hero-search__button-icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Search Results -->
+<section class="section">
+  <div class="container">
+    <div class="content-layout">
+      <main class="content-layout__main">
+        <% if (posts.length === 0) { %>
+          <!-- Empty State -->
+          <div class="empty-state">
+            <div class="empty-state__icon">🔍</div>
+            <h2 class="empty-state__title">Nincs találat</h2>
+            <p class="empty-state__description">
+              Sajnos nem találtunk cikket a "<%= query %>" keresésre. Próbálj meg más kulcsszavakat használni!
+            </p>
+            <div class="empty-state__action">
+              <a href="<%= basePath %>blog" class="btn btn--primary">
+                Összes cikk megtekintése
+              </a>
+            </div>
+          </div>
+        <% } else { %>
+          <!-- Results Grid -->
+          <div class="card__grid card__grid--2-col">
+            <% posts.forEach(post => { %>
+              <article class="card card--hover">
+                <% if (post.featuredImage) { %>
+                  <a href="<%= basePath %>blog/<%= post.slug %>" class="card__image">
+                    <img 
+                      src="<%= post.featuredImage %>" 
+                      alt="<%= post.featuredImageAlt || post.title %>" 
+                      loading="lazy"
+                    >
+                  </a>
+                <% } %>
+                <div class="card__body">
+                  <% if (post.category) { %>
+                    <a href="<%= basePath %>blog/kategoria/<%= post.category.slug %>" class="badge badge--primary">
+                      <%= post.category.name %>
+                    </a>
+                  <% } %>
+                  
+                  <h2 class="card__title">
+                    <a href="<%= basePath %>blog/<%= post.slug %>"><%= post.title %></a>
+                  </h2>
+                  
+                  <% if (post.excerpt) { %>
+                    <p class="card__excerpt"><%= post.excerpt %></p>
+                  <% } %>
+                  
+                  <div class="meta-list">
+                    <span class="meta-item">
+                      <svg class="icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                      </svg>
+                      <%= post.author.name %>
+                    </span>
+                    <span class="meta-item">
+                      <svg class="icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                      </svg>
+                      <%= new Date(post.publishedAt).toLocaleDateString('hu-HU') %>
+                    </span>
+                    <% if (post.readingTime) { %>
+                      <span class="meta-item">
+                        <svg class="icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                        </svg>
+                        <%= post.readingTime %> perc
+                      </span>
+                    <% } %>
+                  </div>
+                </div>
+              </article>
+            <% }); %>
+          </div>
+
+          <!-- Pagination -->
+          <% if (totalPages > 1) { %>
+            <%- include('../partials/pagination', {
+              currentPage,
+              totalPages,
+              basePath: `${basePath}blog/kereses?q=${encodeURIComponent(query)}&page=`
+            }) %>
+          <% } %>
+        <% } %>
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="content-layout__sidebar">
+        <!-- Categories Widget -->
+        <div class="sidebar-widget">
+          <div class="card">
+            <div class="card__body">
+              <h3 class="card__title">Kategóriák</h3>
+              <ul class="list list--unstyled">
+                <% categories.forEach(category => { %>
+                  <li>
+                    <a href="<%= basePath %>blog/kategoria/<%= category.slug %>" class="list-link">
+                      <%= category.name %>
+                    </a>
+                  </li>
+                <% }); %>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Popular Posts -->
+        <div class="sidebar-widget">
+          <div class="card">
+            <div class="card__body">
+              <h3 class="card__title">Népszerű cikkek</h3>
+              <div class="card-list">
+                <% popularPosts.forEach(post => { %>
+                  <article class="card-list__item">
+                    <% if (post.featuredImage) { %>
+                      <a href="<%= basePath %>blog/<%= post.slug %>" class="card-list__thumbnail">
+                        <img src="<%= post.featuredImage %>" alt="<%= post.title %>" loading="lazy">
+                      </a>
+                    <% } %>
+                    <div class="card-list__content">
+                      <h4 class="card-list__title">
+                        <a href="<%= basePath %>blog/<%= post.slug %>"><%= post.title %></a>
+                      </h4>
+                      <div class="card-list__meta">
+                        <%= new Date(post.publishedAt).toLocaleDateString('hu-HU') %>
+                      </div>
+                    </div>
+                  </article>
+                <% }); %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

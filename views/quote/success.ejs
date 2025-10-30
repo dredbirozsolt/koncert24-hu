@@ -1,0 +1,64 @@
+<main class="quote-wizard">
+  <div class="quote-wizard__container quote-wizard__container--success">
+    
+    <!-- Success Icon -->
+    <div class="success-icon">
+      <svg width="80" height="80" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+    </div>
+
+    <h1 class="quote-wizard__title quote-wizard__title--success">
+      🎉 Köszönjük, rögzítettük az ajánlatkérésedet!
+    </h1>
+
+    <!-- Reference ID -->
+    <p class="success-reference">
+      Hivatkozási azonosító: <strong>#<%= referenceId %></strong>
+    </p>
+
+    <!-- What's Next -->
+    <div class="success-next-steps">
+      <h2>Mi történik ezután?</h2>
+      <ol>
+        <li>📧 Megerősítő e-mailt küldünk a megadott címre</li>
+        <li>📞 Kollégánk 24 órán belül felveszi veled a kapcsolatot</li>
+        <li>🎯 Kiválasztjuk a legjobb előadókat az igényeid alapján</li>
+        <li>💼 Egyedi ajánlatot készítünk számodra</li>
+      </ol>
+    </div>
+
+    <!-- Reassurance Notice -->
+    <div class="success-notice">
+      <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+      </svg>
+      <p>
+        Az ajánlatkérésed még nem minősül foglalásnak.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="success-actions">
+      <a href="<%= basePath %>" class="btn btn--secondary btn--large">
+        Vissza a főoldalra
+      </a>
+      <a href="<%= basePath %>eloadok" class="btn btn--primary btn--large">
+        További előadók böngészése
+      </a>
+    </div>
+
+    <!-- Support Info -->
+    <div class="success-support">
+      <p>
+        <strong>Kérdésed van?</strong><br>
+        Írj nekünk: <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a><br>
+        Vagy hívj minket: <a href="tel:<%= contactPhone.replace(/\s/g, '') %>"><%= contactPhone %></a>
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<!-- Custom CSS for this page -->
+<link rel="stylesheet" href="<%= basePath %>css/pages/quote-wizard.css">

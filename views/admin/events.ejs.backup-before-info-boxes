@@ -1,0 +1,551 @@
+<!-- Admin Events Management Page - Refactored -->
+<!-- Using Rounded Soft Design System & admin.css -->
+
+<style>
+    /* Section spacing */
+    .page-container > .data-card {
+        margin-bottom: 2rem;
+    }
+
+    .page-container > .data-card:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Event-specific styles */
+    .sync-result {
+        display: none;
+        background: var(--bg-secondary);
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        border-left: 4px solid var(--color-success);
+        margin-top: 1.5rem;
+    }
+
+    .sync-result h3 {
+        color: var(--color-success);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        font-weight: var(--font-semibold);
+    }
+
+    .sync-result-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .sync-result-item {
+        text-align: center;
+        padding: 1rem;
+        background: white;
+        border-radius: var(--radius-md);
+    }
+
+    .sync-result-item .label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .sync-result-item .value {
+        font-size: 1.75rem;
+        font-weight: var(--font-bold);
+        color: var(--text-primary);
+    }
+
+    .event-status {
+        display: inline-block;
+        padding: 0.35rem 0.85rem;
+        border-radius: var(--radius-full);
+        font-size: var(--text-xs);
+        font-weight: var(--font-semibold);
+    }
+
+    .event-status--approved {
+        background: var(--color-success-100);
+        color: var(--color-success-700);
+    }
+
+    .event-status--pending {
+        background: var(--color-warning-100);
+        color: var(--color-warning-700);
+    }
+
+    .event-status--cancelled {
+        background: var(--color-error-100);
+        color: var(--color-error-700);
+    }
+
+    .event-date {
+        font-weight: var(--font-medium);
+    }
+
+    .event-time {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+
+    .performer-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: var(--font-medium);
+        transition: color var(--transition-base);
+    }
+
+    .performer-link:hover {
+        color: var(--primary-color-hover);
+        text-decoration: underline;
+    }
+
+    .location-cell {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+        font-size: 1.25rem;
+        font-weight: var(--font-semibold);
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state-text {
+        color: var(--text-secondary);
+    }
+
+    .stat-card--primary {
+        border-left-color: var(--primary-color);
+    }
+
+    .stat-card--success {
+        border-left-color: var(--color-success);
+    }
+</style>
+
+<div class="page-container">
+    <!-- Success/Error Messages -->
+    <% if (messages && messages.success) { %>
+    <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+    <% if (messages && messages.error) { %>
+    <div class="alert alert-danger"><%= messages.error %></div>
+    <% } %>
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card stat-card--primary">
+            <h3>📊 Összes Esemény</h3>
+            <div class="stat-value"><%= totalEvents %></div>
+        </div>
+        <div class="stat-card stat-card--success">
+            <h3>🎉 Jövőbeli</h3>
+            <div class="stat-value"><%= upcomingEvents %></div>
+        </div>
+    </div>
+
+    <!-- 1. Sync Settings Card -->
+    <div class="data-card">
+        <div class="card-header">
+            <span>⚙️ Szinkronizálási Beállítások</span>
+        </div>
+        <div class="card-body">
+            <form id="sync-settings-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="syncMonthsBefore">
+                            Hány hónappal visszamenőleg?
+                        </label>
+                        <input 
+                            type="number" 
+                            name="syncMonthsBefore" 
+                            id="syncMonthsBefore"
+                            class="form-input"
+                            value="<%= syncMonthsBefore %>"
+                            min="0"
+                            max="12"
+                        >
+                        <small class="form-help">Pl: 1 = az elmúlt 1 hónap eseményeit</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="syncMonthsAfter">
+                            Hány hónappal előre?
+                        </label>
+                        <input 
+                            type="number" 
+                            name="syncMonthsAfter"
+                            id="syncMonthsAfter" 
+                            class="form-input"
+                            value="<%= syncMonthsAfter %>"
+                            min="0"
+                            max="24"
+                        >
+                        <small class="form-help">Pl: 1 = a következő 1 hónap eseményeit</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Beállítások Mentése
+                    </button>
+                    <span id="settings-status"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Manual Sync Card -->
+    <div class="data-card">
+        <div class="card-header">
+            <span>🔄 Manuális Szinkronizálás</span>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <strong>💡 Tipp:</strong> Ha üresen hagyod a dátumokat, a rendszer a fenti beállításokat használja 
+                (<strong><%= syncMonthsBefore %> hónap vissza</strong> és <strong><%= syncMonthsAfter %> hónap előre</strong>).
+            </div>
+            
+            <form id="manual-sync-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="startDate">
+                            Kezdő dátum <small>(opcionális)</small>
+                        </label>
+                        <input 
+                            type="date" 
+                            name="startDate" 
+                            id="startDate"
+                            class="form-input"
+                            placeholder="Hagyd üresen az alapértelmezetthez"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="endDate">
+                            Vég dátum <small>(opcionális)</small>
+                        </label>
+                        <input 
+                            type="date" 
+                            name="endDate" 
+                            id="endDate"
+                            class="form-input"
+                            placeholder="Hagyd üresen az alapértelmezetthez"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        🔄 Szinkronizálás Indítása
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="setDefaultDates()">
+                        📅 Beállítások Szerinti Időszak
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearDates()">
+                        🗑️ Mezők Törlése
+                    </button>
+                    <span id="sync-status"></span>
+                </div>
+            </form>
+
+            <div id="sync-result" class="sync-result">
+                <h3>📊 Szinkronizálás Eredménye</h3>
+                <div class="sync-result-grid">
+                    <div class="sync-result-item">
+                        <span class="label">Feldolgozott</span>
+                        <span class="value" id="result-processed">0</span>
+                    </div>
+                    <div class="sync-result-item">
+                        <span class="label">Létrehozva</span>
+                        <span class="value" id="result-created">0</span>
+                    </div>
+                    <div class="sync-result-item">
+                        <span class="label">Frissítve</span>
+                        <span class="value" id="result-updated">0</span>
+                    </div>
+                    <div class="sync-result-item">
+                        <span class="label">Hibák</span>
+                        <span class="value" id="result-errors">0</span>
+                    </div>
+                    <div class="sync-result-item">
+                        <span class="label">Időtartam</span>
+                        <span class="value"><span id="result-duration">0</span> ms</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Events List Card -->
+    <div class="data-card">
+        <div class="card-header">
+            <span>📋 Események Listája</span>
+        </div>
+        <div class="card-body">
+            <% if (events.length === 0) { %>
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-title">Még nincsenek események</div>
+                    <div class="empty-state-text">Futtasd a szinkronizálást a Vtiger eseményeinek betöltéséhez!</div>
+                </div>
+            <% } else { %>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Dátum & Idő</th>
+                                <th>Tárgy</th>
+                                <th>Előadó</th>
+                                <th>Helyszín</th>
+                                <th>Tétel</th>
+                                <th>Állapot</th>
+                                <th class="text-center">Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% events.forEach(event => { %>
+                                <tr data-event-id="<%= event.id %>">
+                                    <td data-label="Dátum">
+                                        <div class="event-date"><%= event.performanceDate || '-' %></div>
+                                        <div class="event-time"><%= event.performanceTime || '-' %></div>
+                                    </td>
+                                    <td data-label="Tárgy">
+                                        <strong><%= event.subject %></strong>
+                                    </td>
+                                    <td data-label="Előadó">
+                                        <% if (event.performer) { %>
+                                            <a href="/admin/performers/<%= event.performer.id %>" class="performer-link">
+                                                <%= event.performer.name %>
+                                            </a>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Helyszín">
+                                        <% if (event.performanceLocation) { %>
+                                            <span class="location-cell" title="<%= event.performanceLocation %>">
+                                                <%= event.performanceLocation %>
+                                            </span>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td data-label="Tétel">
+                                        <%= event.itemName || '-' %>
+                                    </td>
+                                    <td data-label="Állapot">
+                                        <span class="event-status <%= event.status === 'Approved' ? 'event-status--approved' : (event.status === 'Cancelled' ? 'event-status--cancelled' : 'event-status--pending') %>">
+                                            <%= event.status || 'Ismeretlen' %>
+                                        </span>
+                                    </td>
+                                    <td data-label="Műveletek" class="text-center">
+                                        <button 
+                                            onclick="deleteEvent(<%= event.id %>)" 
+                                            class="btn btn-danger btn-sm"
+                                            title="Esemény törlése"
+                                        >
+                                            🗑️ Törlés
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+// Alapértelmezett dátumok beállítása
+const SYNC_MONTHS_BEFORE = <%= syncMonthsBefore %>;
+const SYNC_MONTHS_AFTER = <%= syncMonthsAfter %>;
+
+function setDefaultDates() {
+    const today = new Date();
+    
+    // Kezdő dátum: X hónappal ezelőtt
+    const startDate = new Date(today);
+    startDate.setMonth(startDate.getMonth() - SYNC_MONTHS_BEFORE);
+    document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+    
+    // Vég dátum: Y hónappal előre
+    const endDate = new Date(today);
+    endDate.setMonth(endDate.getMonth() + SYNC_MONTHS_AFTER);
+    document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+}
+
+function clearDates() {
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+}
+
+// Beállítások mentése
+document.getElementById('sync-settings-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const statusEl = document.getElementById('settings-status');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Mentés...';
+        statusEl.innerHTML = '';
+        
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const response = await fetch('/admin/events/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            await UniversalModal.success(result.message || 'Beállítások sikeresen mentve!');
+            statusEl.innerHTML = '';
+        } else {
+            await UniversalModal.error(result.message || 'Hiba történt a mentés során');
+            statusEl.innerHTML = '';
+        }
+    } catch (error) {
+        await UniversalModal.error('Hálózati hiba: ' + error.message);
+        console.error('Error:', error);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+});
+
+// Manuális szinkronizálás
+document.getElementById('manual-sync-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const statusEl = document.getElementById('sync-status');
+    const resultEl = document.getElementById('sync-result');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Szinkronizálás...';
+        statusEl.innerHTML = '<span class="text-info">Szinkronizálás folyamatban...</span>';
+        resultEl.style.display = 'none';
+        
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Üres értékek törlése - ha üresek, a backend használja a beállításokat
+        if (!data.startDate) delete data.startDate;
+        if (!data.endDate) delete data.endDate;
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const response = await fetch('/admin/events/sync', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            statusEl.innerHTML = '';
+            
+            // Eredmények megjelenítése
+            document.getElementById('result-processed').textContent = result.processed || 0;
+            document.getElementById('result-created').textContent = result.created || 0;
+            document.getElementById('result-updated').textContent = result.updated || 0;
+            document.getElementById('result-errors').textContent = result.errors || 0;
+            document.getElementById('result-duration').textContent = result.duration || 0;
+            resultEl.style.display = 'block';
+            
+            await UniversalModal.success('Szinkronizálás sikeresen befejezve!');
+            
+            // Oldal újratöltése 1 másodperc múlva
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            statusEl.innerHTML = '';
+            await UniversalModal.error(result.message || 'Hiba történt a szinkronizálás során');
+        }
+    } catch (error) {
+        statusEl.innerHTML = '';
+        await UniversalModal.error('Hiba történt: ' + error.message);
+        console.error('Error:', error);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+});
+
+// Esemény törlése
+async function deleteEvent(eventId) {
+    const confirmed = await UniversalModal.confirmDialog(
+        'Biztosan törölni szeretnéd ezt az eseményt?',
+        { confirmText: 'Igen, törlöm', cancelText: 'Mégse' }
+    );
+    
+    if (!confirmed) {
+        return;
+    }
+    
+    try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const response = await fetch('/admin/events/' + eventId, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Sor eltávolítása a táblázatból
+            const row = document.querySelector('tr[data-event-id="' + eventId + '"]');
+            if (row) {
+                row.remove();
+            }
+            await UniversalModal.success('Esemény sikeresen törölve');
+        } else {
+            await UniversalModal.error(result.message || 'Hiba történt a törlés során');
+        }
+    } catch (error) {
+        await UniversalModal.error('Hálózati hiba történt');
+        console.error('Error:', error);
+    }
+}
+
+// Oldal betöltéskor alapértelmezett dátumok beállítása
+document.addEventListener('DOMContentLoaded', () => {
+    setDefaultDates();
+});
+</script>

@@ -1,0 +1,138 @@
+
+<!-- ============================================
+     ITERÁCIÓ 7 - Szándék-alapú belépés
+     ============================================ -->
+<!-- KPI: intent_select_rate, iter7_submit_rate -->
+<section class="iteration-section" id="iter7" style="background: var(--bg-surface); border: 2px solid var(--border-base); border-radius: var(--radius-2xl); padding: var(--space-12); margin: var(--space-16) auto; max-width: 1200px;">
+    <h2 style="font-size: var(--text-3xl); font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-3);">
+        <span style="background: var(--color-primary-500); color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800;">7</span>
+        Iteráció 7 – Szándék-alapú belépés
+    </h2>
+    <p style="font-size: var(--text-base); color: var(--text-secondary); margin-bottom: var(--space-10); max-width: 700px;">
+        <strong>Tesztelés célja:</strong> Intent-first megközelítés – először azonosítjuk a felhasználó szándékát, majd releváns short-form jelenik meg.
+    </p>
+
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h3 style="font-size: var(--text-2xl); font-weight: 600; text-align: center; color: var(--text-primary); margin-bottom: var(--space-8);">
+            Mit szeretnél tenni?
+        </h3>
+
+        <div role="radiogroup" aria-label="Válassz szándékot" id="iter7IntentGroup" style="display: flex; gap: var(--space-4); margin-bottom: var(--space-10); flex-wrap: wrap; justify-content: center;">
+            <button 
+                role="radio" 
+                aria-checked="false"
+                tabindex="0"
+                class="iter7-intent-pill" 
+                data-intent="booking"
+                style="flex: 1; min-width: 200px; padding: var(--space-6); background: var(--bg-surface); border: 3px solid var(--border-base); border-radius: var(--radius-xl); cursor: pointer; transition: all 0.2s; text-align: center; font-size: var(--text-lg); font-weight: 600;">
+                ⚡ Foglalás most
+            </button>
+            <button 
+                role="radio"
+                aria-checked="false"
+                tabindex="-1"
+                class="iter7-intent-pill" 
+                data-intent="quote"
+                style="flex: 1; min-width: 200px; padding: var(--space-6); background: var(--bg-surface); border: 3px solid var(--border-base); border-radius: var(--radius-xl); cursor: pointer; transition: all 0.2s; text-align: center; font-size: var(--text-lg); font-weight: 600;">
+                📋 Ajánlatot kérek
+            </button>
+            <button 
+                role="radio"
+                aria-checked="false"
+                tabindex="-1"
+                class="iter7-intent-pill" 
+                data-intent="browse"
+                style="flex: 1; min-width: 200px; padding: var(--space-6); background: var(--bg-surface); border: 3px solid var(--border-base); border-radius: var(--radius-xl); cursor: pointer; transition: all 0.2s; text-align: center; font-size: var(--text-lg); font-weight: 600;">
+                🔍 Böngészek
+            </button>
+        </div>
+
+        <!-- Form container (hidden by default) -->
+        <div id="iter7FormContainer" style="display: none; opacity: 0; transition: opacity 0.3s;">
+            <!-- Booking form -->
+            <form id="iter7BookingForm" class="iter7-form" style="display: none; background: var(--bg-subtle); padding: var(--space-8); border-radius: var(--radius-xl);">
+                <h4 style="font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-6);">Foglalás kezdeményezése</h4>
+                <div style="display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-6);">
+                    <input 
+                        type="date" 
+                        name="date" 
+                        required
+                        aria-label="Dátum"
+                        style="padding: var(--space-4); border: 2px solid var(--border-base); border-radius: var(--radius-lg); font-size: var(--text-base);">
+                    <input 
+                        type="text" 
+                        name="city" 
+                        placeholder="Város (pl. Budapest)"
+                        required
+                        aria-label="Város"
+                        style="padding: var(--space-4); border: 2px solid var(--border-base); border-radius: var(--radius-lg); font-size: var(--text-base);">
+                    <input 
+                        type="email" 
+                        name="email" 
+                        placeholder="Email cím"
+                        required
+                        aria-label="Email"
+                        style="padding: var(--space-4); border: 2px solid var(--border-base); border-radius: var(--radius-lg); font-size: var(--text-base);">
+                </div>
+                <div class="iter7-error" style="display: none; color: var(--color-error-500); margin-bottom: var(--space-4); padding: var(--space-3); background: var(--color-error-100); border-radius: var(--radius-md);"></div>
+                <div class="iter7-spinner" style="display: none; text-align: center; padding: var(--space-4);">⏳ Küldés...</div>
+                <div class="iter7-success" style="display: none; color: var(--color-success-700); background: var(--color-success-100); padding: var(--space-6); border-radius: var(--radius-lg); border: 2px solid var(--color-success-500);"></div>
+                <button type="submit" style="width: 100%; padding: var(--space-4); background: var(--color-primary-500); color: white; border: none; border-radius: var(--radius-xl); font-weight: 700; font-size: var(--text-lg); cursor: pointer;">
+                    Foglalás kezdeményezése
+                </button>
+            </form>
+
+            <!-- Quote form -->
+            <form id="iter7QuoteForm" class="iter7-form" style="display: none; background: var(--bg-subtle); padding: var(--space-8); border-radius: var(--radius-xl);">
+                <h4 style="font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-6);">Ajánlatkérés</h4>
+                <div style="display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-6);">
+                    <input 
+                        type="date" 
+                        name="date" 
+                        required
+                        aria-label="Dátum"
+                        style="padding: var(--space-4); border: 2px solid var(--border-base); border-radius: var(--radius-lg); font-size: var(--text-base);">
+                    <select 
+                        name="type" 
+                        required
+                        aria-label="Műsor típus"
+                        style="padding: var(--space-4); border: 2px solid var(--border-base); border-radius: var(--radius-lg); font-size: var(--text-base);">
+                        <option value="">Válassz műsor típust...</option>
+                        <option value="zenekar">Zenekar</option>
+                        <option value="dj">DJ</option>
+                        <option value="tancosok">Táncosok</option>
+                        <option value="egyeb">Egyéb</option>
+                    </select>
+                    <input 
+                        type="number" 
+                        name="guests" 
+                        placeholder="Vendégszám (pl. 100)"
+                        required
+                        aria-label="Vendégszám"
+                        style="padding: var(--space-4); border: 2px solid var(--border-base); border-radius: var(--radius-lg); font-size: var(--text-base);">
+                </div>
+                <div class="iter7-error" style="display: none; color: var(--color-error-500); margin-bottom: var(--space-4); padding: var(--space-3); background: var(--color-error-100); border-radius: var(--radius-md);"></div>
+                <div class="iter7-spinner" style="display: none; text-align: center; padding: var(--space-4);">⏳ Küldés...</div>
+                <div class="iter7-success" style="display: none; color: var(--color-success-700); background: var(--color-success-100); padding: var(--space-6); border-radius: var(--radius-lg); border: 2px solid var(--color-success-500);"></div>
+                <button type="submit" style="width: 100%; padding: var(--space-4); background: var(--color-primary-500); color: white; border: none; border-radius: var(--radius-xl); font-weight: 700; font-size: var(--text-lg); cursor: pointer;">
+                    Ajánlatot kérek
+                </button>
+            </form>
+
+            <!-- Browse option -->
+            <div id="iter7BrowseForm" class="iter7-form" style="display: none; background: var(--bg-subtle); padding: var(--space-8); border-radius: var(--radius-xl); text-align: center;">
+                <h4 style="font-size: var(--text-xl); font-weight: 700; margin-bottom: var(--space-4);">Böngészés a kategóriák között</h4>
+                <p style="color: var(--text-secondary); margin-bottom: var(--space-6);">Nézd meg előadóinkat kategóriánként és válassz szabadon!</p>
+                <a href="/kategoriak" style="display: inline-block; padding: var(--space-4) var(--space-8); background: var(--color-secondary-500); color: white; text-decoration: none; border-radius: var(--radius-xl); font-weight: 600;">
+                    🎭 Kategóriák megtekintése
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .iter7-intent-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .iter7-intent-pill[aria-checked="true"] { background: var(--color-primary-500); color: white; border-color: var(--color-primary-500); }
+        .iter7-intent-pill:focus { outline: 3px solid var(--color-primary-300); outline-offset: 2px; }
+    </style>
+</section>

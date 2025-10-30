@@ -1,0 +1,220 @@
+<div class="page-container">
+
+<!-- Kritikus Figyelmeztetések -->
+<% if (stats?.alerts?.hasAlerts === true) { %>
+<div class="card--data mb-6">
+    <h3>⚠️ Azonnali Figyelem Szükséges!</h3>
+    <div class="flex flex-col gap-3 mt-4">
+        <% if (stats.alerts.unansweredChats > 0) { %>
+        <a href="<%= basePath %>admin/chat" class="btn btn--warning text-left">
+            💬 <strong><%= stats.alerts.unansweredChats %></strong> válaszra váró chat üzenet
+        </a>
+        <% } %>
+        <% if (stats.alerts.offlineMessagesUrgent > 0) { %>
+        <a href="<%= basePath %>admin/chat/offline-messages" class="btn btn--warning text-left">
+            📧 <strong><%= stats.alerts.offlineMessagesUrgent %></strong> offline üzenet (48 órás határidő)
+        </a>
+        <% } %>
+    </div>
+</div>
+<% } %>
+
+<!-- Üzleti KPI-ok -->
+<div class="card--data">
+    <h3>📊 Üzleti Áttekintés</h3>
+    
+    <!-- Foglalások -->
+    <div class="stats-grid">
+        <div class="card--stat card--stat--primary">
+            <h3>📋 Összes Foglalás</h3>
+            <div class="stat-value"><%= stats?.bookings?.total || 0 %></div>
+        </div>
+        
+        <div class="card--stat card--stat--primary">
+            <h3>📅 Mai Foglalások</h3>
+            <div class="stat-value"><%= stats?.bookings?.today || 0 %></div>
+        </div>
+        
+        <div class="card--stat card--stat--info">
+            <h3>📈 Heti Foglalások</h3>
+            <div class="stat-value"><%= stats?.bookings?.thisWeek || 0 %></div>
+        </div>
+        
+        <div class="card--stat card--stat--success">
+            <h3>📊 Havi Foglalások</h3>
+            <div class="stat-value"><%= stats?.bookings?.thisMonth || 0 %></div>
+        </div>
+    </div>
+    
+    <!-- Felhasználók -->
+    <div class="stats-grid mt-6">
+        <div class="card--stat card--stat--info">
+            <h3>👥 Összes User</h3>
+            <div class="stat-value"><%= stats?.users?.total || 0 %></div>
+        </div>
+        
+        <div class="card--stat card--stat--success">
+            <h3>✨ Mai Új User</h3>
+            <div class="stat-value"><%= stats?.users?.newToday || 0 %></div>
+        </div>
+        
+        <div class="card--stat card--stat--success">
+            <h3>📈 Heti Új User</h3>
+            <div class="stat-value"><%= stats?.users?.newThisWeek || 0 %></div>
+        </div>
+        
+        <div class="card--stat card--stat--success">
+            <h3>📊 Havi Új User</h3>
+            <div class="stat-value"><%= stats?.users?.newThisMonth || 0 %></div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Performers -->
+<% if (stats && stats.performers && stats.performers.topPerformers && stats.performers.topPerformers.length > 0) { %>
+<div class="card--data">
+    <h3>🏆 Top 5 Előadók (Foglalások Szerint)</h3>
+    <div class="flex flex-col gap-3">
+        <% stats.performers.topPerformers.forEach((performer, index) => { %>
+        <div class="card card-bordered flex flex-row flex-wrap items-center justify-between p-3">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl font-bold text-primary">
+                    <%= index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : (index + 1) %>
+                </span>
+                <div>
+                    <strong><%= performer.name %></strong>
+                    <br>
+                    <small class="text-muted"><%= performer.category %></small>
+                </div>
+            </div>
+            <span class="badge badge-primary">
+                <%= performer.bookingCount %> foglalás
+            </span>
+        </div>
+        <% }) %>
+    </div>
+</div>
+<% } %>
+
+<!-- 12 Hónapos Trend Grafikon -->
+<div class="card--data">
+    <h3>📈 Foglalási Trend (12 Hónap)</h3>
+    <div class="chart-container">
+        <canvas id="bookingTrendChart"></canvas>
+    </div>
+</div>
+
+<!-- Rendszer Állapot -->
+<div class="card--data">
+    <h3>💻 Rendszer Állapot</h3>
+    <div class="stats-grid">
+        <% if (stats?.system?.cronJobs && stats.system.cronJobs.length > 0) { %>
+            <% stats.system.cronJobs.forEach(job => { %>
+            <div class="card--stat <%= job.hasError ? 'card--stat--error' : job.enabled ? 'card--stat--success' : 'card--stat--muted' %>">
+                <h3>⏰ <%= job.name %></h3>
+                <div class="text-sm">
+                    <strong>Státusz:</strong> <%= job.enabled ? '✅ Aktív' : '⏸️ Letiltva' %>
+                    <br>
+                    <% if (job.lastRun) { %>
+                        <strong>Utolsó fut:</strong> <%= new Date(job.lastRun).toLocaleString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) %>
+                    <% } else { %>
+                    <strong>Még nem futott</strong>
+                    <% } %>
+                    <% if (job.hasError) { %>
+                    <br>
+                    <span class="text-error">❌ Hiba: <%= job.lastError %></span>
+                    <% } %>
+                </div>
+            </div>
+            <% }) %>
+        <% } %>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    // CSS változók kiolvasása a Chart.js számára
+    const rootStyles = getComputedStyle(document.documentElement);
+    const primaryColor = rootStyles.getPropertyValue('--color-primary-500').trim();
+    
+    // Konvertáljuk hex-et RGB-re
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+    
+    const rgb = hexToRgb(primaryColor);
+    const borderColor = rgb ? `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` : 'rgb(59, 130, 246)';
+    const bgColor = rgb ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)` : 'rgba(59, 130, 246, 0.1)';
+    
+    async function loadChartData() {
+        try {
+            const response = await fetch('<%= basePath %>admin/api/dashboard/chart-data?months=12');
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                initBookingTrendChart(result.data.bookingTrend);
+            }
+        } catch (error) {
+            console.error('Failed to load chart data:', error);
+        }
+    }
+    
+    function initBookingTrendChart(data) {
+        const ctx = document.getElementById('bookingTrendChart');
+        if (!ctx) return;
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Foglalások',
+                    data: data.data,
+                    borderColor: borderColor,
+                    backgroundColor: bgColor,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' foglalás';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadChartData);
+    } else {
+        loadChartData();
+    }
+})();
+</script>
+
+</div>

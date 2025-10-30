@@ -1,0 +1,165 @@
+/**
+ * Session Timeout Modal
+ * Styles for the session expiration warning modal
+ */
+
+/* ==========================================
+   MODAL BASE
+   ========================================== */
+
+#session-timeout-modal {
+  display: none;
+  z-index: 10000;
+}
+
+#session-timeout-modal.show {
+  display: block;
+}
+
+/* ==========================================
+   OVERLAY
+   ========================================== */
+
+.session-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(var(--color-black-rgb), 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ==========================================
+   MODAL CONTENT
+   ========================================== */
+
+.session-modal-content {
+  background: var(--color-white);
+  padding: var(--space-10);
+  border-radius: var(--radius-2xl);
+  max-width: 450px;
+  text-align: center;
+  box-shadow: var(--shadow-2xl);
+  animation: slideIn 0.3s ease;
+}
+
+.session-modal-icon {
+  font-size: var(--text-6xl);
+  margin-bottom: var(--space-4);
+}
+
+.session-modal-content h2 {
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-2xl);
+}
+
+.session-modal-content p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ==========================================
+   ACTIONS
+   ========================================== */
+
+.session-modal-actions {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.session-btn {
+  flex: 1;
+  padding: var(--space-3-5) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+  min-width: 150px;
+}
+
+.session-btn-primary {
+  background: var(--color-primary-600);
+  color: var(--color-white);
+}
+
+.session-btn-primary:hover {
+  background: var(--color-primary-700);
+  transform: translateY(calc(var(--space-0-5) * -1));
+  box-shadow: 0 4px 12px rgba(var(--color-primary-600-rgb), 0.3);
+}
+
+.session-btn-secondary {
+  background: var(--color-gray-500);
+  color: var(--color-white);
+}
+
+.session-btn-secondary:hover {
+  background: var(--color-gray-600);
+}
+
+/* ==========================================
+   TIMER WARNING
+   ========================================== */
+
+.session-modal-timer {
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  background: var(--color-warning-100);
+  border-radius: var(--radius-lg);
+  color: var(--color-warning-800);
+  font-weight: var(--font-weight-semibold);
+}
+
+#session-countdown {
+  color: var(--color-warning-600);
+  font-size: var(--text-xl);
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--space-12) * -1));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 768px) {
+  .session-modal-content {
+    padding: var(--space-8);
+    margin: var(--space-4);
+  }
+
+  .session-modal-actions {
+    flex-direction: column;
+  }
+
+  .session-btn {
+    min-width: 100%;
+  }
+}

@@ -1,0 +1,315 @@
+
+
+<!-- Admin Users Management -->
+
+<div class="page-container">
+    <% if (messages.success) { %>
+    <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+    <% if (messages.error) { %>
+    <div class="alert alert-error"><%= messages.error %></div>
+    <% } %>
+
+    <!-- 2-Column Grid Layout -->
+    <div class="admin-two-col">
+        
+        <!-- Left Column: Main Content -->
+        <div>
+
+    <!-- Statistics -->
+    <div class="card--data">
+        <h3>� Statisztikák</h3>
+        <div class="stats-grid">
+            <div class="card--stat card--stat--warning">
+                <h3>👑 Admin</h3>
+                <div class="stat-value"><%= users.filter(u => u.role === 'admin').length %></div>
+            </div>
+            <div class="card--stat card--stat--info">
+                <h3>💼 Értékesítő</h3>
+                <div class="stat-value"><%= users.filter(u => u.role === 'sales').length %></div>
+            </div>
+            <div class="card--stat card--stat--primary">
+                <h3>🎤 Előadó</h3>
+                <div class="stat-value"><%= users.filter(u => u.role === 'performer').length %></div>
+            </div>
+            <div class="card--stat card--stat--success">
+                <h3>👤 Megrendelő</h3>
+                <div class="stat-value"><%= users.filter(u => u.role === 'client').length %></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card--data">
+        <h3>🔍 Szűrés</h3>
+        <form method="GET" action="/admin/users">
+            <div class="filter-grid-4-col">
+                <div class="form__group">
+                    <label>Keresés</label>
+                    <input type="text" name="search" class="form__control"
+                           placeholder="Név, email, telefon..."
+                           value="<%= filters.search || '' %>">
+                </div>
+                <div class="form__group">
+                    <label>Szerepkör</label>
+                    <select name="role" class="form__select">
+                        <option value="">Összes</option>
+                        <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Adminisztrátor</option>
+                        <option value="sales" <%= filters.role === 'sales' ? 'selected' : '' %>>Értékesítő</option>
+                        <option value="client" <%= filters.role === 'client' ? 'selected' : '' %>>Megrendelő</option>
+                        <option value="performer" <%= filters.role === 'performer' ? 'selected' : '' %>>Előadó</option>
+                    </select>
+                </div>
+                <div class="form__group">
+                    <label>Állapot</label>
+                    <select name="status" class="form__select">
+                        <option value="">🔘 Összes</option>
+                        <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>✅ Aktív</option>
+                        <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>❌ Inaktív</option>
+                    </select>
+                </div>
+                <div class="form__group">
+                    <button type="submit" class="btn btn--primary w-full">
+                        🔍 Szűrés
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Action Button -->
+    <div class="btn__group btn__group--equal mb-4">
+        <a href="/admin/users/new" class="btn btn--primary">
+            ➕ Új Felhasználó
+        </a>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card--data">
+        <h3>👥 Felhasználók Listája</h3>
+        <% if (users.length === 0) { %>
+            <div class="empty-state">
+                <h3>😕 Nincs megjeleníthető felhasználó</h3>
+                <p>Próbáljon más szűrési feltételeket.</p>
+            </div>
+        <% } else { %>
+            <div class="table--responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Név</th>
+                            <th>Szerepkör</th>
+                            <th>Állapot</th>
+                            <th>Regisztrált</th>
+                            <th>Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(function(userData) { %>
+                            <tr>
+                                <td data-label="Név">
+                                    <strong><%= userData.name %></strong>
+                                </td>
+                                <td data-label="Szerepkör">
+                                    <% if (userData.role === 'admin') { %>
+                                        <span class="badge badge-error">👑 Admin</span>
+                                    <% } else if (userData.role === 'sales') { %>
+                                        <span class="badge badge-primary">💼 Értékesítő</span>
+                                    <% } else if (userData.role === 'client') { %>
+                                        <span class="badge badge-success">👤 Megrendelő</span>
+                                    <% } else if (userData.role === 'performer') { %>
+                                        <span class="badge badge-warning">🎤 Előadó</span>
+                                    <% } %>
+                                </td>
+                                <td data-label="Állapot">
+                                    <button type="button" 
+                                            class="status-toggle <%= userData.isActive ? 'status-toggle--active' : 'status-toggle--inactive' %>" 
+                                            data-user-id="<%= userData.id %>"
+                                            data-current-status="<%= userData.isActive %>"
+                                            onclick="toggleUserStatus(this)"
+                                            title="Kattints az állapot váltásához">
+                                        <span class="status-toggle__label">
+                                            <%= userData.isActive ? 'Aktív' : 'Inaktív' %>
+                                        </span>
+                                    </button>
+                                </td>
+                                <td data-label="Regisztrált"><%= new Date(userData.createdAt).toLocaleDateString('hu-HU') %></td>
+                                <td data-label="Műveletek">
+                                    <div class="actions">
+                                        <a href="/admin/users/<%= userData.id %>/edit" class="btn btn-icon-only btn--secondary" title="Szerkesztés">
+                                            ✏️
+                                        </a>
+                                        <button class="btn btn-icon-only btn-error delete-user" 
+                                                data-id="<%= userData.id %>" 
+                                                data-name="<%= userData.name %>"
+                                                data-email="<%= userData.email %>"
+                                                title="Törlés">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+
+        </div> <!-- End Left Column -->
+
+        <!-- Right Column: Info Boxes -->
+        <div>
+            <!-- Szerepkörök -->
+            <div class="card--data">
+                <h3>👥 Szerepkörök</h3>
+                <div class="card__info-content">
+                    <p><strong>👑 Admin</strong> - Teljes hozzáférés az admin felülethez. Minden funkció elérhető.</p>
+                    <p><strong>💼 Értékesítő</strong> - Korlátozott hozzáférés. Csak az értékesítési modulokhoz fér hozzá.</p>
+                    <p><strong>🎤 Előadó</strong> - Előadói profil kezelése, naptár, foglalások megtekintése.</p>
+                    <p><strong>👤 Megrendelő</strong> - Ügyféloldali hozzáférés. Saját foglalások, rendelések kezelése.</p>
+                </div>
+            </div>
+
+            <!-- Felhasználó Kezelése -->
+            <div class="card--data">
+                <h3>⚙️ Felhasználó Kezelése</h3>
+                <div class="card__info-content">
+                    <p><strong>Új felhasználó:</strong></p>
+                    <ul>
+                        <li>Kattints a <strong>➕ Új Felhasználó</strong> gombra</li>
+                        <li>Töltsd ki a kötelező mezőket</li>
+                        <li>Válaszd ki a szerepkört</li>
+                        <li>Állítsd be az aktív státuszt</li>
+                    </ul>
+                    <p><strong>Szerkesztés:</strong> Kattints a ✏️ ikonra</p>
+                    <p><strong>Törlés:</strong> Kattints a 🗑️ ikonra (visszavonhatatlan!)</p>
+                </div>
+            </div>
+
+            <!-- Állapot Váltás -->
+            <div class="card--data">
+                <h3>🔄 Állapot Váltás</h3>
+                <div class="card__info-content">
+                    <p>A <strong>státusz gombra kattintva</strong> azonnal aktiválhatod vagy deaktiválhatod a felhasználót.</p>
+                    <p><strong>Aktív:</strong> A felhasználó be tud jelentkezni és használhatja a rendszert.</p>
+                    <p><strong>Inaktív:</strong> A felhasználó nem tud bejelentkezni. Adatai megmaradnak.</p>
+                    <p>⚠️ Az állapot váltás azonnal érvénybe lép!</p>
+                </div>
+            </div>
+
+            <!-- Szűrés és Keresés -->
+            <div class="card--data">
+                <h3>🔍 Szűrés és Keresés</h3>
+                <div class="card__info-content">
+                    <p><strong>Keresés</strong> - Név, email vagy telefonszám alapján</p>
+                    <p><strong>Szerepkör</strong> - Szűrés szerepkör szerint</p>
+                    <p><strong>Állapot</strong> - Csak aktív vagy inaktív felhasználók</p>
+                    <p>A szűrők kombinálhatók. A keresés valós időben történik a táblázatban.</p>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End Grid -->
+</div> <!-- End page-container -->
+
+<script>
+// Toggle user status (Active/Inactive)
+async function toggleUserStatus(button) {
+    const userId = button.dataset.userId;
+    const currentStatus = button.dataset.currentStatus === 'true';
+    const newStatus = !currentStatus;
+    
+    const originalHTML = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<span class="status-toggle__label">⏳...</span>';
+    
+    try {
+        // Használjuk a window.location.origin-t hogy a megfelelő protokollt használjuk
+        const url = `${window.location.origin}/admin/users/${userId}/toggle`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': '<%= csrfToken %>'
+            },
+            body: JSON.stringify({ isActive: newStatus })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Update button state
+            button.dataset.currentStatus = newStatus;
+            button.className = `status-toggle ${newStatus ? 'status-toggle--active' : 'status-toggle--inactive'}`;
+            button.innerHTML = `<span class="status-toggle__label">${newStatus ? 'Aktív' : 'Inaktív'}</span>`;
+            
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success';
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '1000';
+            alertDiv.textContent = data.message || 'Felhasználó állapota frissítve!';
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3000);
+        } else {
+            throw new Error(data.message || 'Hiba történt');
+        }
+    } catch (error) {
+        alert('❌ Hiba: ' + error.message);
+        button.innerHTML = originalHTML;
+    } finally {
+        button.disabled = false;
+    }
+}
+
+document.querySelectorAll('.delete-user').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const name = this.dataset.name;
+        const email = this.dataset.email;
+        const id = this.dataset.id;
+        
+        const confirmed = await Modal.confirm({
+            title: 'Felhasználó törlése',
+            message: 'Biztosan törölni szeretnéd ezt a felhasználót?',
+            confirmText: 'Törlés',
+            cancelText: 'Mégse'
+        });
+        
+        if (confirmed) {
+            try {
+                // Használjuk a window.location.origin-t hogy a megfelelő protokollt használjuk
+                const url = `${window.location.origin}/admin/users/${id}/delete`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '<%= csrfToken %>'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    Modal.alert({
+                        title: 'Siker',
+                        message: data.message || 'Felhasználó sikeresen törölve!',
+                        type: 'success'
+                    });
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    throw new Error(data.message || 'Hiba történt a törlés során');
+                }
+            } catch (error) {
+                Modal.alert({
+                    title: 'Hiba',
+                    message: error.message,
+                    type: 'error'
+                });
+            }
+        }
+    });
+});
+</script>

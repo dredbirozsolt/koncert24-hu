@@ -1,0 +1,83 @@
+<!-- Auth resend verification with Design System -->
+
+<section class="section">
+    <div class="max-w-md mx-auto">
+        <div class="card">
+            <div class="card__header text-center">
+                <h1 class="card__title text-2xl">📧 Megerősítő email újraküldése</h1>
+                <p class="text-sm text-gray-600 mt-2">Add meg az email címedet és küldünk egy új megerősítő linket</p>
+            </div>
+
+            <div class="card__body">
+                <% if (error) { %>
+                    <div class="alert alert--error mb-6">
+                        <div class="alert__icon">⚠️</div>
+                        <div class="alert__content">
+                            <p class="alert__message">
+                                <% if (error === 'validation') { %>
+                                    Kérlek adj meg egy érvényes email címet!
+                                <% } else if (error === 'not_found') { %>
+                                    Nem található regisztrált fiók ezzel az email címmel.
+                                <% } else if (error === 'already_verified') { %>
+                                    Ez az email cím már meg van erősítve! <a href="<%= basePath %>auth/login" class="underline font-semibold">Jelentkezz be itt</a>
+                                <% } else if (error === 'email_error') { %>
+                                    Nem sikerült elküldeni az emailt. Kérlek próbáld újra később!
+                                <% } else { %>
+                                    Hiba történt. Kérlek próbáld újra!
+                                <% } %>
+                            </p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <% if (success) { %>
+                    <div class="alert alert--success mb-6">
+                        <div class="alert__icon">✅</div>
+                        <div class="alert__content">
+                            <p class="alert__message">
+                                Megerősítő email sikeresen elküldve! Ellenőrizd a postafiókod.
+                            </p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <div class="alert alert--info mb-6">
+                    <div class="alert__icon">💡</div>
+                    <div class="alert__content">
+                        <p class="alert__message">
+                            Ha nem érkezett meg vagy lejárt a megerősítő link, itt kérhetsz újat. A link 24 órán belül lejár.
+                        </p>
+                    </div>
+                </div>
+
+                <form action="<%= basePath %>auth/request-verification" method="POST">
+                    <div class="form__group">
+                        <label for="email" class="form__label">Email cím</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form__input" 
+                            placeholder="pelda@email.hu"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn--primary w-full">
+                        📧 Megerősítő email küldése
+                    </button>
+                </form>
+            </div>
+
+            <div class="card__footer border-t text-center">
+                <p class="text-sm text-gray-600">
+                    Már megerősítetted az email címed? 
+                    <a href="<%= basePath %>auth/login" class="text-primary hover:underline font-semibold">
+                        Jelentkezz be
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

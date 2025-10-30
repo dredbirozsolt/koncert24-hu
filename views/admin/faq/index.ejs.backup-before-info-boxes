@@ -1,0 +1,182 @@
+<!-- FAQ Management Page -->
+<div class="page-container">
+    <!-- Action Buttons -->
+    <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
+        <a href="/admin/faq/categories/new" class="btn btn-primary">
+            <i class="fas fa-folder-plus"></i> Új Kategória
+        </a>
+        <a href="/admin/faq/items/new" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Új Kérdés
+        </a>
+    </div>
+
+    <% if (success) { %>
+        <div class="alert alert-success">
+            <%= decodeURIComponent(success) %>
+        </div>
+    <% } %>
+
+    <% if (error) { %>
+        <div class="alert alert-error">
+            <%= decodeURIComponent(error) %>
+        </div>
+    <% } %>
+
+    <% if (!categories || categories.length === 0) { %>
+        <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <h2 class="empty-state-title">Még nincs GYIK kategória</h2>
+            <p class="empty-state-text">Kezdd el az első kategória létrehozásával!</p>
+            <a href="/admin/faq/categories/new" class="btn btn-primary btn-lg">
+                ➕ Első Kategória Létrehozása
+            </a>
+        </div>
+    <% } else { %>
+        <!-- Categories with Tables -->
+        <% categories.forEach((category) => { %>
+            <div class="data-card" style="margin-bottom: 2rem;">
+                <!-- Category Header -->
+                <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-default); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="font-size: 2rem;"><%= category.icon %></span>
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.25rem;"><%= category.name %></h2>
+                            <% if (category.description) { %>
+                                <small style="color: #6b7280;"><%= category.description %></small>
+                            <% } %>
+                        </div>
+                        <span class="badge <%= category.isActive ? 'badge-success' : 'badge-danger' %>">
+                            <%= category.isActive ? 'Aktív' : 'Inaktív' %>
+                        </span>
+                        <span style="color: #6b7280;">Sorrend: <%= category.displayOrder %></span>
+                        <span style="color: #6b7280;"><%= category.items.length %> kérdés</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="/admin/faq/categories/<%= category.id %>/edit" 
+                           class="btn btn-sm btn-secondary">
+                            ✏️ Szerkesztés
+                        </a>
+                        <button class="btn btn-sm btn-danger"
+                                onclick="deleteFaqCategory('<%= category.id %>', '<%= category.name %>', <%= category.items.length %>)">
+                            🗑️ Törlés
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FAQ Items Table -->
+                <% if (category.items && category.items.length > 0) { %>
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Kérdés</th>
+                                    <th>Státusz</th>
+                                    <th>Sorrend</th>
+                                    <th>Megtekintés</th>
+                                    <th>Műveletek</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% category.items.forEach((item) => { %>
+                                    <tr>
+                                        <td data-label="Kérdés">
+                                            <strong>❓ <%= item.question %></strong>
+                                            <br>
+                                            <small style="color: var(--text-secondary); display: block; margin-top: 0.25rem;">
+                                                <%= item.answer.substring(0, 100) %><%= item.answer.length > 100 ? '...' : '' %>
+                                            </small>
+                                        </td>
+                                        <td data-label="Státusz">
+                                            <span class="badge <%= item.isActive ? 'badge-success' : 'badge-danger' %>">
+                                                <%= item.isActive ? 'Aktív' : 'Inaktív' %>
+                                            </span>
+                                        </td>
+                                        <td data-label="Sorrend"><%= item.displayOrder %></td>
+                                        <td data-label="Megtekintés">
+                                            👁️ <%= item.viewCount %>
+                                        </td>
+                                        <td data-label="Műveletek">
+                                            <div class="actions">
+                                                <a href="/admin/faq/items/<%= item.id %>/edit" 
+                                                   class="btn-icon" 
+                                                   style="color: #3b82f6;" 
+                                                   title="Szerkesztés">
+                                                    ✏️
+                                                </a>
+                                                <button class="btn-icon" 
+                                                        style="color: #ef4444;"
+                                                        onclick="deleteFaqItem('<%= item.id %>', '<%= item.question.replace(/'/g, "\\'") %>')"
+                                                        title="Törlés">
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div style="padding: 2rem; text-align: center; color: #6b7280;">
+                        <p>Még nincs kérdés ebben a kategóriában.</p>
+                        <a href="/admin/faq/items/new" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus"></i> Új Kérdés Hozzáadása
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        <% }); %>
+    <% } %>
+</div>
+
+<script>
+// Delete FAQ Category
+async function deleteFaqCategory(categoryId, categoryName, itemCount) {
+    const message = itemCount > 0 
+        ? `Biztosan törölni szeretnéd a "${categoryName}" kategóriát? Ez ${itemCount} kérdést is töröl!`
+        : `Biztosan törölni szeretnéd a "${categoryName}" kategóriát?`;
+    
+    const confirmed = await UniversalModal.confirm(message);
+    
+    if (confirmed) {
+        const csrfToken = document.querySelector('input[name="_csrf"]').value;
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/faq/categories/${categoryId}/delete`;
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf';
+        csrfInput.value = csrfToken;
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Delete FAQ Item
+async function deleteFaqItem(itemId, question) {
+    const confirmed = await UniversalModal.confirm(
+        `Biztosan törölni szeretnéd ezt a kérdést?\n\n"${question}"`
+    );
+    
+    if (confirmed) {
+        const csrfToken = document.querySelector('input[name="_csrf"]').value;
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/faq/items/${itemId}/delete`;
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf';
+        csrfInput.value = csrfToken;
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>

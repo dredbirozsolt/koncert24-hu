@@ -1,0 +1,149 @@
+<!-- Blog Kategóriák Kezelése -->
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="btn__group btn__group--equal">
+      <a href="/admin/blog" class="btn btn--secondary">
+        ← Vissza
+      </a>
+      <a href="/admin/blog/categories/new" class="btn btn--primary">
+        ➕ Új kategória
+      </a>
+    </div>
+  </div>
+
+  <!-- Üzenetek -->
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success">
+      <%= decodeURIComponent(success) %>
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-error">
+      <%= decodeURIComponent(error) %>
+    </div>
+  <% } %>
+
+  <!-- Kategóriák lista -->
+  <div class="card--data">
+    <% if (categories.length === 0) { %>
+      <div class="p-12 text-center text-secondary">
+        📁 <p>Még nincsenek kategóriák</p>
+        <a href="/admin/blog/categories/new" class="btn btn--primary mt-2">
+          ➕ Első kategória létrehozása
+        </a>
+      </div>
+    <% } else { %>
+      <div class="table--responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="w-10">#</th>
+              <th>Név</th>
+              <th>Slug</th>
+              <th>Leírás</th>
+              <th class="w-24 text-center">Bejegyzések</th>
+              <th class="w-24 text-center">Sorrend</th>
+              <th class="w-32">Műveletek</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% categories.forEach((category, index) => { %>
+              <tr>
+                <td data-label="#"><%= index + 1 %></td>
+                <td data-label="Név">
+                  <strong><%= category.name %></strong>
+                </td>
+                <td data-label="Slug">
+                  <code class="text-sm text-primary">/<%= category.slug %></code>
+                </td>
+                <td data-label="Leírás">
+                  <% if (category.description) { %>
+                    <%= category.description.substring(0, 60) %><%= category.description.length > 60 ? '...' : '' %>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+                <td data-label="Bejegyzések" class="text-center">
+                  <span class="badge badge-info">
+                    <%= category.posts ? category.posts.length : 0 %>
+                  </span>
+                </td>
+                <td data-label="Sorrend" class="text-center">
+                  <%= category.displayOrder || 0 %>
+                </td>
+                <td data-label="Műveletek">
+                  <div class="actions">
+                    <a href="/admin/blog/categories/<%= category.id %>/edit" class="btn btn-icon-only btn--secondary" title="Szerkesztés">
+                      ✏️
+                    </a>
+                    <% if (!category.posts || category.posts.length === 0) { %>
+                      <button onclick="deleteCategory(<%= category.id %>)" class="btn btn-icon-only btn-error" title="Törlés">
+                        🗑️
+                      </button>
+                    <% } else { %>
+                      <button disabled title="Van hozzárendelt bejegyzés" class="btn btn-icon-only opacity-30 cursor-not-allowed">
+                        🗑️
+                      </button>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Törlés megerősítő form (not needed anymore) -->
+<form id="deleteForm" method="POST" class="hidden">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+</form>
+
+<script>
+async function deleteCategory(id) {
+  const confirmed = await Modal.confirm({
+    title: 'Kategória törlése',
+    message: 'Biztosan törölni szeretnéd ezt a kategóriát?',
+    confirmText: 'Törlés',
+    cancelText: 'Mégse'
+  });
+  
+  if (confirmed) {
+    try {
+      const response = await fetch(`/admin/blog/categories/${id}/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= csrfToken %>'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        Modal.alert({
+          title: 'Siker',
+          message: data.message || 'Kategória sikeresen törölve!',
+          type: 'success'
+        });
+        location.reload();
+      } else {
+        throw new Error(data.message || 'Hiba történt a törlés során');
+      }
+    } catch (error) {
+      Modal.alert({
+        title: 'Hiba',
+        message: '❌ Hiba: ' + error.message,
+        type: 'error'
+      });
+    }
+  }
+}
+</script>
+
+
+

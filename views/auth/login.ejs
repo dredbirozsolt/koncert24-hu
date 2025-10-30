@@ -1,0 +1,106 @@
+<!-- Auth login with Design System -->
+
+<section class="section">
+    <div class="max-w-md mx-auto">
+        <div class="card">
+        <div class="card">
+            <div class="card__header text-center">
+                <h1 class="card__title text-2xl">Bejelentkezés</h1>
+                <p class="text-sm text-gray-600 mt-2">Jelentkezz be a fiókodba</p>
+            </div>
+
+            <div class="card__body">
+                <% if (locals.success && success === 'password_reset') { %>
+                    <div class="alert alert--success mb-6">
+                        <div class="alert__icon">✅</div>
+                        <div class="alert__content">
+                            <p class="alert__message">Jelszó sikeresen módosítva! Most bejelentkezhet az új jelszavával.</p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <% if (error) { %>
+                    <div class="alert alert--error mb-6">
+                        <div class="alert__icon">❌</div>
+                        <div class="alert__content">
+                            <p class="alert__message">
+                                <% if (error === 'invalid') { %>
+                                    Hibás email cím vagy jelszó!
+                                <% } else if (error === 'locked') { %>
+                                    🔒 A fiókja ideiglenesen zárolva van 30 percig túl sok sikertelen bejelentkezési kísérlet miatt. Kérjük, próbálja újra később!
+                                <% } else if (error === 'validation') { %>
+                                    Kérjük, töltse ki helyesen az összes mezőt!
+                                <% } else if (error === 'inactive') { %>
+                                    A fiókja inaktív. Kérjük, vegye fel velünk a kapcsolatot!
+                                <% } else if (error === 'server') { %>
+                                    Szerver hiba történt. Kérjük, próbálja újra később!
+                                <% } else { %>
+                                    Bejelentkezési hiba!
+                                <% } %>
+                            </p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <form method="POST" action="<%= basePath %>auth/login">
+                    <!-- 🛡️ CSRF Protection -->
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    
+                    <!-- Honeypot fields - hidden from users, visible to bots -->
+                    <input type="text" name="website" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    <input type="text" name="url" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    <input type="text" name="homepage" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    <input type="text" name="company_name" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    <input type="text" name="phone_number" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    
+                    <div class="form__group">
+                        <label for="email" class="form__label">📧 Email cím</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form__input"
+                            required 
+                            autofocus 
+                            autocomplete="email"
+                            placeholder="pelda@email.com"
+                        >
+                    </div>
+
+                    <div class="form__group">
+                        <label for="password" class="form__label">🔑 Jelszó</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form__input"
+                            required 
+                            autocomplete="current-password"
+                            placeholder="Adja meg a jelszavát"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn--primary w-full">
+                        🚪 Bejelentkezés
+                    </button>
+                </form>
+            </div>
+
+            <div class="card__footer border-t text-center">
+                <div class="space-y-2">
+                    <p class="text-sm">
+                        <a href="<%= basePath %>auth/forgot-password" class="text-primary hover:underline">
+                            🔑 Elfelejtett jelszó?
+                        </a>
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        Még nincs fiókja? 
+                        <a href="<%= basePath %>auth/register" class="text-primary hover:underline font-semibold">
+                            Regisztráljon itt!
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

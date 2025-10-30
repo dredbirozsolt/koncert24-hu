@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="hu" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- 🛡️ Security: CSRF Protection Meta Tag -->
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'Koncert24.hu' %></title>
+    <meta name="description" content="<%= typeof pageDescription !== 'undefined' ? pageDescription : 'Professzionális koncert- és rendezvényszervezés. Böngésszen előadóink között és foglaljon egyszerűen!' %>">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="<%= basePath %>favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="<%= basePath %>images/apple-touch-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+    <!-- Styles - CORRECT LOADING ORDER -->
+    <!-- 1. Design Tokens FIRST - Variables must be defined before use -->
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/tokens.css">
+    
+    <!-- 2. Base & Reset - Uses tokens -->
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/base.css">
+    
+        <!-- 3. Components - Module-specific CSS -->
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/typography.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/button.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/card.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/badge.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/alert.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/form.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/table.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/modal.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/code.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/details.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/skip-link.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/loading.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/breadcrumb.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/pagination.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/skeleton.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/toast.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/dropdown.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/tooltip.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/tabs.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/accordion.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/event-card.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/components/performer-card.css">
+    
+    <!-- 4. Layout - Uses components -->
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/public/public-layout.css">
+    
+    <!-- 5. Utilities LAST - Highest specificity -->
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/utilities.css">
+    <link rel="stylesheet" href="<%= basePath %>css/design-system/utilities/styleguide.css">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.js"></script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        (function() {
+            // Get saved theme or default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            
+            // Apply theme immediately to avoid flash
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Wait for DOM to be ready
+            document.addEventListener('DOMContentLoaded', function() {
+                const themeToggle = document.getElementById('themeToggle');
+                
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', function() {
+                        const currentTheme = document.documentElement.getAttribute('data-theme');
+                        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                        
+                        // Update theme
+                        document.documentElement.setAttribute('data-theme', newTheme);
+                        localStorage.setItem('theme', newTheme);
+                    });
+                }
+            });
+        })();
+    </script>
+</head>
+
+<body<% if (typeof user !== 'undefined' && user) { %> class="logged-in"<% } %>>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-to-main">Ugrás a főtartalomhoz</a>
+
+    <!-- Header -->
+    <header class="header" x-data="{ mobileMenuOpen: false }">
+        <div class="container">
+            <div class="header__content">
+                <!-- Logo -->
+                <div class="logo">
+                    <a href="<%= basePath %>" class="header__logo-link" aria-label="<%= companyName %> főoldal">
+                        <img src="<%= companyLogo ? companyLogo : basePath + 'images/dmf_logo.png' %>" alt="<%= companyName %>" class="header__logo-img" width="40"
+                            height="40">
+                        <span class="header__site-name"><%= siteName %></span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="nav nav__desktop" role="navigation" aria-label="Főmenü">
+                    <a href="<%= basePath %>" class="nav__link <%= currentPath === '/' ? 'active' : '' %>" <% if
+                        (currentPath==='/' ) { %>aria-current="page"<% } %>>
+                            Rendezvényszervezés
+                    </a>
+                    
+                    <a href="<%= basePath %>eloadok" class="nav__link <%= currentPath.startsWith('/eloadok') ? 'active' : '' %>" <% if
+                        (currentPath.startsWith('/eloadok')) { %>aria-current="page"<% } %>>
+                            Előadók
+                    </a>
+
+                    <a href="<%= basePath %>esemenyek" class="nav__link <%= currentPath.startsWith('/esemenyek') ? 'active' : '' %>" <% if
+                        (currentPath.startsWith('/esemenyek')) { %>aria-current="page"<% } %>>
+                            Események
+                    </a>
+
+                    <a href="<%= basePath %>blog" class="nav__link <%= currentPath.startsWith('/blog') ? 'active' : '' %>" <% if
+                        (currentPath.startsWith('/blog')) { %>aria-current="page"<% } %>>
+                            Blog
+                    </a>
+
+                    <a href="<%= basePath %>styleguide" class="nav__link <%= currentPath.startsWith('/styleguide') ? 'active' : '' %>" <% if
+                        (currentPath.startsWith('/styleguide')) { %>aria-current="page"<% } %>>
+                            <svg class="icon-inline--mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                            </svg>
+                            Design
+                    </a>
+
+                    <div class="nav__dropdown" x-data="{ open: false }" @mouseenter="open = true"
+                        @mouseleave="open = false">
+                        <button
+                            class="nav__link nav__dropdown-trigger <%= currentPath.startsWith('/info') ? 'active' : '' %>">
+                            Infó
+                            <svg class="nav__dropdown-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div class="nav__dropdown-menu" x-show="open" x-transition>
+                            <a href="<%= basePath %>info/rolunk" class="nav__dropdown-link">Rólunk</a>
+                            <a href="<%= basePath %>info/eloadoknak" class="nav__dropdown-link">Előadóknak</a>
+                            <a href="<%= basePath %>info/megrendeloknek" class="nav__dropdown-link">Megrendelőknek</a>
+                            <a href="<%= basePath %>info/gyik" class="nav__dropdown-link">GYIK</a>
+                        </div>
+                    </div>
+
+                    <!-- User Authentication -->
+                    <div class="nav__auth">
+                        <!-- Theme Toggle -->
+                        <button id="themeToggle" class="header__theme-toggle-btn" aria-label="Téma váltás" type="button">
+                            <svg class="nav__theme-icon nav__theme-icon-light" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+                            </svg>
+                            <svg class="nav__theme-icon nav__theme-icon-dark" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                            </svg>
+                        </button>
+                        
+                        <% if (isLoggedIn) { %>
+                            <div class="nav__dropdown" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                                <button class="nav__link nav__dropdown-trigger" :aria-expanded="open" aria-haspopup="true" type="button">
+                                    <%= user.name %>
+                                    <svg class="nav__dropdown-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                                <div class="nav__dropdown-menu" x-show="open" x-transition role="menu">
+                                    <a href="<%= basePath %>auth/profile" class="nav__dropdown-link" role="menuitem">Profil</a>
+                                    <% if (isAdmin) { %>
+                                        <a href="<%= basePath %>admin" class="nav__dropdown-link" role="menuitem">Admin</a>
+                                    <% } %>
+                                    <form method="POST" action="<%= basePath %>auth/logout" class="nav__dropdown-form">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button type="submit" class="nav__dropdown-link nav__dropdown-button" role="menuitem">Kijelentkezés</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <a href="<%= basePath %>auth/login" class="nav__link">Belépés</a>
+                            <a href="<%= basePath %>auth/register" class="nav__link">Regisztráció</a>
+                        <% } %>
+                    </div>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button class="header__mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen"
+                    :aria-expanded="mobileMenuOpen" :aria-label="mobileMenuOpen ? 'Menü bezárása' : 'Menü megnyitása'"
+                    type="button">
+                    <span class="header__mobile-menu-line" :class="{ 'active': mobileMenuOpen }" aria-hidden="true"></span>
+                    <span class="header__mobile-menu-line" :class="{ 'active': mobileMenuOpen }" aria-hidden="true"></span>
+                    <span class="header__mobile-menu-line" :class="{ 'active': mobileMenuOpen }" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <nav class="nav nav__mobile" x-show="mobileMenuOpen" x-transition>
+                <a href="<%= basePath %>" class="nav__link-mobile">Rendezvényszervezés</a>
+                
+                <a href="<%= basePath %>eloadok" class="nav__link-mobile">Előadók</a>
+
+                <a href="<%= basePath %>esemenyek" class="nav__link-mobile">Események</a>
+
+                <a href="<%= basePath %>blog" class="nav__link-mobile">Blog</a>
+                
+                <a href="<%= basePath %>styleguide" class="nav__link-mobile">
+                    <svg class="icon-inline--mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                    </svg>
+                    Design System
+                </a>
+
+                <div class="nav__category-mobile">
+                    <div class="nav__category-title">Infó</div>
+                    <a href="<%= basePath %>info/rolunk" class="nav__link-mobile">Rólunk</a>
+                    <a href="<%= basePath %>info/eloadoknak" class="nav__link-mobile">Előadóknak</a>
+                    <a href="<%= basePath %>info/megrendeloknek" class="nav__link-mobile">Megrendelőknek</a>
+                    <a href="<%= basePath %>info/gyik" class="nav__link-mobile">GYIK</a>
+                </div>
+
+                <!-- Mobile Authentication -->
+                <div class="nav__category-mobile">
+                    <% if (isLoggedIn) { %>
+                        <div class="nav__category-title"><%= user.name %></div>
+                        <a href="<%= basePath %>auth/profile" class="nav__link-mobile">Profil</a>
+                        <% if (isAdmin) { %>
+                            <a href="<%= basePath %>admin" class="nav__link-mobile">Admin</a>
+                        <% } %>
+                        <form method="POST" action="<%= basePath %>auth/logout" class="nav__mobile-form">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="nav__link-mobile nav-mobile-button">Kijelentkezés</button>
+                        </form>
+                    <% } else { %>
+                        <div class="nav__category-title">Fiók</div>
+                        <a href="<%= basePath %>auth/login" class="nav__link-mobile">Belépés</a>
+                        <a href="<%= basePath %>auth/register" class="nav__link-mobile">Regisztráció</a>
+                    <% } %>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" id="main-content" role="main">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="footer__section">
+                    <h4 class="footer__title"><%= companyName %></h4>
+                    <p class="footer__text">
+                        Professzionális koncert- és rendezvényszervezés évtizedes tapasztalattal.
+                    </p>
+                </div>
+
+                <div class="footer__section">
+                    <h4 class="footer__title">Kapcsolat</h4>
+                    <div class="footer__contact">
+                        <a href="tel:<%= companyPhone.replace(/\s/g, '') %>" class="footer__link">
+                            <svg class="footer__icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                            </svg>
+                            <%= companyPhone %>
+                        </a>
+                        <a href="mailto:<%= companyEmail %>" class="footer__link">
+                            <svg class="footer__icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                            </svg>
+                            <%= companyEmail %>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Social Media Links (Phase 2) -->
+                <% if (socialFacebook || socialInstagram || socialYoutube || socialLinkedin || socialTiktok) { %>
+                <div class="footer__section">
+                    <h4 class="footer__title">Kövess Minket</h4>
+                    <div class="footer__social">
+                        <% if (socialFacebook) { %>
+                        <a href="<%= socialFacebook %>" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Facebook">
+                            <svg class="footer__icon" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <% } %>
+                        <% if (socialInstagram) { %>
+                        <a href="<%= socialInstagram %>" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Instagram">
+                            <svg class="footer__icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <% } %>
+                        <% if (socialYoutube) { %>
+                        <a href="<%= socialYoutube %>" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="YouTube">
+                            <svg class="footer__icon" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                        <% } %>
+                        <% if (socialLinkedin) { %>
+                        <a href="<%= socialLinkedin %>" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="LinkedIn">
+                            <svg class="footer__icon" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </a>
+                        <% } %>
+                        <% if (socialTiktok) { %>
+                        <a href="<%= socialTiktok %>" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="TikTok">
+                            <svg class="footer__icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                        </a>
+                        <% } %>
+                    </div>
+                </div>
+                <% } %>
+
+                <div class="footer__section">
+                    <h4 class="footer__title">Linkek</h4>
+                    <div class="footer__links">
+                        <a href="<%= basePath %>info/rolunk" class="footer__link">Rólunk</a>
+                        <a href="<%= basePath %>info/megrendeloknek" class="footer__link">Megrendelőknek</a>
+                        <a href="<%= basePath %>info/eloadoknak" class="footer__link">Előadóknak</a>
+                        <a href="<%= basePath %>partners" class="footer__link">Partnereink</a>
+                        <a href="<%= basePath %>info/adatkezeles" class="footer__link">Adatkezelés</a>
+                        <a href="#" class="footer__link" id="cookie-settings-link">Cookie beállítások</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer__bottom">
+                <p class="footer__copyright">
+                    © <%= new Date().getFullYear() %> <%= siteName %> - <%= companyName %> Minden jog fenntartva.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll to anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Cookie Settings Link Handler
+        const cookieSettingsLink = document.getElementById('cookie-settings-link');
+        if (cookieSettingsLink) {
+            cookieSettingsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (window.CookieConsent && typeof window.CookieConsent.showBanner === 'function') {
+                    window.CookieConsent.showBanner();
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

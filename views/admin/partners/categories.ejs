@@ -1,0 +1,176 @@
+<!-- Partner Kategóriák Lista -->
+<div class="page-container">
+  <!-- Két oszlopos layout -->
+  <div class="admin-two-col">
+    <!-- BAL OSZLOP: Statisztikák és Táblázat -->
+    <div>
+      <!-- Statisztikák -->
+      <div class="card--data">
+        <h3>📊 Statisztikák</h3>
+        <div class="stats-grid">
+          <div class="card--stat card--stat--primary">
+            <h3>📁 Összes Kategória</h3>
+            <div class="stat-value"><%= stats.totalCategories %></div>
+          </div>
+          <div class="card--stat card--stat--success">
+            <h3>✅ Aktív</h3>
+            <div class="stat-value"><%= stats.activeCategories %></div>
+          </div>
+          <div class="card--stat card--stat--warning">
+            <h3>⏸️ Inaktív</h3>
+            <div class="stat-value"><%= stats.inactiveCategories %></div>
+          </div>
+          <div class="card--stat card--stat--info">
+            <h3>👥 Összes Partner</h3>
+            <div class="stat-value"><%= stats.totalPartners %></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Új kategória gomb -->
+      <div class="btn__group btn__group--equal mb-4">
+        <a href="/admin/partners" class="btn btn--secondary">
+          ← Vissza
+        </a>
+        <a href="/admin/partners/categories/new" class="btn btn--primary">
+          ➕ Új kategória
+        </a>
+      </div>
+
+      <!-- Kategóriák tábla -->
+      <div class="card--data">
+        <div class="table--responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th class="w-16">#</th>
+                <th>Név</th>
+                <th class="w-32 text-center">Partnerek</th>
+                <th class="w-32 text-center">Sorrend</th>
+                <th class="w-32 text-center">Aktív</th>
+                <th class="w-48 text-center">Műveletek</th>
+              </tr>
+            </thead>
+            <tbody>
+        <% if (categories && categories.length > 0) { %>
+          <% categories.forEach((category, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td>
+                <strong><%= category.name %></strong>
+              </td>
+              <td class="text-center">
+                <span class="badge badge-info">
+                  <%= category.activeCount || 0 %> db
+                </span>
+              </td>
+              <td class="text-center"><%= category.displayOrder %></td>
+              <td class="text-center">
+                <% if (category.isActive) { %>
+                  <span class="badge badge-success">
+                    ✓ Igen
+                  </span>
+                <% } else { %>
+                  <span class="badge badge-error">
+                    ✖️ Nem
+                  </span>
+                <% } %>
+              </td>
+              <td class="text-center">
+                <div class="actions justify-center">
+                  <a href="/admin/partners/categories/<%= category.id %>/edit" 
+                     class="btn btn-icon-only btn--secondary" 
+                     title="Szerkesztés">
+                    ✏️
+                  </a>
+                  <% if (category.partnerCount === 0) { %>
+                    <button 
+                      onclick="deleteCategory(<%= category.id %>, '<%= category.name %>', <%= category.partnerCount %>)" 
+                      class="btn btn-icon-only btn-error"
+                      title="Törlés">
+                      🗑️
+                    </button>
+                  <% } else { %>
+                    <button 
+                      disabled
+                      class="btn btn-icon-only opacity-30 cursor-not-allowed"
+                      title="Nem törölhető (van hozzárendelt partner)">
+                      🗑️
+                    </button>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="6" class="text-center p-8 text-secondary">
+              📥 Még nincsenek kategóriák. Klikk az "Új kategória" gombra a létrehozáshoz!
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <!-- /.card--data (táblázat) -->
+</div>
+<!-- /.bal oszlop -->
+
+<!-- JOBB OSZLOP: Info -->
+<div>
+  <!-- Info kártya -->
+  <div class="card--data">
+    <h3>💡 Tudnivalók</h3>
+    <div class="text-sm space-y-2">
+      <p><strong>Sorrend:</strong> A kategóriák megjelenítési sorrendje a kisebb szám = előrébb elv szerint.</p>
+      <p><strong>Slug:</strong> Ha üresen hagyod, automatikusan generálódik a névből.</p>
+      <p><strong>Törlés:</strong> Csak üres kategóriák törölhetők (0 partner).</p>
+      <p><strong>Inaktív:</strong> Az inaktív kategóriák nem jelennek meg a frontend-en.</p>
+    </div>
+  </div>
+
+  <!-- Hibaüzenetek / Sikeresség -->
+  <% if (typeof error !== 'undefined' || (typeof query !== 'undefined' && query.error)) { %>
+    <div class="alert alert-error">
+      <%= typeof error !== 'undefined' ? error : (query.error || 'Hiba történt') %>
+    </div>
+  <% } %>
+
+  <% if (typeof success !== 'undefined' || (typeof query !== 'undefined' && query.success)) { %>
+    <div class="alert alert-success">
+      <%= typeof success !== 'undefined' ? success : (query.success || 'Művelet sikeres') %>
+    </div>
+  <% } %>
+</div>
+<!-- /.jobb oszlop -->
+</div>
+<!-- /.admin-two-col -->
+</div>
+<!-- /.page-container -->
+
+<script>
+function deleteCategory(id, name, partnerCount) {
+  if (partnerCount > 0) {
+    alert(`A "${name}" kategória nem törölhető, mert ${partnerCount} db partner tartozik hozzá.\n\nElőször rendeld át vagy töröld a partnereket!`);
+    return;
+  }
+
+  if (confirm(`Biztosan törölni szeretnéd a(z) "${name}" kategóriát?\n\nEz a művelet nem vonható vissza!`)) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/admin/partners/categories/${id}/delete`;
+    
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_csrf';
+    csrfInput.value = '<%= csrfToken %>';
+    
+    form.appendChild(csrfInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+}
+</script>
+
+

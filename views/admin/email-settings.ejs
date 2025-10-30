@@ -1,0 +1,414 @@
+<!-- Email Configuration Page -->
+<div class="page-container">
+    <div class="admin-two-col">
+        
+        <!-- Bal oldal: Email Configuration Form -->
+        <div>
+            <form id="email-form">
+                <!-- Email Method Selection -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        🔄 Email Módszer
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label for="email.method">Válaszd ki a küldési módszert</label>
+                        <select name="email.method" id="email.method" class="form__control" onchange="toggleEmailFields(this.value)">
+                            <option value="smtp" <%= flatSettings['email.method'] === 'smtp' || !flatSettings['email.method'] ? 'selected' : '' %>>SMTP (Standard)</option>
+                            <option value="oauth2" <%= flatSettings['email.method'] === 'oauth2' ? 'selected' : '' %>>OAuth2 (Gmail biztonságos)</option>
+                        </select>
+                        <small class="form__hint">SMTP egyszerűbb, OAuth2 biztonságosabb Gmailhez</small>
+                    </div>
+                </div>
+
+                <!-- SMTP Fields -->
+                <div class="card--data email-fields smtp-fields " id="smtp-fields">
+                    <h3 class="section-title">
+                        🖥️ SMTP Beállítások
+                    </h3>
+                    
+                    <div>
+                        <div class="form__group">
+                            <label for="email.host">
+                                SMTP Host <span>*</span>
+                            </label>
+                            <input type="text" 
+                                   name="email.host" 
+                                   id="email.host"
+                                   class="form__control"
+                                   value="<%= flatSettings['email.host'] || '' %>"
+                                   placeholder="smtp.gmail.com">
+                        </div>
+
+                        <div class="form__group">
+                            <label for="email.port">
+                                Port <span>*</span>
+                            </label>
+                            <input type="number" 
+                                   name="email.port" 
+                                   id="email.port"
+                                   class="form__control"
+                                   value="<%= flatSettings['email.port'] || '587' %>"
+                                   placeholder="587">
+                        </div>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="email.user">
+                            SMTP Felhasználó <span>*</span>
+                        </label>
+                        <input type="text" 
+                               name="email.user" 
+                               id="email.user"
+                               class="form__control"
+                               value="<%= flatSettings['email.user'] || '' %>"
+                               placeholder="your-email@gmail.com">
+                    </div>
+
+                    <div class="form__group">
+                        <label for="email.password">
+                            🔒 SMTP Jelszó / App Password <span>*</span>
+                        </label>
+                        <input type="password" 
+                               name="email.password" 
+                               id="email.password"
+                               class="form__control"
+                               value="<%= flatSettings['email.password'] || '' %>"
+                               placeholder="App Password">
+                        <small class="form__hint">
+                            Gmail esetén App Password szükséges, nem a sima jelszó
+                        </small>
+                    </div>
+                </div>
+
+                <!-- OAuth2 Fields -->
+                <div class="card--data email-fields oauth2-fields " id="oauth2-fields">
+                    <h3 class="section-title">
+                        🔍 OAuth2 Beállítások (Gmail)
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label for="email.oauth2_client_id">
+                            Client ID
+                        </label>
+                        <input type="text" 
+                               name="email.oauth2_client_id" 
+                               id="email.oauth2_client_id"
+                               class="form__control"
+                               value="<%= flatSettings['email.oauth2_client_id'] || '' %>"
+                               placeholder="Client ID from Google Console">
+                    </div>
+
+                    <div class="form__group">
+                        <label for="email.oauth2_client_secret">
+                            🔑 Client Secret
+                        </label>
+                        <input type="password" 
+                               name="email.oauth2_client_secret" 
+                               id="email.oauth2_client_secret"
+                               class="form__control"
+                               value="<%= flatSettings['email.oauth2_client_secret'] || '' %>"
+                               placeholder="Client Secret">
+                    </div>
+
+                    <div class="form__group">
+                        <label for="email.oauth2_refresh_token">
+                            🔄 Refresh Token
+                        </label>
+                        <input type="text" 
+                               name="email.oauth2_refresh_token" 
+                               id="email.oauth2_refresh_token"
+                               class="form__control"
+                               value="<%= flatSettings['email.oauth2_refresh_token'] || '' %>"
+                               placeholder="Refresh Token">
+                    </div>
+                    
+                    <div class="form__group">
+                        <label for="email.oauth2_user">
+                            Gmail Fiók <span>*</span>
+                        </label>
+                        <input type="email" 
+                               name="email.oauth2_user" 
+                               id="email.oauth2_user"
+                               class="form__control"
+                               value="<%= flatSettings['email.oauth2_user'] || '' %>"
+                               placeholder="your-email@gmail.com">
+                    </div>
+                </div>
+
+                <!-- Common Email Fields -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        ✉️ Feladó Adatok
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label for="email.from">
+                            Feladó Email Cím <span>*</span>
+                        </label>
+                        <input type="email" 
+                               name="email.from" 
+                               id="email.from"
+                               class="form__control"
+                               value="<%= flatSettings['email.from'] || '' %>"
+                               placeholder="noreply@koncert24.hu"
+                               required>
+                        <small class="form__hint">Ez az email cím jelenik meg feladóként</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="email.admin">
+                            Admin Email Cím <span>*</span>
+                        </label>
+                        <input type="email" 
+                               name="email.admin" 
+                               id="email.admin"
+                               class="form__control"
+                               value="<%= flatSettings['email.admin'] || '' %>"
+                               placeholder="admin@koncert24.hu"
+                               required>
+                        <small class="form__hint">Kritikus hibák és rendszereseményekről ide érkeznek értesítések</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="email.booking">
+                            Booking Email Cím <span>*</span>
+                        </label>
+                        <input type="email" 
+                               name="email.booking" 
+                               id="email.booking"
+                               class="form__control"
+                               value="<%= flatSettings['email.booking'] || '' %>"
+                               placeholder="booking@koncert24.hu"
+                               required>
+                        <small class="form__hint">Foglalásokkal kapcsolatos emailek címzettje</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="general.site_name">
+                            Feladó Név <span>*</span>
+                        </label>
+                        <input type="text" 
+                               name="general.site_name" 
+                               id="general.site_name"
+                               class="form__control"
+                               value="<%= flatSettings['general.site_name'] || '' %>"
+                               placeholder="Koncert24.hu"
+                               required>
+                        <small class="form__hint">A küldő neve az emailekben</small>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form__group">
+                    <div class="btn__group btn__group--equal">
+                        <button type="button" class="btn btn--secondary" onclick="testEmail()">
+                            Teszt Email Küldése
+                        </button>
+                        <button type="button" class="btn btn--primary" onclick="saveEmail()">
+                            Mentés
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Jobb oldal: Info Panels -->
+        <div>
+            <!-- SMTP vs OAuth2 -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ❓ Melyiket válaszd?
+                </h3>
+                
+                <div>
+                    <div>
+                        <strong>📧 SMTP:</strong><br>
+                        • Egyszerűbb beállítás<br>
+                        • Bármilyen email szolgáltatóhoz<br>
+                        • App Password szükséges Gmailhez
+                    </div>
+                    
+                    <div>
+                        <strong>🔐 OAuth2:</strong><br>
+                        • Biztonságosabb (nincs jelszó tárolás)<br>
+                        • Csak Gmail-hez<br>
+                        • Bonyolultabb beállítás
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gmail App Password útmutató -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🔍 Gmail App Password
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>Lépések:</strong>
+                    </p>
+                    
+                    <ol>
+                        <li>
+                            Menj a <strong>Google Account → Security</strong> oldalra
+                        </li>
+                        <li>
+                            Kapcsold be a <strong>2-Step Verification</strong>-t
+                        </li>
+                        <li>
+                            Keresd meg az <strong>App Passwords</strong> menüt
+                        </li>
+                        <li>
+                            Generálj új App Password-öt
+                        </li>
+                        <li>
+                            Másold be ide a jelszó mezőbe
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Portok -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🌐 SMTP Portok
+                </h3>
+                
+                <div>
+                    <div>
+                        <span><strong>Port 587</strong></span>
+                        <span>✓ Ajánlott</span>
+                    </div>
+                    <div>
+                        <span><strong>Port 465</strong></span>
+                        <span>SSL</span>
+                    </div>
+                    <div>
+                        <span><strong>Port 25</strong></span>
+                        <span>Legacy</span>
+                    </div>
+                    
+                    <p>
+                        <strong>Gmail:</strong> 587 (TLS) vagy 465 (SSL)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Teszt -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🧪 Email Teszt
+                </h3>
+                
+                <div>
+                    <p>
+                        A <strong>Teszt Email</strong> gomb egy próba emailt küld a beállított címre.
+                    </p>
+                    
+                    <p>
+                        <strong>✓ Ellenőrizd:</strong><br>
+                        • Email megérkezik?<br>
+                        • Feladó neve helyes?<br>
+                        • Nem spam mappában van?
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const csrfToken = '<%= csrfToken %>';
+
+    // Toggle between SMTP and OAuth2 fields
+    function toggleEmailFields(method) {
+        const smtpFields = document.getElementById('smtp-fields');
+        const oauth2Fields = document.getElementById('oauth2-fields');
+        
+        if (method === 'oauth2') {
+            smtpFields.style.display = 'none';
+            oauth2Fields.style.display = 'block';
+        } else {
+            smtpFields.style.display = 'block';
+            oauth2Fields.style.display = 'none';
+        }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const method = document.getElementById('email.method').value;
+        toggleEmailFields(method);
+    });
+
+    // Save email settings
+    async function saveEmail() {
+        const form = document.getElementById('email-form');
+        
+        // Collect ALL form fields
+        const settingsObj = {};
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (input.name) {
+                settingsObj[input.name] = input.value || '';
+            }
+        });
+        
+        try {
+            const response = await fetch('/admin/email/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({ settings: settingsObj })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('success', data.message || 'Sikeresen mentve!');
+            } else {
+                showAlert('error', data.message || 'Hiba történt a mentés során');
+            }
+        } catch (error) {
+            showAlert('error', `Hálózati hiba: ${error.message}`);
+        }
+    }
+
+    // Test email functionality
+    async function testEmail() {
+        const btn = event.currentTarget;
+        const originalText = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = 'Küldés folyamatban...';
+        
+        try {
+            const response = await fetch('/admin/email/test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('success', data.message || 'Teszt email sikeresen elküldve');
+            } else {
+                showAlert('error', data.message || 'Teszt email küldése sikertelen');
+            }
+        } catch (error) {
+            console.error('Test email error:', error);
+            showAlert('error', error.message || 'Hálózati hiba történt');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }
+
+    // ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+    // No local definition needed - automatically available on all admin pages
+</script>

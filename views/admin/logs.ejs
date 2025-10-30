@@ -1,0 +1,689 @@
+<!-- Logs Page - 2 Column Layout -->
+<!-- Using Design System -->
+
+
+<div class="page-container">
+    <% if (messages && messages.success) { %>
+        <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+    <% if (messages && messages.error) { %>
+        <div class="alert alert-error"><%= messages.error %></div>
+    <% } %>
+
+    <div class="admin-two-col">
+        <!-- Bal oldal: Log Management -->
+        <div>
+            <!-- 1. Log Beállítások -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⚙️ Log Beállítások
+                </h3>
+                
+                <form id="log-settings-form">
+                    <div class="form__group">
+                        <label for="retentionDays" class="form__label">
+                            Megőrzési Idő (nap)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="retentionDays" 
+                            name="retentionDays"
+                            class="form__control"
+                            value="<%= settings.retentionDays %>"
+                            min="1"
+                            max="365"
+                            required
+                        >
+                        <small class="form__hint">Ennyi napnál régebbi logok automatikusan törlődnek naponta hajnali 2:00-kor</small>
+                    </div>
+                    
+                    <div class="btn__group btn__group--equal mt-4">
+                        <button type="button" class="btn btn--warning" onclick="manualLogCleanup()">
+                            🧹 Régi Logok Törlése
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 2. Log Fájlok -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📄 Log Fájlok
+                </h3>
+                
+                <div class="table--responsive">
+                    <table class="table table-hover" id="log-files-table">
+                        <thead>
+                            <tr>
+                                <th>Fájlnév</th>
+                                <th>Méret</th>
+                                <th>Módosítva</th>
+                                <th class="text-center">Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-files">
+                            <tr>
+                                <td colspan="4" class="text-center text-secondary">
+                                    ⏳ Log fájlok betöltése...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="log-filters filter-grid-inline grid-cols-5">
+                    <div class="form__group">
+                        <label>&nbsp;</label>
+                        <select id="level-filter" class="form__select">
+                            <option value="all">Összes szint</option>
+                            <option value="info">INFO</option>
+                            <option value="warn">WARN</option>
+                            <option value="error">ERROR</option>
+                        </select>
+                    </div>
+                    <div class="form__group">
+                        <label>&nbsp;</label>
+                        <input type="text" id="search-box" class="form__control" placeholder="Keresés...">
+                    </div>
+                </div>
+                
+                <div class="btn__group btn__group--equal mt-3">
+                    <button class="btn btn--primary" onclick="applyFilters()">
+                        🔍 Szűrés
+                    </button>
+                    <button class="btn btn--secondary" onclick="clearFilters()">
+                        ✖️ Törlés
+                    </button>
+                    <button class="btn btn--secondary" onclick="refreshLogs()">
+                        🔄 Frissítés
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. Log Viewer -->
+            <div class="card--data">
+                <h3 class="section-title" id="log-header">
+                    👁️ Válasszon egy log fájlt
+                </h3>
+                
+                <div id="log-content" class="log-viewer">
+                    <div class="log-viewer-empty">
+                        Kattintson egy log fájlra a tartalom megjelenítéséhez.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobb oldal: Info Panels -->
+        <div>
+            <!-- Log Szintek -->
+            <div class="card--data">
+                <h3>
+                    📚 Log Szintek
+                </h3>
+                
+                <div class="card__info-content">
+                    <div class="level-badge info">
+                        <strong>INFO</strong><br>
+                        Normál működés, információs üzenetek. Nincs probléma.
+                    </div>
+                    
+                    <div class="level-badge warn">
+                        <strong>WARN</strong><br>
+                        Figyelmeztető üzenetek. Működik, de érdemes figyelni.
+                    </div>
+                    
+                    <div class="level-badge error">
+                        <strong>ERROR</strong><br>
+                        Hiba történt. Azonnali figyelmet igényel!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keresési Tippek -->
+            <div class="card--data">
+                <h3>
+                    🔍 Keresési Tippek
+                </h3>
+                
+                <div class="card__info-content">
+                    <p>
+                        <strong>🔍 Keresés:</strong><br>
+                        Írj be bármilyen szót vagy kifejezést a log tartalmában való kereséshez.
+                    </p>
+                    
+                    <p>
+                        <strong>🎯 Szint szűrés:</strong><br>
+                        Válaszd ki, hogy csak INFO, WARN vagy ERROR szintű bejegyzéseket láss.
+                    </p>
+                    
+                    <p>
+                        <strong>⚡ Enter billentyű:</strong><br>
+                        A keresőmezőben nyomd meg az Enter-t a gyors kereséshez.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Log Rotáció Beállítások -->
+            <div class="card--data">
+                <h3>
+                    ⚙️ Log Rotáció (.env)
+                </h3>
+                
+                <div class="card__info-content">
+                    <p>
+                        <strong>📋 Infrastruktúra beállítások:</strong><br>
+                        A log rotáció és fájlméret a <code>.env</code> fájlban konfigurálható. Ezek NEM szerkeszthetők az admin felületen (ipari standard).
+                    </p>
+                    
+                    <p>
+                        <strong>🔧 Környezeti változók:</strong>
+                    </p>
+                    <ul>
+                        <li><code>LOG_MAX_SIZE</code> - Max fájlméret (jelenleg: 50M)</li>
+                        <li><code>LOG_ROTATION_INTERVAL</code> - Új fájl időköz (jelenleg: 1d - naponta)</li>
+                        <li><code>LOG_COMPRESS</code> - Gzip tömörítés (jelenleg: false)</li>
+                    </ul>
+                    
+                    <p>
+                        <strong>⚠️ Szerver újraindítás szükséges:</strong><br>
+                        Ezek a beállítások csak szerver újraindítás után lépnek érvénybe.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Megőrzés és Tisztítás -->
+            <div class="card--data">
+                <h3>
+                    🧹 Megőrzés és Tisztítás
+                </h3>
+                
+                <div class="card__info-content">
+                    <p>
+                        <strong>🎯 Megőrzési idő beállítása:</strong><br>
+                        A fenti "Megőrzési Idő (nap)" mező határozza meg, hogy hány napnál régebbi logok törlődjenek. 
+                        Ez az érték <strong>azonnal érvénybe lép</strong> mentés után, adatbázisban tárolódik.
+                    </p>
+                    
+                    <p>
+                        <strong>⏰ Automatikus tisztítás:</strong><br>
+                        A rendszer naponta éjjel <strong>2:00</strong>-kor automatikusan törli a régi log fájlokat (Daily Maintenance cron job).
+                    </p>
+                    
+                    <p>
+                        <strong>🔧 Manuális tisztítás:</strong><br>
+                        Használd a "🧹 Régi Logok Törlése" gombot azonnali tisztításhoz várakozás nélkül.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Frissítés -->
+            <div class="card--data">
+                <h3>
+                    ℹ️ Frissítés
+                </h3>
+                
+                <div class="card__info-content">
+                    <p>
+                        <strong>🔄 Automatikus frissítés:</strong><br>
+                        A kiválasztott log fájl tartalma automatikusan frissül 30 másodpercenként.
+                    </p>
+                    
+                    <p>
+                        <strong>✋ Manuális frissítés:</strong><br>
+                        Használd a "🔄 Frissítés" gombot azonnali frissítéshez.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Log Viewer Scrollable Container */
+#log-content {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* Active log file row */
+.log-file-row.active {
+    background-color: var(--color-primary-light) !important;
+}
+
+:root[data-theme="dark"] .log-file-row.active {
+    background-color: var(--color-primary-dark) !important;
+}
+
+/* Custom Scrollbar for Log Viewer */
+#log-content::-webkit-scrollbar {
+    width: var(--space-2);
+    height: var(--space-2);
+}
+
+#log-content::-webkit-scrollbar-track {
+    background: var(--color-gray-100);
+    border-radius: var(--radius-md);
+}
+
+#log-content::-webkit-scrollbar-thumb {
+    background: var(--color-gray-300);
+    border-radius: var(--radius-md);
+}
+
+#log-content::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-400);
+}
+
+/* Dark mode scrollbar */
+:root[data-theme="dark"] #log-content::-webkit-scrollbar-track {
+    background: var(--color-gray-800);
+}
+
+:root[data-theme="dark"] #log-content::-webkit-scrollbar-thumb {
+    background: var(--color-gray-600);
+}
+
+:root[data-theme="dark"] #log-content::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-500);
+}
+</style>
+
+<script>
+const csrfToken = '<%= csrfToken %>';
+let selectedFile = null;
+let originalContent = '';
+
+// ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+// No local definition needed - automatically available on all admin pages
+
+// Load log files on page load
+document.addEventListener('DOMContentLoaded', function () {
+    loadLogFiles();
+    
+    // Auto-save for number inputs (blur event)
+    document.querySelectorAll('#log-settings-form input[type="number"]').forEach(input => {
+        input.addEventListener('blur', async (e) => {
+            const fieldName = e.target.name;
+            const value = e.target.value;
+            
+            // Validate min/max
+            const min = parseInt(e.target.min);
+            const max = parseInt(e.target.max);
+            const numValue = parseInt(value);
+            
+            if (numValue < min || numValue > max) {
+                showAlert('error', `❌ Érték ${min} és ${max} között kell legyen`);
+                e.target.value = e.target.defaultValue;
+                return;
+            }
+            
+            await saveSingleSetting(fieldName, value);
+        });
+    });
+    
+    // Auto-save for select (change event)
+    document.querySelectorAll('#log-settings-form select').forEach(select => {
+        select.addEventListener('change', async (e) => {
+            const fieldName = e.target.name;
+            const value = e.target.value;
+            await saveSingleSetting(fieldName, value);
+        });
+    });
+});
+
+// Auto-save single setting function
+async function saveSingleSetting(fieldName, value) {
+    // Only retentionDays can be updated from UI
+    const retentionDays = document.getElementById('retentionDays').value;
+    
+    try {
+        const response = await fetch('/admin/logs/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ retentionDays })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', `✅ Megőrzési idő sikeresen mentve!`);
+        } else {
+            showAlert('error', `❌ ${data.error || 'Hiba történt a mentés során'}`);
+        }
+    } catch (error) {
+        console.error('Save error:', error);
+        showAlert('error', '❌ Hálózati hiba történt');
+    }
+}
+
+async function loadLogFiles() {
+    try {
+        const response = await fetch('/admin/logs/files');
+        const data = await response.json();
+
+        const filesContainer = document.getElementById('log-files');
+
+        if (data.success && data.files.length > 0) {
+            filesContainer.innerHTML = data.files.map(file => `
+                <tr class="log-file-row" onclick="selectLogFile('${file.name}')" class="cursor-pointer">
+                    <td>📄 ${file.name}</td>
+                    <td>${(file.size / 1024).toFixed(1)} KB</td>
+                    <td>${new Date(file.modified).toLocaleString('hu-HU')}</td>
+                    <td class="text-center">
+                        <button 
+                            class="btn btn-icon-only btn-error" 
+                            onclick="deleteLogFile(event, '${file.name}')" 
+                            title="Fájl törlése"
+                        >
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            filesContainer.innerHTML = '<tr><td colspan="4" class="text-center text-secondary">Nincsenek elérhető log fájlok.</td></tr>';
+        }
+    } catch (error) {
+        console.error('Error loading log files:', error);
+        document.getElementById('log-files').innerHTML =
+            '<tr><td colspan="4"><div class="alert alert-error">❌ Hiba a log fájlok betöltésekor: ' + error.message + '</div></td></tr>';
+    }
+}
+
+async function selectLogFile(filename) {
+    // Remove active class from all rows
+    document.querySelectorAll('.log-file-row').forEach(row => {
+        row.classList.remove('active');
+    });
+
+    // Add active class to selected row
+    event.currentTarget.classList.add('active');
+
+    selectedFile = filename;
+    document.getElementById('log-header').innerHTML = `👁️ ${filename}`;
+
+    await loadLogContent();
+}
+
+async function loadLogContent() {
+    if (!selectedFile) return;
+
+    const contentEl = document.getElementById('log-content');
+    contentEl.innerHTML = '<div class="loading-indicator">⏳ Log betöltése...</div>';
+
+    try {
+        const level = document.getElementById('level-filter').value;
+        const search = document.getElementById('search-box').value.trim();
+
+        const params = new URLSearchParams();
+        if (level !== 'all') params.append('level', level);
+        if (search) params.append('search', search);
+
+        const response = await fetch(`/admin/logs/content/${encodeURIComponent(selectedFile)}?${params}`);
+        const data = await response.json();
+
+        if (data.success) {
+            if (data.isStructured && data.entries) {
+                renderStructuredLogs(data.entries, contentEl);
+            } else {
+                originalContent = data.content;
+                contentEl.textContent = data.content;
+            }
+
+            contentEl.scrollTop = contentEl.scrollHeight;
+        } else {
+            contentEl.innerHTML = '<div class="alert alert-error">❌ Hiba: ' + data.error + '</div>';
+        }
+    } catch (error) {
+        console.error('Error loading log content:', error);
+        contentEl.innerHTML = '<div class="alert alert-error">❌ Hiba a log tartalom betöltésekor: ' + error.message + '</div>';
+    }
+}
+
+function renderStructuredLogs(entries, container) {
+    if (entries.length === 0) {
+        container.innerHTML = '<div class="log-viewer-empty">Nincs megjeleníthető log bejegyzés</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    
+    entries.forEach(entry => {
+        const logLine = document.createElement('div');
+        logLine.className = 'log-entry';
+        
+        let html = `<span class="log-timestamp">[${entry.timestamp}]</span> `;
+        html += `<span class="${entry.levelClass} log-level-bold">${entry.level}</span> `;
+        html += `<span>${escapeHtml(entry.message)}</span>`;
+
+        if (entry.details) {
+            html += `<div class="log-details-wrapper">`;
+            html += `<details class="log-details">`;
+            html += `<summary class="log-summary">Részletek</summary>`;
+            html += `<pre class="log-details-pre">${escapeHtml(JSON.stringify(entry.details, null, 2))}</pre>`;
+            html += `</details>`;
+            html += `</div>`;
+        }
+
+        logLine.innerHTML = html;
+        container.appendChild(logLine);
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function applyFilters() {
+    if (selectedFile) {
+        loadLogContent();
+    }
+}
+
+function clearFilters() {
+    document.getElementById('search-box').value = '';
+    document.getElementById('level-filter').value = 'all';
+    if (selectedFile) {
+        loadLogContent();
+    }
+}
+
+function refreshLogs() {
+    loadLogFiles();
+    if (selectedFile) {
+        setTimeout(() => {
+            loadLogContent();
+        }, 500);
+    }
+}
+
+// Auto-refresh every 30 seconds
+setInterval(() => {
+    if (selectedFile) {
+        loadLogContent();
+    }
+}, 30000);
+
+// Enter key support for search
+document.getElementById('search-box').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        applyFilters();
+    }
+});
+
+// Level filter change handler
+document.getElementById('level-filter').addEventListener('change', function () {
+    if (selectedFile) {
+        loadLogContent();
+    }
+});
+
+// Manual log cleanup function
+async function manualLogCleanup() {
+    const confirmed = await window.showConfirmModal(
+        'Régi Logok Törlése',
+        'Biztosan törölni szeretnéd a régi log fájlokat?\n\nEz a művelet nem vonható vissza.',
+        'warning'
+    );
+    
+    if (!confirmed) {
+        return;
+    }
+    
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = 'Tisztítás folyamatban...';
+    
+    try {
+        const response = await fetch('/admin/logs/cleanup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', data.message || 'Régi logok sikeresen törölve');
+            setTimeout(() => loadLogFiles(), 1500);
+        } else {
+            showAlert('error', data.error || 'Hiba történt a törlés során');
+        }
+    } catch (error) {
+        console.error('Log cleanup error:', error);
+        showAlert('error', error.message || 'Hálózati hiba történt');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// Delete individual log file
+async function deleteLogFile(event, filename) {
+    // Stop propagation to prevent selectLogFile from triggering
+    event.stopPropagation();
+    
+    // Show delete confirmation modal
+    showDeleteFileModal(filename);
+}
+
+// Show delete file modal
+function showDeleteFileModal(filename) {
+    const modal = document.getElementById('confirmDeleteFileModal');
+    const filenameSpan = document.getElementById('deleteFileName');
+    filenameSpan.textContent = filename;
+    
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+    
+    // Store filename for deletion
+    modal.dataset.filename = filename;
+    
+    // Close on backdrop click
+    modal.onclick = function(e) {
+        if (e.target === modal) {
+            closeDeleteFileModal();
+        }
+    };
+    
+    // Close on ESC key
+    const escHandler = function(e) {
+        if (e.key === 'Escape') {
+            closeDeleteFileModal();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
+// Close delete file modal
+function closeDeleteFileModal() {
+    const modal = document.getElementById('confirmDeleteFileModal');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+// Confirm and execute file delete
+async function confirmFileDelete() {
+    const modal = document.getElementById('confirmDeleteFileModal');
+    const filename = modal.dataset.filename;
+    
+    // Close modal
+    closeDeleteFileModal();
+    
+    try {
+        const response = await fetch(`/admin/logs/delete/${encodeURIComponent(filename)}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', `✅ ${data.message}`);
+            
+            // If deleted file was selected, clear viewer
+            if (selectedFile === filename) {
+                selectedFile = null;
+                document.getElementById('log-header').innerHTML = '👁️ Válasszon egy log fájlt';
+                document.getElementById('log-content').innerHTML = '<div class="log-viewer-empty">Kattintson egy log fájlra a tartalom megjelenítéséhez.</div>';
+            }
+            
+            // Reload file list
+            setTimeout(() => {
+                loadLogFiles();
+            }, 500);
+        } else {
+            showAlert('error', data.error || 'Hiba történt a törlés során');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        showAlert('error', error.message || 'Hálózati hiba történt');
+    }
+}
+
+// ✅ DESIGN SYSTEM: Uses global showAlert() and showConfirmModal() from design-system/modal.js
+// No local modal definition needed - automatically available on all admin pages
+</script>
+
+<!-- Design System Delete File Modal (for single file deletions) -->
+<div class="modal__backdrop" id="confirmDeleteFileModal" style="display: none;">
+    <div class="modal modal-sm modal-confirm">
+        <div class="modal__header">
+            <h5 class="modal__title">Fájl Törlése</h5>
+            <button type="button" class="modal__close" onclick="closeDeleteFileModal()"></button>
+        </div>
+        <div class="modal__body">
+            <div class="modal-confirm-icon icon-warning">
+                🗑️
+            </div>
+            <h4 class="modal-confirm-title">Log fájl törlése</h4>
+            <p class="modal-confirm-message">
+                Biztosan törölni szeretnéd ezt a fájlt:<br>
+                <strong id="deleteFileName"></strong>
+            </p>
+        </div>
+        <div class="modal-footer modal-footer-center">
+            <button type="button" class="btn btn--secondary" onclick="closeDeleteFileModal()">
+                Mégse
+            </button>
+            <button type="button" class="btn btn--danger" onclick="confirmFileDelete()">
+                Törlés
+            </button>
+        </div>
+    </div>
+</div>

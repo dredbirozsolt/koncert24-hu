@@ -1,0 +1,268 @@
+<!-- Admin FAQ Item Edit -->
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header mb-4">
+    <a href="/admin/faq" class="btn btn--secondary">
+      ← Vissza a GYIK-hez
+    </a>
+  </div>
+
+  <!-- Form -->
+  <form method="POST" action="<%= item ? '/admin/faq/items/' + item.id : '/admin/faq/items' %>" id="faqItemForm">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="admin-two-col">
+      <!-- Bal oldal: Alapadatok -->
+      <div>
+        <div class="card--data">
+          <h3 class="section-title">
+            ❓ <%= item ? 'Kérdés Szerkesztése' : 'Új Kérdés' %>
+          </h3>
+
+          <div class="form__group">
+            <label for="categoryId">Kategória *</label>
+            <select 
+              id="categoryId" 
+              name="categoryId" 
+              class="form__control" 
+              required
+            >
+              <option value="">-- Válassz kategóriát --</option>
+              <% categories.forEach(cat => { %>
+                <option 
+                  value="<%= cat.id %>" 
+                  <%= item && item.categoryId === cat.id ? 'selected' : '' %>
+                >
+                  <%= cat.icon %> <%= cat.name %>
+                </option>
+              <% }); %>
+            </select>
+            <small class="form__hint">
+              Válaszd ki, melyik kategóriába tartozik ez a kérdés. 
+              <a href="/admin/faq/categories/new" target="_blank">Új kategória →</a>
+            </small>
+          </div>
+
+          <div class="form__group">
+            <label for="question">Kérdés *</label>
+            <input 
+              type="text" 
+              id="question" 
+              name="question" 
+              class="form__control" 
+              value="<%= item ? item.question : '' %>"
+              required
+              maxlength="500"
+              placeholder="pl. Hogyan működik a foglalási folyamat?"
+            >
+            <div class="char-counter">
+              <span id="questionCount">0</span> / 500 karakter
+            </div>
+            <small class="form__hint">
+              Fogalmazd meg röviden és érthetően. Használj kérdő mondatot.
+            </small>
+          </div>
+
+          <div class="form__group">
+            <label for="answer">Válasz *</label>
+            <textarea 
+              id="answer" 
+              name="answer" 
+              class="form__control" 
+              required
+              maxlength="5000"
+              rows="10"
+              class="min-h-250 resize-vertical leading-relaxed"
+              placeholder="Részletes válasz a kérdésre..."
+            ><%= item ? item.answer : '' %></textarea>
+            <div class="char-counter">
+              <span id="answerCount">0</span> / 5000 karakter
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form__group">
+              <label for="displayOrder">Megjelenítési sorrend</label>
+              <input 
+                type="number" 
+                id="displayOrder" 
+                name="displayOrder" 
+                class="form__control" 
+                value="<%= item ? item.displayOrder : 0 %>"
+                min="0"
+                max="999"
+              >
+              <small class="form__hint">Kategórián belüli sorrend</small>
+            </div>
+
+            <div class="form__group">
+              <label>&nbsp;</label>
+              <div class="form__switch-row">
+                <span class="form__switch-row-label">Aktív kérdés</span>
+                <input 
+                  type="checkbox" 
+                  class="form-switch-input"
+                  name="isActive" 
+                  id="isActive"
+                  value="true"
+                  <%= !item || item.isActive ? 'checked' : '' %>
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="btn__group btn__group--equal mb-4">
+            <button type="submit" class="btn btn--primary">
+              💾 <%= item ? 'Mentés' : 'Létrehozás' %>
+            </button>
+            <a href="/admin/faq" class="btn btn--secondary">
+              ✖️ Mégse
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobb oldal: Info Panel -->
+      <div>
+        <!-- Tippek -->
+        <div class="card--data">
+          <h3 class="section-title">
+            💡 Tippek a jó válaszhoz
+          </h3>
+          
+          <div class="text-sm leading-relaxed">
+            <ul class="m-0 pl-6">
+              <li class="mb-3">
+                <strong>Légy konkrét</strong><br>
+                Adj részletes, egyértelmű magyarázatot
+              </li>
+              <li class="mb-3">
+                <strong>Egyszerű nyelvezet</strong><br>
+                Kerüld a szakzsargont, vagy magyarázd el
+              </li>
+              <li class="mb-3">
+                <strong>Számozd a lépéseket</strong><br>
+                Ha több lépésből áll, számozással tagold
+              </li>
+              <li class="mb-3">
+                <strong>Kapcsolódó infók</strong><br>
+                Említsd meg a releváns további információkat
+              </li>
+              <li class="m-0">
+                <strong>Jó példák</strong><br>
+                Konkrét példákkal szemléltesd a válaszod
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <% if (item) { %>
+        <!-- Statisztikák -->
+        <div class="card--data">
+          <h3 class="section-title">
+            📊 Statisztikák
+          </h3>
+          
+          <p class="mb-4">
+            <strong>👁️ Megtekintések:</strong> <%= item.viewCount || 0 %>
+          </p>
+          
+          <p class="mb-2">
+            <strong>Létrehozva:</strong><br>
+            <%= new Date(item.createdAt).toLocaleDateString('hu-HU') %>
+          </p>
+          <% if (item.updatedAt && item.updatedAt !== item.createdAt) { %>
+          <p>
+            <strong>Módosítva:</strong><br>
+            <%= new Date(item.updatedAt).toLocaleDateString('hu-HU') %>
+          </p>
+          <% } %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+
+<script>
+    // Character counters
+    function updateCharCount(inputId, counterId, max) {
+        const input = document.getElementById(inputId);
+        const counter = document.getElementById(counterId).parentElement;
+        const countSpan = document.getElementById(counterId);
+        
+        function update() {
+            const length = input.value.length;
+            countSpan.textContent = length;
+            
+            // Color coding
+            counter.classList.remove('warning', 'danger');
+            if (length > max * 0.9) {
+                counter.classList.add('danger');
+            } else if (length > max * 0.75) {
+                counter.classList.add('warning');
+            }
+        }
+        
+        input.addEventListener('input', update);
+        update(); // Initial
+    }
+
+    // Initialize counters
+    updateCharCount('question', 'questionCount', 500);
+    updateCharCount('answer', 'answerCount', 5000);
+    
+    // FAQ item form submit handler
+    document.getElementById('faqItemForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Mentés...';
+        
+        try {
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= csrfToken %>',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                Modal.alert({
+                    title: 'Siker',
+                    message: result.message || 'GYIK elem sikeresen mentve!',
+                    type: 'success'
+                });
+                window.location.href = '/admin/faq';
+            } else {
+                throw new Error(result.message || 'Hiba történt a mentés során');
+            }
+        } catch (error) {
+            Modal.alert({
+                title: 'Hiba',
+                message: '❌ Hiba: ' + error.message,
+                type: 'error'
+            });
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+</script>

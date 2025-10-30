@@ -1,0 +1,182 @@
+<!-- Blog Tag Page -->
+<!-- Breadcrumbs -->
+<nav aria-label="Breadcrumb" class="container pt-4">
+  <ol class="breadcrumb">
+    <li class="breadcrumb__item">
+      <a href="<%= basePath %>"><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>Főoldal</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="<%= basePath %>blog">Blog</a>
+    </li>
+    <li class="breadcrumb__item" aria-current="page">
+      <span>#<%= tag.name %></span>
+    </li>
+  </ol>
+</nav>
+
+<section class="section bg-light">
+  <div class="container">
+    <div class="blog-header">
+      <h1 class="blog-title">
+        #<%= tag.name %>
+      </h1>
+      
+      <p class="blog-description">
+        Összes cikk ezzel a címkével
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section pt-8">
+  <div class="container">
+    
+    <!-- Result Count -->
+    <% if (posts.length > 0) { %>
+      <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+        <div class="result-count">
+          <span class="result-count__number"><%= totalPosts || posts.length %></span>
+          <span>cikk ezzel a címkével</span>
+        </div>
+      </div>
+    <% } %>
+    
+    <% if (posts.length === 0) { %>
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-state__icon">🏷️</div>
+        <h2 class="empty-state__title">Még nincsenek cikkek ezzel a címkével</h2>
+        <p class="empty-state__description">
+          Hamarosan új tartalmakat adunk hozzá!
+        </p>
+        <div class="empty-state__action">
+          <a href="<%= basePath %>blog" class="btn btn--primary">
+            Vissza a bloghoz
+          </a>
+        </div>
+      </div>
+    <% } else { %>
+      
+      <!-- Posts Grid -->
+      <div class="card__grid card__grid--3">
+        <% posts.forEach(post => { %>
+          <article class="card card--hover">
+            
+            <!-- Card Image -->
+            <% if (post.featuredImage) { %>
+              <a href="<%= basePath %>blog/<%= post.slug %>" class="card__image">
+                <img 
+                  src="<%= post.featuredImage %>" 
+                  alt="<%= post.featuredImageAlt || post.title %>"
+                  loading="lazy"
+                >
+              </a>
+            <% } %>
+
+            <!-- Card Content -->
+            <div class="card__body">
+              
+              <!-- Category Badge -->
+              <% if (post.category) { %>
+                <a href="<%= basePath %>blog/kategoria/<%= post.category.slug %>" class="badge badge--primary">
+                  <%= post.category.name %>
+                </a>
+              <% } %>
+
+              <!-- Title -->
+              <h2 class="card__title">
+                <a href="<%= basePath %>blog/<%= post.slug %>">
+                  <%= post.title %>
+                </a>
+              </h2>
+
+              <!-- Excerpt -->
+              <% if (post.excerpt) { %>
+                <p class="text-muted text-clamp text-clamp--3">
+                  <%= post.excerpt %>
+                </p>
+              <% } %>
+
+              <!-- Meta Info -->
+              <div class="meta-list">
+                <span class="meta-item">
+                  <svg class="icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                  </svg>
+                  <%= post.author.name %>
+                </span>
+                <span class="meta-item">
+                  <svg class="icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                  </svg>
+                  <%= new Date(post.publishedAt).toLocaleDateString('hu-HU') %>
+                </span>
+                <% if (post.readingTime) { %>
+                  <span class="meta-item">
+                    <svg class="icon" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                    </svg>
+                    <%= post.readingTime %> perc
+                  </span>
+                <% } %>
+              </div>
+
+              <!-- Tags -->
+              <% if (post.tags && post.tags.length > 0) { %>
+                <div class="tag-list">
+                  <% post.tags.slice(0, 3).forEach(tag => { %>
+                    <a href="<%= basePath %>blog/tag/<%= tag.slug %>" class="tag">
+                      #<%= tag.name %>
+                    </a>
+                  <% }); %>
+                </div>
+              <% } %>
+              
+            </div>
+          </article>
+        <% }); %>
+      </div>
+
+      <!-- Enhanced Pagination -->
+      <% if (totalPages > 1) { %>
+        <nav class="pagination pagination--enhanced" aria-label="Lapozás">
+          <% if (hasPrevPage) { %>
+            <a href="<%= basePath %>blog/tag/<%= tag.slug %>?page=<%= currentPage - 1 %>" class="pagination__item pagination__prev">
+              ← Előző
+            </a>
+          <% } %>
+
+          <% if (currentPage > 3) { %>
+            <a href="<%= basePath %>blog/tag/<%= tag.slug %>?page=1" class="pagination__item">1</a>
+            <% if (currentPage > 4) { %>
+              <span class="pagination__ellipsis">...</span>
+            <% } %>
+          <% } %>
+          
+          <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+            <a 
+              href="<%= basePath %>blog/tag/<%= tag.slug %>?page=<%= i %>" 
+              class="pagination__item <%= i === currentPage ? 'pagination__item--active' : '' %>"
+              <%= i === currentPage ? 'aria-current="page"' : '' %>
+            >
+              <%= i %>
+            </a>
+          <% } %>
+
+          <% if (currentPage < totalPages - 2) { %>
+            <% if (currentPage < totalPages - 3) { %>
+              <span class="pagination__ellipsis">...</span>
+            <% } %>
+            <a href="<%= basePath %>blog/tag/<%= tag.slug %>?page=<%= totalPages %>" class="pagination__item"><%= totalPages %></a>
+          <% } %>
+
+          <% if (hasNextPage) { %>
+            <a href="<%= basePath %>blog/tag/<%= tag.slug %>?page=<%= currentPage + 1 %>" class="pagination__item pagination__next">
+              Következő →
+            </a>
+          <% } %>
+        </nav>
+      <% } %>
+    <% } %>
+  </div>
+</section>

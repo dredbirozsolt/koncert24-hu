@@ -1,0 +1,505 @@
+<% if (typeof deleted !== 'undefined' && deleted) { %>
+    <!-- Account Deleted Success Notification -->
+    <div x-data="{ showDeletedNotification: true }" x-init="setTimeout(() => showDeletedNotification = false, 8000)">
+        <div x-show="showDeletedNotification" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" class="notification-overlay" @click="showDeletedNotification = false">
+
+            <div x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate(-50%, -50%) scale-90"
+                x-transition:enter-end="opacity-100 transform translate(-50%, -50%) scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform translate(-50%, -50%) scale-100"
+                x-transition:leave-end="opacity-0 transform translate(-50%, -50%) scale-90" class="notification-toast notification-success"
+                @click.stop>
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="notification-message">✅ Fiókja sikeresen törölve lett. Köszönjük, hogy használta szolgáltatásainkat!</div>
+                    <button @click="showDeletedNotification = false" class="notification-close">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<% if (typeof registered !== 'undefined' && registered) { %>
+    <script>
+        // Simple, reliable notification trigger
+        window.showRegistrationSuccess = function() {
+            const bookingEl = document.querySelector('[x-data]');
+            if (bookingEl && bookingEl.__x && bookingEl.__x.data) {
+                const data = bookingEl.__x.data;
+                if (data.showNotification) {
+                    data.showNotification('🎉 Sikeres regisztráció! Küldtünk egy megerősítő emailt a megadott címre. Kérjük, erősítse meg email címét, hogy láthassa az árakat.', 'success');
+                }
+            }
+        };
+
+        // Try multiple approaches to ensure notification shows
+        document.addEventListener('DOMContentLoaded', function() {
+            // Immediate try
+            setTimeout(window.showRegistrationSuccess, 100);
+            
+            // Alpine.js ready
+            document.addEventListener('alpine:initialized', function() {
+                setTimeout(window.showRegistrationSuccess, 50);
+            });
+            
+            // Fallback after longer delay
+            setTimeout(window.showRegistrationSuccess, 1000);
+        });
+    </script>
+<% } %>
+
+<% if (typeof verified !== 'undefined' && verified) { %>
+    <script>
+        // Simple, reliable notification trigger for email verification
+        window.showVerificationSuccess = function() {
+            const bookingEl = document.querySelector('[x-data]');
+            if (bookingEl && bookingEl.__x && bookingEl.__x.data) {
+                const data = bookingEl.__x.data;
+                if (data.showNotification) {
+                    data.showNotification('✅ Email megerősítés sikeres! Az email cím megerősítése sikeres.', 'success');
+                }
+            }
+        };
+
+        // Try multiple approaches to ensure notification shows
+        document.addEventListener('DOMContentLoaded', function() {
+            // Immediate try
+            setTimeout(window.showVerificationSuccess, 100);
+            
+            // Alpine.js ready
+            document.addEventListener('alpine:initialized', function() {
+                setTimeout(window.showVerificationSuccess, 50);
+            });
+            
+            // Fallback after longer delay
+            setTimeout(window.showVerificationSuccess, 1000);
+        });
+    </script>
+<% } %>
+
+<!-- Hero Section -->
+<div class="page__hero">
+    <div class="container">
+        <h1 class="page__hero__title">Találja meg a tökéletes előadót rendezvényére</h1>
+        <p class="page__hero__subtitle">
+            Több mint 500 professzionális előadó, zenész, műsorvezető és humorista - egyszerű foglalási rendszerrel
+        </p>
+        
+        <div class="page__hero__cta">
+            <div class="hero-search">
+                <form action="<%= basePath %>eloadok" method="GET" class="hero-search__form" id="hero-search-form">
+                    <svg class="hero-search__icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                    <input 
+                        type="text" 
+                        name="search" 
+                        id="hero-search-input"
+                        class="hero-search__input" 
+                        placeholder="Keresés előadók között (pl. zenész, humorista, DJ...)"
+                        autocomplete="off"
+                    >
+                    <div id="hero-search-results" class="hero-search__results hidden"></div>
+                    <button type="submit" class="hero-search__button">
+                        Keresés
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking System Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Gyors foglalás</h2>
+            <p class="section-subtitle">
+                Válasszon dátumot és kategóriát - megmutatjuk a rendelkezésre álló előadókat
+            </p>
+        </div>
+        <%- include('../partials/booking/booking-system') %>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section id="categories" class="section section-light">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Kategóriák</h2>
+            <p class="section-subtitle">
+                Böngésszen előadóink között kategóriák szerint
+            </p>
+        </div>
+
+        <div class="categories-grid">
+            <% if (categoryStats && categoryStats.length> 0) { %>
+                <% categoryStats.forEach(cat=> { %>
+                    <a href="<%= basePath %>eloadok/kategoria/<%= cat.slug %>" class="category-card">
+                        <div class="category-icon">
+                            <%= cat.icon %>
+                        </div>
+                        <h3 class="category-name">
+                            <%= cat.name %>
+                        </h3>
+                        <p class="category-description">
+                            <%= cat.description %>
+                        </p>
+                    </a>
+                    <% }); %>
+                        <% } else { %>
+                            <p class="text-center">Jelenleg nincsenek elérhető kategóriák.</p>
+                            <% } %>
+        </div>
+    </div>
+</section>
+
+<!-- Category Navigation (from performers page) -->
+<section class="section section--light">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Tallózás kategóriák szerint</h2>
+            <p class="section-subtitle">
+                Válaszd ki az érdeklődési körödet és találd meg az ideális előadót
+            </p>
+        </div>
+
+        <div class="category-navigation" role="navigation" aria-label="Előadó kategóriák">
+            <% if (categoryStats && categoryStats.length > 0) { %>
+                <% categoryStats.forEach(cat => { %>
+                    <a 
+                        href="<%= basePath %>eloadok/kategoria/<%= cat.slug %>" 
+                        class="category-nav-link"
+                        aria-label="<%= cat.name %> kategória">
+                        <span class="category-nav-link__icon">
+                            <% 
+                            // Category icons based on category name
+                            let iconPath = 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3'; // Music note default
+                            
+                            if (cat.name.toLowerCase().includes('zene') || cat.name.toLowerCase().includes('zenész') || cat.name.toLowerCase().includes('koncert')) {
+                                iconPath = 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3';
+                            } else if (cat.name.toLowerCase().includes('humor') || cat.name.toLowerCase().includes('stand')) {
+                                iconPath = 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+                            } else if (cat.name.toLowerCase().includes('gyermek') || cat.name.toLowerCase().includes('gyerek')) {
+                                iconPath = 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+                            } else if (cat.name.toLowerCase().includes('tánc')) {
+                                iconPath = 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z';
+                            } else if (cat.name.toLowerCase().includes('műsor') || cat.name.toLowerCase().includes('kiegészítő')) {
+                                iconPath = 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z';
+                            } else if (cat.name.toLowerCase().includes('mág') || cat.name.toLowerCase().includes('bűvész')) {
+                                iconPath = 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z';
+                            } else if (cat.name.toLowerCase().includes('mulatós')) {
+                                iconPath = 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3';
+                            } else if (cat.name.toLowerCase().includes('musical') || cat.name.toLowerCase().includes('operett')) {
+                                iconPath = 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z';
+                            }
+                            %>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="<%= iconPath %>"></path>
+                            </svg>
+                        </span>
+                        <span class="category-nav-link__text"><%= cat.name %></span>
+                        <span class="category-nav-link__arrow">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                    </a>
+                <% }); %>
+            <% } else { %>
+                <p class="text-center">Jelenleg nincsenek elérhető kategóriák.</p>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Performers Section -->
+<% if (featuredPerformers && featuredPerformers.length> 0) { %>
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Kiemelt előadók</h2>
+                <p class="section-subtitle">
+                    Legnépszerűbb előadóink
+                </p>
+            </div>
+
+            <div class="performers__grid">
+                <% featuredPerformers.forEach(function(performer) { %>
+                  <div class="performer__card">
+                    <div class="performer__image">
+                      <a href="<%= basePath %>eloadok/<%= performer.slug %>">
+                        <% if (performer.imageUrl) { %>
+                          <img src="<%= performer.imageUrl %>" 
+                               alt="<%= performer.name %>" 
+                               loading="lazy">
+                          <% } else { %>
+                            <div class="performer__placeholder">
+                              <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                  clip-rule="evenodd" />
+                              </svg>
+                            </div>
+                            <% } %>
+                      </a>
+                      
+                      <!-- Status Badge on Image -->
+                      <% if (performer.status) { 
+                        let badgeClass = '';
+                        let badgeEmoji = '';
+                        if (performer.status === 'Kiemelt') {
+                          badgeClass = 'badge--featured';
+                          badgeEmoji = '⭐';
+                        } else if (performer.status === 'Népszerű') {
+                          badgeClass = 'badge--popular';
+                          badgeEmoji = '🔥';
+                        } else if (performer.status === 'Kedvezményes' || performer.status === 'Akciós') {
+                          badgeClass = 'badge--discount';
+                          badgeEmoji = '💰';
+                        }
+                      %>
+                        <span class="badge <%= badgeClass %> performer__status-badge"><%= badgeEmoji %> <%= performer.status %></span>
+                      <% } %>
+                    </div>
+                    <div class="performer__content">
+                      <div class="performer__header">
+                        <% if (performer.performanceType) { %>
+                          <div class="performer-category">
+                            <%= performer.performanceType %>
+                          </div>
+                        <% } %>
+                        <% if (isLoggedIn && user && user.emailVerified && performer.price) { %>
+                          <div class="performer-price-badge">
+                            <%= new Intl.NumberFormat('hu-HU').format(performer.price) %> Ft-tól
+                          </div>
+                          <% } %>
+                      </div>
+
+                      <h2 class="performer__name">
+                        <a href="<%= basePath %>eloadok/<%= performer.slug %>">
+                          <%= performer.name %>
+                        </a>
+                      </h2>
+
+                      <% if (performer.shortDescription) { %>
+                        <p class="performer__description">
+                          <%= performer.shortDescription %>
+                        </p>
+                        <% } %>
+
+                      <!-- Style Badges -->
+                      <% if (performer.style && performer.style.length > 0) { %>
+                        <div class="performer__styles">
+                          <% performer.style.forEach(function(style) { %>
+                            <span class="badge badge--style"><%= style %></span>
+                          <% }); %>
+                        </div>
+                      <% } %>
+
+                          <div class="performer__actions">
+                            <a href="<%= basePath %>eloadok/<%= performer.slug %>" class="btn btn--outline">
+                              <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd"
+                                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                  clip-rule="evenodd" />
+                              </svg>
+                              Részletek
+                            </a>
+                            <a href="<%= basePath %>foglalas/<%= performer.id %>" class="btn btn--primary">
+                              <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                                <path fill-rule="evenodd"
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                  clip-rule="evenodd" />
+                              </svg>
+                              Foglalás
+                            </a>
+                          </div>
+                    </div>
+                  </div>
+                  <% }); %>
+            </div>
+
+            <div class="section-footer">
+                <a href="<%= basePath %>eloadok" class="btn btn--outline btn-large">
+                    Minden előadó megtekintése
+                </a>
+            </div>
+        </div>
+    </section>
+    <% } %>
+
+        <!-- Features Section -->
+        <section class="section section-light">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Miért válasszon minket?</h2>
+                </div>
+
+                <div class="features-grid">
+                    <div class="card--feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Professzionális szolgáltatás</h3>
+                        <p class="feature-description">
+                            Évtizedes tapasztalat a rendezvényszervezés területén, megbízható partnerek.
+                        </p>
+                    </div>
+
+                    <div class="card--feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Egyszerű foglalás</h3>
+                        <p class="feature-description">
+                            Gyors és könnyű foglalási folyamat, átlátható kommunikáció.
+                        </p>
+                    </div>
+
+                    <div class="card--feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Minőségi előadók</h3>
+                        <p class="feature-description">
+                            Gondosan válogatott, tapasztalt előadók minden kategóriában.
+                        </p>
+                    </div>
+
+                    <div class="card--feature">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                                <path
+                                    d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">24/7 támogatás</h3>
+                        <p class="feature-description">
+                            Kérdése van? Csapatunk készségesen áll rendelkezésére.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partners Section -->
+        <% if (typeof homepagePartners !== 'undefined' && homepagePartners && homepagePartners.length > 0) { %>
+        <section class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Partnereink</h2>
+                    <p class="section-subtitle">Megbízható kapcsolatok a magyar zeneipar és rendezvényszervezés területén</p>
+                </div>
+
+                <div class="partners-grid">
+                    <% homepagePartners.forEach(partner => { %>
+                        <div class="partner-logo-item">
+                            <a href="<%= partner.websiteUrl %>" target="_blank" rel="noopener noreferrer" title="<%= partner.name %>">
+                                <% if (partner.logo) { %>
+                                    <img src="<%= partner.logo %>" 
+                                         alt="<%= partner.name %> logó" 
+                                         title="<%= partner.name %>" 
+                                         width="150" 
+                                         height="75" 
+                                         class="partner-logo-image">
+                                <% } else { %>
+                                    🤝 <% } %>
+                            </a>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <div class="section-footer">
+                    <a href="<%= basePath %>partners" class="btn btn--outline btn-large">
+                        Összes partner megtekintése
+                    </a>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
+        <!-- CTA Section -->
+        <section class="section section-primary">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 class="cta-title">Készen áll a foglalásra?</h2>
+                    <p class="cta-subtitle">
+                        Válasszon előadót és kezdje el rendezvényének szervezését még ma!
+                    </p>
+                    <div class="cta-actions">
+                        <a href="<%= basePath %>eloadok" class="btn btn-white btn-large">
+                            Előadók böngészése
+                        </a>
+                        <a href="tel:<%= companyPhone.replace(/\s/g, '') %>" class="btn btn--outline-white btn-large">
+                            Hívjon most: <%= companyPhone %>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- Hero Search Autocomplete Script -->
+<script src="<%= basePath %>js/pages/home-search.js"></script>
+
+<!-- Lazy Load Images Script for Featured Performers -->
+<script>
+  (function() {
+    // Enhanced Lazy Load with Blur-up Effect for featured performers
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          
+          // Add loaded class when image fully loads
+          img.addEventListener('load', function() {
+            img.classList.add('loaded');
+          }, { once: true });
+          
+          // If image is already cached, add class immediately
+          if (img.complete) {
+            img.classList.add('loaded');
+          }
+          
+          imageObserver.unobserve(img);
+        }
+      });
+    }, {
+      rootMargin: '50px',
+      threshold: 0.01
+    });
+    
+    // Observe all lazy images in performers section
+    document.querySelectorAll('.performers__grid .performer__image img[loading="lazy"]').forEach(img => {
+      imageObserver.observe(img);
+    });
+  })();
+</script>

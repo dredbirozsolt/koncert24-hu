@@ -1,0 +1,311 @@
+<!-- Blog Kategória Szerkesztése -->
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header mb-4">
+    <div class="flex gap-4">
+      <a href="/admin/blog/categories" class="btn btn--secondary">
+        ← Vissza
+      </a>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form method="POST" action="<%= category ? `/admin/blog/categories/${category.id}` : '/admin/blog/categories' %>" id="blogCategoryForm" data-action="<%= category ? `/admin/blog/categories/${category.id}` : '/admin/blog/categories' %>">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="grid grid-cols-3-2 gap-4">
+      <!-- Bal oldal: Alapadatok -->
+      <div>
+        <!-- Alapadatok -->
+        <div class="card--data">
+          <h3 class="section-title">Alapadatok</h3>
+
+          <div class="form__group">
+            <label for="name">Kategória neve *</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              class="form__control"
+              placeholder="pl. Koncertszervezés"
+              value="<%= category ? category.name : '' %>"
+              required
+              onblur="generateSlug()"
+            >
+          </div>
+
+          <div class="form__group">
+            <label for="slug">URL slug *</label>
+            <input 
+              type="text" 
+              id="slug" 
+              name="slug" 
+              class="form__control"
+              placeholder="pl. koncertszervezes"
+              value="<%= category ? category.slug : '' %>"
+              required
+            >
+            <small class="form__hint">URL-barát formátum (csak kisbetű, szám és kötőjel)</small>
+          </div>
+
+          <div class="form__group">
+            <label for="description">Leírás</label>
+            <textarea 
+              id="description" 
+              name="description" 
+              class="form__control"
+              rows="4"
+              placeholder="Rövid leírás a kategóriáról..."
+            ><%= category && category.description ? category.description : '' %></textarea>
+          </div>
+
+          <div class="form__group">
+            <label for="displayOrder">Sorrend</label>
+            <input 
+              type="number" 
+              id="displayOrder" 
+              name="displayOrder" 
+              class="form__control"
+              placeholder="0"
+              value="<%= category && category.displayOrder ? category.displayOrder : 0 %>"
+              min="0"
+            >
+            <small class="form__hint">Alacsonyabb szám = előrébb jelenik meg a listában</small>
+          </div>
+        </div>
+
+        <!-- SEO beállítások -->
+        <div class="card--data mt-3">
+          <h3 class="section-title">SEO beállítások</h3>
+
+          <div class="form__group">
+            <label for="metaTitle">Meta cím</label>
+            <input 
+              type="text" 
+              id="metaTitle" 
+              name="metaTitle" 
+              class="form__control"
+              placeholder="Ha üres, a kategória neve lesz használva"
+              value="<%= category && category.metaTitle ? category.metaTitle : '' %>"
+              maxlength="70"
+              oninput="updateCount('metaTitle', 70)"
+            >
+            <small class="form__hint">
+              <span id="metaTitle-count">0</span>/70 karakter
+            </small>
+          </div>
+
+          <div class="form__group">
+            <label for="metaDescription">Meta leírás</label>
+            <textarea 
+              id="metaDescription" 
+              name="metaDescription" 
+              class="form__control"
+              rows="3"
+              placeholder="Ha üres, a leírás lesz használva"
+              maxlength="165"
+              oninput="updateCount('metaDescription', 165)"
+            ><%= category && category.metaDescription ? category.metaDescription : '' %></textarea>
+            <small class="form__hint">
+              <span id="metaDescription-count">0</span>/165 karakter
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobb oldal: Műveletek és Info -->
+      <div>
+        <!-- Műveletek -->
+        <div class="card--data p-4">
+          <h3 class="section-title">Műveletek</h3>
+
+          <button type="submit" class="btn btn--primary btn--block mb-1">
+            💾 <%= category ? 'Mentés' : 'Létrehozás' %>
+          </button>
+
+          <a href="/admin/blog/categories" class="btn btn--secondary btn--block">
+            ❌ Mégse
+          </a>
+        </div>
+
+        <!-- Info (csak szerkesztésnél) -->
+        <% if (category) { %>
+          <div class="card--data mt-3">
+            <h3 class="section-title">Információk</h3>
+
+            <div class="mb-4">
+              <div class="text-sm text-secondary mb-1">
+                Bejegyzések száma:
+              </div>
+              <div class="text-xl font-semibold text-primary">
+                <%= category.posts ? category.posts.length : 0 %>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="text-sm text-secondary mb-1">
+                Létrehozva:
+              </div>
+              <div class="text-sm">
+                <%= new Date(category.createdAt).toLocaleDateString('hu-HU') %>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm text-secondary mb-1">
+                Utolsó módosítás:
+              </div>
+              <div class="text-sm">
+                <%= new Date(category.updatedAt).toLocaleDateString('hu-HU') %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kapcsolódó bejegyzések -->
+          <% if (category.posts && category.posts.length > 0) { %>
+            <div class="card--data mt-3">
+              <h3 class="section-title">Kapcsolódó bejegyzések</h3>
+              
+              <ul class="list-none p-0 m-0">
+                <% category.posts.slice(0, 5).forEach(post => { %>
+                  <li class="py-2 border-b">
+                    <a href="/admin/blog/<%= post.id %>/edit" class="text-primary no-underline text-sm">
+                      <%= post.title %>
+                    </a>
+                  </li>
+                <% }); %>
+                <% if (category.posts.length > 5) { %>
+                  <li class="py-2 text-center">
+                    <span class="text-sm text-secondary">
+                      És még <%= category.posts.length - 5 %> bejegyzés...
+                    </span>
+                  </li>
+                <% } %>
+              </ul>
+            </div>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+// Slug generálás a névből
+function generateSlug() {
+  const nameInput = document.getElementById('name');
+  const slugInput = document.getElementById('slug');
+  
+  // Csak akkor generálunk, ha a slug még üres
+  if (!slugInput.value && nameInput.value) {
+    const slug = nameInput.value
+      .toLowerCase()
+      .trim()
+      .replace(/á/g, 'a')
+      .replace(/é/g, 'e')
+      .replace(/í/g, 'i')
+      .replace(/ó/g, 'o')
+      .replace(/ö/g, 'o')
+      .replace(/ő/g, 'o')
+      .replace(/ú/g, 'u')
+      .replace(/ü/g, 'u')
+      .replace(/ű/g, 'u')
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    
+    slugInput.value = slug;
+  }
+}
+
+// Karakter számláló
+function updateCount(fieldId, maxLength) {
+  const field = document.getElementById(fieldId);
+  const counter = document.getElementById(`${fieldId}-count`);
+  const length = field.value.length;
+  
+  counter.textContent = length;
+  
+  // Színezés
+  if (length > maxLength) {
+    counter.style.color = 'var(--color-error-600)';
+  } else if (length > maxLength * 0.9) {
+    counter.style.color = 'var(--color-warning-600)';
+  } else {
+    counter.style.color = 'var(--color-success-600)';
+  }
+}
+
+// Inicializálás
+document.addEventListener('DOMContentLoaded', () => {
+  updateCount('metaTitle', 70);
+  updateCount('metaDescription', 165);
+  
+  // Blog category form submit handler
+  document.getElementById('blogCategoryForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    // Use data-action attribute to ensure absolute URL
+    const actionUrl = form.dataset.action || form.action;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Mentés...';
+    
+    try {
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      
+      console.log('Submitting to URL:', actionUrl);
+      console.log('Request body:', JSON.stringify(data));
+      
+      const response = await fetch(actionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= csrfToken %>'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      let result;
+      try {
+        const text = await response.text();
+        console.log('Server response:', text);
+        result = JSON.parse(text);
+      } catch (parseError) {
+        console.error('Parse error:', parseError);
+        throw new Error('A szerver nem megfelelő választ adott. Kérlek ellenőrizd a konzolt.');
+      }
+      
+      if (response.ok && result.success) {
+        Modal.alert({
+          title: 'Siker',
+          message: result.message || 'Kategória sikeresen mentve!',
+          type: 'success'
+        });
+        window.location.href = '/admin/blog/categories';
+      } else {
+        throw new Error(result.message || 'Hiba történt a mentés során');
+      }
+    } catch (error) {
+      Modal.alert({
+        title: 'Hiba',
+        message: '❌ Hiba: ' + error.message,
+        type: 'error'
+      });
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+  });
+});
+</script>
+
+

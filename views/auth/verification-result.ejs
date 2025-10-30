@@ -1,0 +1,44 @@
+<!-- Auth verification result with Design System -->
+
+<section class="section">
+    <div class="max-w-md mx-auto">
+        <div class="card">
+            <div class="card__header text-center">
+                <div class="mb-4 text-6xl">
+                    <%= success ? '✅' : '❌' %>
+                </div>
+                <h1 class="card__title text-2xl">
+                    <%= success ? 'Email megerősítve!' : 'Megerősítés sikertelen' %>
+                </h1>
+            </div>
+
+            <div class="card__body">
+                <div class="alert <%= success ? 'alert--success' : 'alert--error' %> mb-6">
+                    <div class="alert__icon">
+                        <%= success ? '🎉' : '⚠️' %>
+                    </div>
+                    <div class="alert__content">
+                        <p class="alert__message">
+                            <%= message %>
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <% if (success) { %>
+                        <a href="<%= basePath %>auth/login" class="btn btn--primary w-full mb-4">
+                            🚪 Belépés
+                        </a>
+                    <% } else { %>
+                        <a href="<%= basePath %>auth/request-verification" class="btn btn--primary w-full mb-4">
+                            📧 Új megerősítő email kérése
+                        </a>
+                    <% } %>
+                    <a href="<%= basePath %>" class="btn <%= success ? 'btn--outline' : 'btn--outline' %> w-full">
+                        🏠 Főoldal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

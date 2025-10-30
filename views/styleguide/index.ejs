@@ -1,0 +1,1449 @@
+<!-- Style Guide Hero -->
+<div class="page__hero">
+  <div class="container">
+    <h1 class="page__hero__title">Design System</h1>
+    <p class="page__hero__subtitle">Komponens galéria és dokumentáció fejlesztőknek és designereknek</p>
+    
+    <div class="page__hero__cta">
+      <div class="btn__group-equal">
+        <a href="#typography" class="btn btn--outline btn--outline-white btn-pill">Tipográfia</a>
+        <a href="#colors" class="btn btn--outline btn--outline-white btn-pill">Színek</a>
+        <a href="#buttons" class="btn btn--outline btn--outline-white btn-pill">Gombok</a>
+        <a href="#forms" class="btn btn--outline btn--outline-white btn-pill">Űrlapok</a>
+        <a href="#event-card" class="btn btn--outline btn--outline-white btn-pill">Esemény kártya</a>
+        <a href="#performer-card" class="btn btn--outline btn--outline-white btn-pill">Előadó kártya</a>
+        <a href="#skeleton" class="btn btn--outline btn--outline-white btn-pill">Skeleton Loader</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<section class="section styleguide-section">
+  <div class="container styleguide-grid">
+    
+    <!-- Dark Mode Toggle -->
+    <div class="card">
+      <div class="card__header">
+        <h2 class="card__title">Téma váltó</h2>
+      </div>
+      <div class="card__body">
+        <div class="btn__group-equal">
+          <button data-theme-btn="light" class="btn btn--secondary">
+            <svg class="icon-inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Light Mode
+          </button>
+          <button data-theme-btn="dark" class="btn btn--secondary">
+            <svg class="icon-inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            Dark Mode
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typography -->
+    <div id="typography" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Tipográfia</h2>
+        <p class="card__subtitle">Betűtípusok és szövegstílusok a design rendszerben</p>
+      </div>
+      <div class="card__body">
+        <div class="typography-samples">
+          <div>
+            <h1>H1 Heading - 2.5rem (40px)</h1>
+            <p class="text-muted">font-weight: 700, line-height: 1.2</p>
+          </div>
+          <div>
+            <h2>H2 Heading - 2rem (32px)</h2>
+            <p class="text-muted">font-weight: 700, line-height: 1.2</p>
+          </div>
+          <div>
+            <h3>H3 Heading - 1.75rem (28px)</h3>
+            <p class="text-muted">font-weight: 600, line-height: 1.3</p>
+          </div>
+          <div>
+            <h4>H4 Heading - 1.5rem (24px)</h4>
+            <p class="text-muted">font-weight: 600, line-height: 1.3</p>
+          </div>
+          <div>
+            <h5>H5 Heading - 1.25rem (20px)</h5>
+            <p class="text-muted">font-weight: 600, line-height: 1.4</p>
+          </div>
+          <div>
+            <h6>H6 Heading - 1rem (16px)</h6>
+            <p class="text-muted">font-weight: 600, line-height: 1.4</p>
+          </div>
+          <div>
+            <p class="text-xl-sample">Extra Large Text - 1.25rem (20px)</p>
+            <p class="text-muted">font-weight: 500</p>
+          </div>
+          <div>
+            <p class="text-lg-sample">Large Text - 1.125rem (18px)</p>
+            <p class="text-muted">font-weight: 400</p>
+          </div>
+          <div>
+            <p>Body Text - 1rem (16px)</p>
+            <p class="text-muted">Default paragraph text, font-weight: 400</p>
+          </div>
+          <div>
+            <p class="text-sm-sample">Small Text - 0.875rem (14px)</p>
+            <p class="text-muted">font-weight: 400</p>
+          </div>
+          <div>
+            <p class="text-xs-sample">Extra Small Text - 0.75rem (12px)</p>
+            <p class="text-muted">font-weight: 400</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colors -->
+    <div id="colors" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Színek</h2>
+        <p class="card__subtitle">Teljes színpaletta a design rendszerből</p>
+      </div>
+      <div class="card__body">
+        
+        <!-- Primary Colors -->
+        <h3 class="section-title">Primary Colors</h3>
+        <div class="color-grid color-grid--spaced">
+          <div>
+            <div class="color-swatch swatch-primary-50 color-swatch--bordered"></div>
+            <p class="color-label">primary-50</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-100"></div>
+            <p class="color-label">primary-100</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-200"></div>
+            <p class="color-label">primary-200</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-300"></div>
+            <p class="color-label">primary-300</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-400"></div>
+            <p class="color-label">primary-400</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-500"></div>
+            <p class="color-label">primary-500</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-600"></div>
+            <p class="color-label">primary-600</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-700"></div>
+            <p class="color-label">primary-700</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-800"></div>
+            <p class="color-label">primary-800</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-primary-900"></div>
+            <p class="color-label">primary-900</p>
+          </div>
+        </div>
+
+        <!-- Semantic Colors -->
+        <h3 class="section-title">Semantic Colors</h3>
+        <div class="color-grid">
+          <div>
+            <div class="color-swatch swatch-success"></div>
+            <p class="color-label">Success</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-warning"></div>
+            <p class="color-label">Warning</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-danger"></div>
+            <p class="color-label">Danger</p>
+          </div>
+          <div>
+            <div class="color-swatch swatch-info"></div>
+            <p class="color-label">Info</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div id="buttons" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Gombok</h2>
+        <p class="card__subtitle">Button komponensek és variációk</p>
+      </div>
+      <div class="card__body">
+        <div class="alert alert--info section-spacing">
+          <strong>Naming Convention:</strong> BEM formátumot használunk (<code>.btn--primary</code>). 
+          Backward compatibility miatt az egyszerű kötőjeles forma (<code>.btn--primary</code>) is támogatott.
+        </div>
+        
+        <!-- Primary Buttons -->
+        <div class="section-spacing">
+          <h3 class="section-title">Primary Buttons</h3>
+          <div class="button-demo-group">
+            <button class="btn btn--primary">Primary Button</button>
+            <button class="btn btn--primary btn--lg">Large Primary</button>
+            <button class="btn btn--primary btn--sm">Small Primary</button>
+            <button class="btn btn--primary" disabled>Disabled</button>
+          </div>
+        </div>
+
+        <!-- Secondary Buttons -->
+        <div class="section-spacing">
+          <h3 class="section-title">Secondary Buttons</h3>
+          <div class="button-demo-group">
+            <button class="btn btn--secondary">Secondary Button</button>
+            <button class="btn btn--secondary btn--lg">Large Secondary</button>
+            <button class="btn btn--secondary btn--sm">Small Secondary</button>
+            <button class="btn btn--secondary" disabled>Disabled</button>
+          </div>
+        </div>
+
+        <!-- Outline Buttons -->
+        <div class="section-spacing">
+          <h3 class="section-title">Outline Buttons</h3>
+          <div class="button-demo-group">
+            <button class="btn btn--outline">Outline Button</button>
+            <button class="btn btn--outline btn--lg">Large Outline</button>
+            <button class="btn btn--outline btn--sm">Small Outline</button>
+            <button class="btn btn--outline" disabled>Disabled</button>
+          </div>
+        </div>
+
+        <!-- Semantic Buttons -->
+        <div class="section-spacing">
+          <h3 class="section-title">Semantic Buttons</h3>
+          <div class="button-demo-group">
+            <button class="btn btn--success">Success</button>
+            <button class="btn btn--warning">Warning</button>
+            <button class="btn btn--danger">Danger</button>
+            <button class="btn btn--info">Info</button>
+          </div>
+        </div>
+
+        <!-- Button Groups -->
+        <div class="section-spacing">
+          <h3 class="section-title">Button Groups</h3>
+          <div class="btn__group section-spacing">
+            <button class="btn btn--primary">Left</button>
+            <button class="btn btn--primary">Middle</button>
+            <button class="btn btn--primary">Right</button>
+          </div>
+          <div class="btn__group-equal">
+            <button class="btn btn--secondary">Equal Width 1</button>
+            <button class="btn btn--secondary">Equal Width 2</button>
+            <button class="btn btn--secondary">Equal Width 3</button>
+          </div>
+        </div>
+
+        <!-- Icon Buttons -->
+        <div>
+          <h3 class="section-title">Icon Buttons</h3>
+          <div class="button-demo-group">
+            <button class="btn btn--primary">
+              <svg class="icon-inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Item
+            </button>
+            <button class="btn btn--secondary">
+              <svg class="icon-inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              Download
+            </button>
+            <button class="btn btn--danger">
+              <svg class="icon-inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forms -->
+    <div id="forms" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Űrlapok</h2>
+        <p class="card__subtitle">Form komponensek és input mezők</p>
+      </div>
+      <div class="card__body">
+        <div class="alert alert--info section-spacing">
+          <strong>Használat:</strong> Minden űrlap mező <code>.form__group</code> konténerbe kerül. 
+          Checkbox és radio gombok <code>.form-checkbox-wrapper</code> / <code>.form-radio-wrapper</code> struktúrát használnak 
+          a helyes elrendezéshez.
+        </div>
+        
+        <form class="demo-container">
+          
+          <!-- Text Input -->
+          <div class="form__group">
+            <label for="demo-name" class="form__label">Név</label>
+            <input type="text" id="demo-name" class="form__input" placeholder="Teljes név">
+          </div>
+
+          <!-- Email Input -->
+          <div class="form__group">
+            <label for="demo-email" class="form__label">Email cím</label>
+            <input type="email" id="demo-email" class="form__input" placeholder="pelda@email.hu">
+            <small class="form__help">Ide küldjük az értesítéseket</small>
+          </div>
+
+          <!-- Select -->
+          <div class="form__group">
+            <label for="demo-select" class="form__label">Kategória</label>
+            <select id="demo-select" class="form__input">
+              <option>Válassz...</option>
+              <option>Zenekar</option>
+              <option>DJ</option>
+              <option>Humorista</option>
+              <option>Műsorvezető</option>
+            </select>
+          </div>
+
+          <!-- Textarea -->
+          <div class="form__group">
+            <label for="demo-message" class="form__label">Üzenet</label>
+            <textarea id="demo-message" class="form__input" rows="4" placeholder="Írd le, miben segíthetünk..."></textarea>
+          </div>
+
+          <!-- Checkbox -->
+          <div class="form__group">
+            <div class="form-checkbox-wrapper">
+              <input type="checkbox" class="form-checkbox" id="demo-terms">
+              <label for="demo-terms" class="form-checkbox-label">Elfogadom az Adatkezelési Tájékoztatót</label>
+            </div>
+            <details class="code-example">
+              <summary class="code-example-summary">Példa kód</summary>
+              <pre class="code-example-content"><code>&lt;div class="form-checkbox-wrapper"&gt;
+  &lt;input type="checkbox" class="form-checkbox" id="terms"&gt;
+  &lt;label for="terms" class="form-checkbox-label"&gt;Szöveg&lt;/label&gt;
+&lt;/div&gt;</code></pre>
+            </details>
+          </div>
+
+          <!-- Radio Buttons -->
+          <div class="form__group">
+            <label class="form__label">Rendezvény típusa</label>
+            <div class="form-radio-wrapper">
+              <input type="radio" class="form-radio" name="event-type" value="wedding" id="demo-wedding">
+              <label for="demo-wedding" class="form-radio-label">Esküvő</label>
+            </div>
+            <div class="form-radio-wrapper">
+              <input type="radio" class="form-radio" name="event-type" value="corporate" id="demo-corporate">
+              <label for="demo-corporate" class="form-radio-label">Céges rendezvény</label>
+            </div>
+            <div class="form-radio-wrapper">
+              <input type="radio" class="form-radio" name="event-type" value="private" id="demo-private">
+              <label for="demo-private" class="form-radio-label">Privát party</label>
+            </div>
+            <details class="code-example">
+              <summary class="code-example-summary">Példa kód</summary>
+              <pre class="code-example-content"><code>&lt;div class="form-radio-wrapper"&gt;
+  &lt;input type="radio" class="form-radio" name="group" value="1" id="opt1"&gt;
+  &lt;label for="opt1" class="form-radio-label"&gt;Opció 1&lt;/label&gt;
+&lt;/div&gt;</code></pre>
+            </details>
+          </div>
+
+          <!-- Error State -->
+          <div class="form__group">
+            <label for="demo-error" class="form__label">Hibás mező</label>
+            <input type="text" id="demo-error" class="form-input form-input--error" value="Hibás érték">
+            <small class="form__error">Ez a mező kötelező</small>
+          </div>
+
+          <!-- Success State -->
+          <div class="form__group">
+            <label for="demo-success" class="form__label">Helyes mező</label>
+            <input type="text" id="demo-success" class="form-input form-input--success" value="Helyes érték">
+            <small class="form-success">Rendben van!</small>
+          </div>
+
+          <!-- Submit Buttons -->
+          <div class="button-demo-group section-spacing">
+            <button type="submit" class="btn btn--primary">Küldés</button>
+            <button type="reset" class="btn btn--secondary">Mégse</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div id="cards" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Kártyák</h2>
+        <p class="card__subtitle">Card komponensek és layoutok</p>
+      </div>
+      <div class="card__body">
+        
+        <!-- Simple Card -->
+        <div class="section-spacing">
+          <h3 class="section-title">Egyszerű kártya</h3>
+          <div class="card demo-container-sm">
+            <div class="card__body">
+              <h4>Egyszerű kártya címe</h4>
+              <p>Ez egy egyszerű kártya csak body tartalommal. Nincs külön header vagy footer.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card with Header -->
+        <div class="section-spacing">
+          <h3 class="section-title">Kártya header-rel</h3>
+          <div class="card demo-container-sm">
+            <div class="card__header">
+              <h4 class="card__title">Kártya címe</h4>
+              <p class="card__subtitle">Alcím vagy rövid leírás</p>
+            </div>
+            <div class="card__body">
+              <p>A kártya fő tartalma itt található. Ez lehet hosszabb szöveg vagy bármilyen más tartalom.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card with Footer -->
+        <div class="section-spacing">
+          <h3 class="section-title">Kártya footer-rel</h3>
+          <div class="card demo-container-sm">
+            <div class="card__header">
+              <h4 class="card__title">Teljes kártya</h4>
+            </div>
+            <div class="card__body">
+              <p>Ez egy teljes kártya header-rel, body-val és footer-rel.</p>
+            </div>
+            <div class="card__footer">
+              <button class="btn btn--primary">Művelet</button>
+              <button class="btn btn--secondary">Mégse</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Grid -->
+        <div>
+          <h3 class="section-title">Kártya grid</h3>
+          <div class="demo-grid">
+            <div class="card">
+              <div class="card__header">
+                <h4 class="card__title">Kártya 1</h4>
+              </div>
+              <div class="card__body">
+                <p>Grid layout első kártyája.</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card__header">
+                <h4 class="card__title">Kártya 2</h4>
+              </div>
+              <div class="card__body">
+                <p>Grid layout második kártyája.</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card__header">
+                <h4 class="card__title">Kártya 3</h4>
+              </div>
+              <div class="card__body">
+                <p>Grid layout harmadik kártyája.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Card Component -->
+    <div id="event-card" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Esemény kártya</h2>
+        <p class="card__subtitle">Események megjelenítésére szolgáló kártya komponens</p>
+      </div>
+      <div class="card__body">
+        <div class="alert alert--info section-spacing">
+          <strong>Használat:</strong> Az esemény kártya dinamikus háttérképet, dátum badge-et és esemény részleteket tartalmaz.
+          Grid layout-ban automatikusan reszponzív (minmax 320px).
+        </div>
+
+        <h3 class="section-title">Egyedi esemény kártya</h3>
+        <div class="events__grid demo-container">
+          <div class="event__card">
+            <div class="event__image" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800')"></div>
+            <div class="event__content">
+              <div class="event__date">
+                <div class="event__date-year">2025</div>
+                <div class="event__date-month">Dec</div>
+                <div class="event__date-day">31</div>
+              </div>
+              <div class="event__details">
+                <h3 class="event__title">Szilveszteri koncert</h3>
+                <div class="event-performer">
+                  <span class="event__icon">🎤</span>
+                  <a href="#">Budapest Swing Orchestra</a>
+                </div>
+                <div class="event-time">
+                  <span class="event__icon">⏰</span>
+                  20:00
+                </div>
+                <div class="event-location">
+                  <span class="event__icon">📍</span>
+                  Müpa Budapest
+                </div>
+              </div>
+              <div class="event__actions">
+                <a href="#" class="btn btn--primary">Előadó Megtekintése</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="section-title">Esemény kártya grid</h3>
+        <div class="events__grid">
+          <div class="event__card">
+            <div class="event__image" style="background-image: url('https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800')"></div>
+            <div class="event__content">
+              <div class="event__date">
+                <div class="event__date-year">2025</div>
+                <div class="event__date-month">Nov</div>
+                <div class="event__date-day">15</div>
+              </div>
+              <div class="event__details">
+                <h3 class="event__title">Jazz est a Duna parton</h3>
+                <div class="event-performer">
+                  <span class="event__icon">🎤</span>
+                  <a href="#">Snétberger Jazz Quartet</a>
+                </div>
+                <div class="event-time">
+                  <span class="event__icon">⏰</span>
+                  19:30
+                </div>
+                <div class="event-location">
+                  <span class="event__icon">📍</span>
+                  A38 Hajó
+                </div>
+              </div>
+              <div class="event__actions">
+                <a href="#" class="btn btn--primary">Előadó Megtekintése</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="event__card">
+            <div class="event__image" style="background-image: url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800')"></div>
+            <div class="event__content">
+              <div class="event__date">
+                <div class="event__date-year">2025</div>
+                <div class="event__date-month">Nov</div>
+                <div class="event__date-day">22</div>
+              </div>
+              <div class="event__details">
+                <h3 class="event__title">Rock and Roll Night</h3>
+                <div class="event-performer">
+                  <span class="event__icon">🎸</span>
+                  <a href="#">Omega Tribute Band</a>
+                </div>
+                <div class="event-time">
+                  <span class="event__icon">⏰</span>
+                  21:00
+                </div>
+                <div class="event-location">
+                  <span class="event__icon">📍</span>
+                  Barba Negra
+                </div>
+              </div>
+              <div class="event__actions">
+                <a href="#" class="btn btn--primary">Előadó Megtekintése</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="event__card">
+            <div class="event__image" style="background-image: url('https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=800')"></div>
+            <div class="event__content">
+              <div class="event__date">
+                <div class="event__date-year">2025</div>
+                <div class="event__date-month">Dec</div>
+                <div class="event__date-day">05</div>
+              </div>
+              <div class="event__details">
+                <h3 class="event__title">Karácsonyi koncert</h3>
+                <div class="event-performer">
+                  <span class="event__icon">🎵</span>
+                  <a href="#">Budapesti Vonósok</a>
+                </div>
+                <div class="event-time">
+                  <span class="event__icon">⏰</span>
+                  18:00
+                </div>
+                <div class="event-location">
+                  <span class="event__icon">📍</span>
+                  Zeneakadémia
+                </div>
+              </div>
+              <div class="event__actions">
+                <a href="#" class="btn btn--primary">Előadó Megtekintése</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <details class="code-example--spaced">
+          <summary class="code-example-summary">HTML struktúra</summary>
+          <pre class="code-example-content"><code>&lt;div class="events__grid"&gt;
+  &lt;div class="event__card"&gt;
+    &lt;div class="event__image" style="background-image: url('...')"&gt;&lt;/div&gt;
+    &lt;div class="event__content"&gt;
+      &lt;div class="event__date"&gt;
+        &lt;div class="event__date-year"&gt;2025&lt;/div&gt;
+        &lt;div class="event__date-month"&gt;Dec&lt;/div&gt;
+        &lt;div class="event__date-day"&gt;31&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="event__details"&gt;
+        &lt;h3 class="event__title"&gt;Esemény címe&lt;/h3&gt;
+        &lt;div class="event-performer"&gt;
+          &lt;span class="event__icon"&gt;🎤&lt;/span&gt;
+          &lt;a href="#"&gt;Előadó neve&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class="event-time"&gt;
+          &lt;span class="event__icon"&gt;⏰&lt;/span&gt;
+          20:00
+        &lt;/div&gt;
+        &lt;div class="event-location"&gt;
+          &lt;span class="event__icon"&gt;📍&lt;/span&gt;
+          Helyszín
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="event__actions"&gt;
+        &lt;a href="#" class="btn btn--primary"&gt;Előadó Megtekintése&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+      </div>
+    </div>
+
+    <!-- Performer Card Component -->
+    <div id="performer-card" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Előadó kártya</h2>
+        <p class="card__subtitle">Előadók megjelenítésére szolgáló kártya komponens</p>
+      </div>
+      <div class="card__body">
+        <div class="alert alert--info section-spacing">
+          <strong>Használat:</strong> Az előadó kártya képet, kategóriát, árat, leírást és művelet gombokat tartalmaz.
+          Grid layout-ban automatikusan reszponzív (minmax 300px).
+        </div>
+
+        <h3 class="section-title">Egyedi előadó kártya</h3>
+        <div class="performers__grid demo-container">
+          <div class="performer__card">
+            <div class="performer__image">
+              <a href="#">
+                <img src="https://images.unsplash.com/photo-1511735111819-9a3f7709049c?w=600" 
+                     alt="Budapest Swing Orchestra" 
+                     loading="lazy">
+              </a>
+            </div>
+            <div class="performer__content">
+              <div class="performer__header">
+                <div class="performer-category">Zenekar</div>
+                <div class="performer-price-badge">150,000 Ft-tól</div>
+              </div>
+              <h2 class="performer__name">
+                <a href="#">Budapest Swing Orchestra</a>
+              </h2>
+              <p class="performer__description">
+                Professzionális swing zenekar esküvőkre és rendezvényekre. 
+                20 év tapasztalat, több mint 500 sikeres esemény.
+              </p>
+              <div class="performer__actions">
+                <a href="#" class="btn btn--outline">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                  Részletek
+                </a>
+                <a href="#" class="btn btn--primary">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                  </svg>
+                  Foglalás
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="section-title">Előadó kártya grid</h3>
+        <div class="performers__grid">
+          <div class="performer__card">
+            <div class="performer__image">
+              <a href="#">
+                <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600" 
+                     alt="DJ Minimal" 
+                     loading="lazy">
+              </a>
+            </div>
+            <div class="performer__content">
+              <div class="performer__header">
+                <div class="performer-category">DJ</div>
+                <div class="performer-price-badge">80,000 Ft-tól</div>
+              </div>
+              <h2 class="performer__name">
+                <a href="#">DJ Minimal</a>
+              </h2>
+              <p class="performer__description">
+                House és techno DJ több mint 10 év nemzetközi tapasztalattal. 
+                A legjobb klubokban és fesztiválokon fellépő előadó.
+              </p>
+              <div class="performer__actions">
+                <a href="#" class="btn btn--outline">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                  Részletek
+                </a>
+                <a href="#" class="btn btn--primary">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                  </svg>
+                  Foglalás
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="performer__card">
+            <div class="performer__image">
+              <a href="#">
+                <div class="performer__placeholder">
+                  <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </a>
+            </div>
+            <div class="performer__content">
+              <div class="performer__header">
+                <div class="performer-category">Humorista</div>
+                <div class="performer-price-badge">120,000 Ft-tól</div>
+              </div>
+              <h2 class="performer__name">
+                <a href="#">Kovács Humor</a>
+              </h2>
+              <p class="performer__description">
+                Stand-up komikus és rendezvény műsorvezető. Garantáltan jó hangulatot hoz minden eseményre!
+              </p>
+              <div class="performer__actions">
+                <a href="#" class="btn btn--outline">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                  Részletek
+                </a>
+                <a href="#" class="btn btn--primary">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                  </svg>
+                  Foglalás
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="performer__card">
+            <div class="performer__image">
+              <a href="#">
+                <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600" 
+                     alt="Classic Trio" 
+                     loading="lazy">
+              </a>
+            </div>
+            <div class="performer__content">
+              <div class="performer__header">
+                <div class="performer-category">Klasszikus</div>
+                <div class="performer-price-badge">200,000 Ft-tól</div>
+              </div>
+              <h2 class="performer__name">
+                <a href="#">Classic Trio</a>
+              </h2>
+              <p class="performer__description">
+                Hegedű, cselló és zongora trió klasszikus zenei előadásokra. 
+                Elegáns és visszafogott atmoszféra garantálva.
+              </p>
+              <div class="performer__actions">
+                <a href="#" class="btn btn--outline">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                  Részletek
+                </a>
+                <a href="#" class="btn btn--primary">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                  </svg>
+                  Foglalás
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <details class="code-example--spaced">
+          <summary class="code-example-summary">HTML struktúra</summary>
+          <pre class="code-example-content"><code>&lt;div class="performers__grid"&gt;
+  &lt;div class="performer__card"&gt;
+    &lt;div class="performer__image"&gt;
+      &lt;a href="#"&gt;
+        &lt;img src="..." alt="..." loading="lazy"&gt;
+      &lt;/a&gt;
+    &lt;/div&gt;
+    &lt;div class="performer__content"&gt;
+      &lt;div class="performer__header"&gt;
+        &lt;div class="performer-category"&gt;Kategória&lt;/div&gt;
+        &lt;div class="performer-price-badge"&gt;Ár Ft-tól&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;h2 class="performer__name"&gt;
+        &lt;a href="#"&gt;Előadó neve&lt;/a&gt;
+      &lt;/h2&gt;
+      &lt;p class="performer__description"&gt;Leírás...&lt;/p&gt;
+      &lt;div class="performer__actions"&gt;
+        &lt;a href="#" class="btn btn--outline"&gt;Részletek&lt;/a&gt;
+        &lt;a href="#" class="btn btn--primary"&gt;Foglalás&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        </details>
+      </div>
+    </div>
+
+    <!-- Badges & Tags -->
+    <div id="badges" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Badges & Tags</h2>
+        <p class="card__subtitle">Címkék és státusz jelzők</p>
+      </div>
+      <div class="card__body">
+        
+        <!-- Badges -->
+        <div class="badge-demo-section">
+          <h3 class="section-title">Badges</h3>
+          <div class="button-demo-group">
+            <span class="badge badge--primary">Primary</span>
+            <span class="badge badge--secondary">Secondary</span>
+            <span class="badge badge--success">Success</span>
+            <span class="badge badge--warning">Warning</span>
+            <span class="badge badge--danger">Danger</span>
+            <span class="badge badge--info">Info</span>
+          </div>
+        </div>
+
+        <!-- Status Badges -->
+        <div>
+          <h3 class="section-title">Status Badges</h3>
+          <div class="button-demo-group">
+            <span class="badge badge--success">
+              <svg class="icon-inline-sm" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              Aktív
+            </span>
+            <span class="badge badge--warning">
+              <svg class="icon-inline-sm" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+              </svg>
+              Függőben
+            </span>
+            <span class="badge badge--danger">
+              <svg class="icon-inline-sm" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+              Inaktív
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div id="alerts" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Alerts</h2>
+        <p class="card__subtitle">Értesítések és üzenetek</p>
+      </div>
+      <div class="card__body">
+        <div class="styleguide-grid">
+          <div class="alert alert--success">
+            <strong>Siker!</strong> A művelet sikeresen végrehajtva.
+          </div>
+          <div class="alert alert--info">
+            <strong>Információ:</strong> Ez egy tájékoztató üzenet.
+          </div>
+          <div class="alert alert--warning">
+            <strong>Figyelmeztetés:</strong> Ez a művelet visszavonhatatlan.
+          </div>
+          <div class="alert alert--danger">
+            <strong>Hiba!</strong> Valami hiba történt.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Spinners -->
+    <div id="loading" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Loading Spinners</h2>
+        <p class="card__subtitle">Betöltési animációk különböző méretekben</p>
+      </div>
+      <div class="card__body">
+        <div class="loading-demo-group">
+          <div class="loading-demo-item">
+            <div class="spinner spinner--sm"></div>
+            <p class="loading-demo-label">Small (16px)</p>
+          </div>
+          <div class="loading-demo-item">
+            <div class="spinner"></div>
+            <p class="loading-demo-label">Medium (32px)</p>
+          </div>
+          <div class="loading-demo-item">
+            <div class="spinner spinner--lg"></div>
+            <p class="loading-demo-label">Large (48px)</p>
+          </div>
+          <div class="loading-demo-item">
+            <div class="spinner spinner--primary"></div>
+            <p class="loading-demo-label">Primary Color</p>
+          </div>
+          <div class="loading-demo-item">
+            <div class="spinner spinner--white loading-demo-bg"></div>
+            <p class="loading-demo-label">White (for dark bg)</p>
+          </div>
+        </div>
+        <div class="section-spacing">
+          <h4 class="section-title">Loading Overlay</h4>
+          <div class="loading-overlay-demo">
+            <div class="loading-overlay loading-overlay--active">
+              <div class="spinner spinner--lg spinner--primary"></div>
+              <p class="loading-demo-label">Betöltés...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div id="breadcrumb" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Breadcrumb Navigation</h2>
+        <p class="card__subtitle">Navigációs nyomvonal komponens</p>
+      </div>
+      <div class="card__body">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li><a href="/">Kezdőlap</a></li>
+            <li><a href="/eloadok">Előadók</a></li>
+            <li><a href="/eloadok/kategoria/zenekar">Zenekar</a></li>
+            <li class="active" aria-current="page">Budapest Swing Orchestra</li>
+          </ol>
+        </nav>
+        <details class="code-example--spaced">
+          <summary class="code-example-summary">Példa kód</summary>
+          <pre class="code-example-content"><code>&lt;nav aria-label="breadcrumb"&gt;
+  &lt;ol class="breadcrumb"&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Kezdőlap&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/kategoria"&gt;Kategória&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="active" aria-current="page"&gt;Aktuális oldal&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/nav&gt;</code></pre>
+        </details>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Pagination</h2>
+        <p class="card__subtitle">Lapozó komponens táblázatokhoz és listákhoz</p>
+      </div>
+      <div class="card__body">
+        <h4 class="section-title">Standard Pagination</h4>
+        <nav class="pagination" aria-label="Lapozás">
+          <a href="#" class="pagination__btn pagination__btn--prev" aria-label="Előző oldal">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </a>
+          <div class="pagination__pages">
+            <a href="#" class="pagination__page">1</a>
+            <a href="#" class="pagination__page pagination__page--active" aria-current="page">2</a>
+            <a href="#" class="pagination__page">3</a>
+            <span class="pagination__dots">...</span>
+            <a href="#" class="pagination__page">10</a>
+          </div>
+          <a href="#" class="pagination__btn pagination__btn--next" aria-label="Következő oldal">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </nav>
+
+        <h4 class="pagination-section-title">Simple Pagination</h4>
+        <nav class="pagination" aria-label="Lapozás">
+          <a href="#" class="pagination__item pagination__prev">← Előző</a>
+          <a href="#" class="pagination__item">1</a>
+          <a href="#" class="pagination__item pagination__item--active" aria-current="page">2</a>
+          <a href="#" class="pagination__item">3</a>
+          <span class="pagination__ellipsis">...</span>
+          <a href="#" class="pagination__item">10</a>
+          <a href="#" class="pagination__item pagination__next">Következő →</a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Skeleton Loaders -->
+    <div id="skeleton" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Skeleton Loaders</h2>
+        <p class="card__subtitle">Betöltési placeholder animációk</p>
+      </div>
+      <div class="card__body">
+        <h4 class="section-title">Text Skeletons</h4>
+        <div class="skeleton-demo-section">
+          <div class="skeleton skeleton--text skeleton--w-80"></div>
+          <div class="skeleton skeleton--text skeleton--w-60"></div>
+          <div class="skeleton skeleton--text skeleton--w-90"></div>
+        </div>
+
+        <h4 class="section-title">Card Skeleton</h4>
+        <div class="skeleton-card-demo">
+          <div class="skeleton skeleton--rounded skeleton--w-100 skeleton--h-200"></div>
+          <div class="skeleton skeleton--heading skeleton--w-70 skeleton--mb-2"></div>
+          <div class="skeleton skeleton--text skeleton--w-90"></div>
+          <div class="skeleton skeleton--text skeleton--w-80"></div>
+          <div class="skeleton skeleton--text skeleton--w-60"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Toast Notifications</h2>
+        <p class="card__subtitle">Átmeneti értesítések</p>
+      </div>
+      <div class="card__body">
+        <div class="button-demo-group section-spacing">
+          <button class="btn btn--success" data-toast-type="success">Success Toast</button>
+          <button class="btn btn--danger" data-toast-type="error">Error Toast</button>
+          <button class="btn btn--warning" data-toast-type="warning">Warning Toast</button>
+          <button class="btn btn--info" data-toast-type="info">Info Toast</button>
+        </div>
+        <div class="styleguide-grid">
+          <div class="toast toast--success">
+            <svg class="toast__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div class="toast__content">
+              <div class="toast__title">Sikeres művelet</div>
+              <div class="toast__message">Az adatok sikeresen mentésre kerültek.</div>
+            </div>
+            <button class="toast__close" aria-label="Bezárás">×</button>
+          </div>
+          <div class="toast toast--error">
+            <svg class="toast__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div class="toast__content">
+              <div class="toast__title">Hiba történt</div>
+              <div class="toast__message">Kérjük, próbálja újra később.</div>
+            </div>
+            <button class="toast__close" aria-label="Bezárás">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dropdowns -->
+    <div id="dropdown" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Dropdown Menus</h2>
+        <p class="card__subtitle">Legördülő menük és műveletek</p>
+      </div>
+      <div class="card__body">
+        <div class="dropdown-demo-wrapper">
+          <div class="dropdown">
+            <button class="btn btn--primary dropdown__trigger">
+              Műveletek
+              <svg class="icon-inline-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div class="dropdown__menu">
+              <a href="#" class="dropdown__item">Szerkesztés</a>
+              <a href="#" class="dropdown__item">Másolás</a>
+              <a href="#" class="dropdown__item">Megosztás</a>
+              <div class="dropdown__divider"></div>
+              <a href="#" class="dropdown__item dropdown__item--danger">Törlés</a>
+            </div>
+          </div>
+          
+          <div class="dropdown">
+            <button class="btn btn--secondary dropdown__trigger">
+              Profil
+              <svg class="icon-inline-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div class="dropdown__menu dropdown__menu--right">
+              <div class="dropdown-profile-header">
+                <div class="dropdown-profile-name">Kiss János</div>
+                <div class="dropdown-profile-email">janos@example.com</div>
+              </div>
+              <a href="#" class="dropdown__item">Beállítások</a>
+              <a href="#" class="dropdown__item">Súgó</a>
+              <div class="dropdown__divider"></div>
+              <a href="#" class="dropdown__item">Kijelentkezés</a>
+            </div>
+          </div>
+        </div>
+        <p class="demo-note">
+          💡 A dropdown-ok hover-re nyílnak. Éles használatban JavaScript-tel vezérelve működnek.
+        </p>
+      </div>
+    </div>
+
+    <!-- Tooltips -->
+    <div id="tooltip" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Tooltips</h2>
+        <p class="card__subtitle">Segítő szövegek és tippek</p>
+      </div>
+      <div class="card__body">
+        <div class="tooltip-demo-wrapper">
+          <div class="tooltip-wrapper">
+            <button class="btn btn--secondary">Tooltip felül</button>
+            <div class="tooltip tooltip--top">Ez egy tooltip üzenet</div>
+          </div>
+          
+          <div class="tooltip-wrapper">
+            <button class="btn btn--secondary">Tooltip jobbra</button>
+            <div class="tooltip tooltip--right">További információ</div>
+          </div>
+          
+          <div class="tooltip-wrapper">
+            <button class="btn btn--secondary">Tooltip alul</button>
+            <div class="tooltip tooltip--bottom">Ez egy tooltip üzenet</div>
+          </div>
+          
+          <div class="tooltip-wrapper">
+            <button class="btn btn--secondary">Tooltip balra</button>
+            <div class="tooltip tooltip--left">Balra igazított tooltip</div>
+          </div>
+        </div>
+        <p class="demo-note">
+          💡 A tooltip-ok hover-re jelennek meg. Éles használatban JavaScript-tel vezérelve működnek.
+        </p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div id="tabs" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Tabs</h2>
+        <p class="card__subtitle">Fülekkel szervezett tartalom</p>
+      </div>
+      <div class="card__body">
+        <div class="tabs">
+          <div class="tabs__nav">
+            <button class="tabs__tab tabs__tab--active">Általános</button>
+            <button class="tabs__tab">Részletek</button>
+            <button class="tabs__tab">Beállítások</button>
+            <button class="tabs__tab">Előzmények</button>
+          </div>
+          <div class="tabs__content">
+            <div class="tabs__panel tabs__panel--active">
+              <h4 class="section-title">Általános információk</h4>
+              <p>Ez az első fül tartalma. Itt általános információk találhatók a rendszerről.</p>
+            </div>
+            <div class="tabs__panel">
+              <h4 class="section-title">Részletes adatok</h4>
+              <p>Ez a második fül tartalma részletes adatokkal.</p>
+            </div>
+            <div class="tabs__panel">
+              <h4 class="section-title">Beállítások</h4>
+              <p>Itt találhatók a rendszer beállítási lehetőségei.</p>
+            </div>
+            <div class="tabs__panel">
+              <h4 class="section-title">Előzmények</h4>
+              <p>A korábbi műveletek listája.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion -->
+    <div id="accordion" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Accordion</h2>
+        <p class="card__subtitle">Összecsukható tartalom blokkok</p>
+      </div>
+      <div class="card__body">
+        <div class="accordion">
+          <div class="accordion__item">
+            <button class="accordion__header accordion__header--active">
+              <span>Mi az a design system?</span>
+              <svg class="accordion__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div class="accordion__content accordion__content--active">
+              <p>A design system egy átfogó készlet irányelvekről, komponensekről és eszközökről, amelyek konzisztens és skálázható felhasználói felületek létrehozását segítik.</p>
+            </div>
+          </div>
+          
+          <div class="accordion__item">
+            <button class="accordion__header">
+              <span>Hogyan használjam a komponenseket?</span>
+              <svg class="accordion__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div class="accordion__content">
+              <p>Minden komponens előre definiált CSS osztályokkal rendelkezik. Egyszerűen másold be a kívánt HTML struktúrát és a stílusok automatikusan alkalmazódnak.</p>
+            </div>
+          </div>
+          
+          <div class="accordion__item">
+            <button class="accordion__header">
+              <span>Támogatott-e a dark mode?</span>
+              <svg class="accordion__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div class="accordion__content">
+              <p>Igen! Minden komponens teljes mértékben támogatja a dark mode-ot CSS custom properties segítségével.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spacing & Layout -->
+    <div id="spacing" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Spacing Scale</h2>
+        <p class="card__subtitle">Térköz rendszer (0.25rem = 4px)</p>
+      </div>
+      <div class="card__body">
+        <div class="spacing-demo">
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-1 (4px)</div>
+            <div class="spacing-demo-bar spacing-1"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-2 (8px)</div>
+            <div class="spacing-demo-bar spacing-2"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-3 (12px)</div>
+            <div class="spacing-demo-bar spacing-3"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-4 (16px)</div>
+            <div class="spacing-demo-bar spacing-4"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-5 (20px)</div>
+            <div class="spacing-demo-bar spacing-5"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-6 (24px)</div>
+            <div class="spacing-demo-bar spacing-6"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-8 (32px)</div>
+            <div class="spacing-demo-bar spacing-8"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-10 (40px)</div>
+            <div class="spacing-demo-bar spacing-10"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-12 (48px)</div>
+            <div class="spacing-demo-bar spacing-12"></div>
+          </div>
+          <div class="spacing-demo-item">
+            <div class="spacing-demo-label">--space-16 (64px)</div>
+            <div class="spacing-demo-bar spacing-16"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skeleton Loader -->
+    <div id="skeleton" class="card">
+      <div class="card__header">
+        <h2 class="card__title">Skeleton Loader</h2>
+        <p class="card__subtitle">Betöltési animációk esemény kártyákhoz</p>
+      </div>
+      <div class="card__body">
+        <h3 class="demo-heading">Példa</h3>
+        <div class="events__grid max-w-1200">
+          <!-- Skeleton Event Card 1 -->
+          <%- include('../partials/skeleton-event-card') %>
+          
+          <!-- Skeleton Event Card 2 -->
+          <%- include('../partials/skeleton-event-card') %>
+          
+          <!-- Skeleton Event Card 3 -->
+          <%- include('../partials/skeleton-event-card') %>
+        </div>
+
+        <h3 class="demo-heading mt-12">HTML használat</h3>
+        <pre class="code-block"><code>&lt;!-- Skeleton Event Card --&gt;
+&lt;div class="skeleton-event-card"&gt;
+  &lt;div class="skeleton-event-card__image"&gt;&lt;/div&gt;
+  
+  &lt;div class="skeleton-event-card__date"&gt;
+    &lt;div class="skeleton-event-card__date-item"&gt;&lt;/div&gt;
+    &lt;div class="skeleton-event-card__date-item"&gt;&lt;/div&gt;
+    &lt;div class="skeleton-event-card__date-item"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  
+  &lt;div class="skeleton-event-card__content"&gt;
+    &lt;div class="skeleton-event-card__title"&gt;&lt;/div&gt;
+    
+    &lt;div class="skeleton-event-card__details"&gt;
+      &lt;div class="skeleton-event-card__detail"&gt;&lt;/div&gt;
+      &lt;div class="skeleton-event-card__detail"&gt;&lt;/div&gt;
+      &lt;div class="skeleton-event-card__detail"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    
+    &lt;div class="skeleton-event-card__actions"&gt;
+      &lt;div class="skeleton-event-card__button"&gt;&lt;/div&gt;
+      &lt;div class="skeleton-event-card__secondary"&gt;
+        &lt;div class="skeleton-event-card__secondary-btn"&gt;&lt;/div&gt;
+        &lt;div class="skeleton-event-card__secondary-btn"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+        <h3 class="demo-heading mt-8">Használat</h3>
+        <ul class="usage-list">
+          <li>Használd betöltés közben, amikor adatokat töltesz be szerverről</li>
+          <li>Infinite scroll esetén újabb kártyák betöltésénél</li>
+          <li>AJAX kéréseknél az oldal frissítése nélkül</li>
+          <li>Automatikus shimmer animáció, nem kell JavaScript</li>
+          <li>Dark mode automatikusan támogatott</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+// Theme switcher
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
+
+// Initialize theme from localStorage
+(function() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  setTheme(savedTheme);
+})();
+
+// Toast notification system
+function showToast(type) {
+  const messages = {
+    success: { title: 'Sikeres művelet', message: 'Az adatok sikeresen mentésre kerültek.' },
+    error: { title: 'Hiba történt', message: 'Kérjük, próbálja újra később.' },
+    warning: { title: 'Figyelmeztetés', message: 'Ez a művelet visszavonhatatlan lehet.' },
+    info: { title: 'Információ', message: 'Új frissítés érhető el a rendszerben.' }
+  };
+  
+  const icons = {
+    success: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+    error: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+    warning: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>',
+    info: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+  };
+  
+  const container = document.getElementById('toast-container') || createToastContainer();
+  const toast = document.createElement('div');
+  toast.className = `toast toast--${type} toast--show`;
+  toast.innerHTML = `
+    <svg class="toast__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      ${icons[type]}
+    </svg>
+    <div class="toast__content">
+      <div class="toast__title">${messages[type].title}</div>
+      <div class="toast__message">${messages[type].message}</div>
+    </div>
+    <button class="toast__close" aria-label="Bezárás">×</button>
+  `;
+  
+  container.appendChild(toast);
+  
+  // Close button
+  toast.querySelector('.toast__close').addEventListener('click', () => {
+    toast.classList.remove('toast--show');
+    setTimeout(() => toast.remove(), 300);
+  });
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    toast.classList.remove('toast--show');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
+function createToastContainer() {
+  const container = document.createElement('div');
+  container.id = 'toast-container';
+  container.style.cssText = 'position: fixed; top: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem;';
+  document.body.appendChild(container);
+  return container;
+}
+
+// Smooth scroll to anchors
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Toast demo buttons (data-toast-type)
+document.querySelectorAll('[data-toast-type]').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const type = this.getAttribute('data-toast-type');
+    showToast(type);
+  });
+});
+</script>

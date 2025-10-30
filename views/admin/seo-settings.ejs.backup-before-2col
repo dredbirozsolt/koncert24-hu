@@ -1,0 +1,861 @@
+<!-- SEO Settings Page -->
+<!-- Using Rounded Soft Design System & admin.css -->
+
+<!-- Toggle Switch Component CSS -->
+<style>
+    /* Section spacing */
+    .page-container > .data-card {
+        margin-bottom: 2rem;
+    }
+
+    .page-container > .data-card:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Toggle setting layout */
+    .toggle-setting {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+    }
+
+    .toggle-setting__label {
+        font-weight: var(--font-weight-medium);
+        color: var(--text-primary);
+    }
+
+    .seo-section {
+        background: var(--bg-secondary);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .seo-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .seo-section-title {
+        margin: 0;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        font-weight: var(--font-weight-semibold);
+    }
+
+    .toggle-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .seo-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .seo-info-card {
+        padding: 1rem;
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+    }
+
+    .seo-info-card-title {
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .seo-info-card-content {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+
+    .gtm-guide {
+        display: none;
+        background: var(--bg-secondary);
+        border: 2px solid var(--primary-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.8;
+    }
+
+    .gtm-guide h4 {
+        margin: 0 0 1rem 0;
+        color: var(--primary-color);
+    }
+
+    .gtm-guide ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+
+    .gtm-guide-section {
+        margin-bottom: 1rem;
+    }
+
+    .seo-tips-box {
+        background: var(--color-info-100);
+        border-left: 4px solid var(--primary-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+    }
+
+    .seo-tips-box h3 {
+        margin: 0 0 1rem 0;
+        color: var(--text-primary);
+    }
+
+    .seo-tips-box ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+
+    .modal-preview {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        overflow: auto;
+    }
+
+    .modal-preview-content {
+        background: white;
+        margin: 2rem auto;
+        max-width: 1000px;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-preview-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-preview-header h3 {
+        margin: 0;
+        color: var(--primary-color);
+    }
+
+    .modal-preview-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+
+    .modal-preview-body {
+        padding: 1.5rem;
+    }
+
+    .modal-preview-stats {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-base);
+        display: none;
+    }
+
+    .modal-preview-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .modal-preview-code {
+        background: #2d2d2d;
+        color: #f8f8f2;
+        padding: 1.5rem;
+        border-radius: var(--radius-base);
+        overflow-x: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .modal-preview-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        text-align: right;
+    }
+
+    .status-message {
+        display: inline-block;
+        margin-top: 1rem;
+    }
+</style>
+
+<div class="page-container">
+    <!-- Success/Error Messages -->
+    <% if (messages && messages.success) { %>
+    <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+    <% if (messages && messages.error) { %>
+    <div class="alert alert-danger"><%= messages.error %></div>
+    <% } %>
+
+    <!-- 1. Sitemap Information Card -->
+    <div class="data-card">
+        <div class="card-header">
+            <span>📑 Sitemap Beállítások és Információk</span>
+        </div>
+        <div class="card-body">
+            <!-- Sitemap Toggle Settings -->
+            <div class="seo-section">
+                <div class="seo-section-header">
+                    <h3 class="seo-section-title">⚙️ Beállítások</h3>
+                </div>
+                
+                <div class="toggle-grid" id="sitemap-toggles">
+                    <div class="toggle-setting">
+                        <span class="toggle-setting__label">Sitemap generálás engedélyezése</span>
+                        <form method="POST" action="/admin/seo/toggle/sitemap-enabled" class="status-toggle-form">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="status-toggle <%= settings.sitemapEnabled ? 'status-toggle--active' : 'status-toggle--inactive' %>">
+                                <span class="status-toggle__label">
+                                    <%= settings.sitemapEnabled ? 'Bekapcsolva' : 'Kikapcsolva' %>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="toggle-setting">
+                        <span class="toggle-setting__label">Automatikus generálás (napi 2:00)</span>
+                        <form method="POST" action="/admin/seo/toggle/auto-generate" class="status-toggle-form">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="status-toggle <%= settings.autoGenerate ? 'status-toggle--active' : 'status-toggle--inactive' %>">
+                                <span class="status-toggle__label">
+                                    <%= settings.autoGenerate ? 'Bekapcsolva' : 'Kikapcsolva' %>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="toggle-setting">
+                        <span class="toggle-setting__label">Keresőmotorok automatikus értesítése</span>
+                        <form method="POST" action="/admin/seo/toggle/ping-enabled" class="status-toggle-form">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="status-toggle <%= settings.pingEnabled ? 'status-toggle--active' : 'status-toggle--inactive' %>">
+                                <span class="status-toggle__label">
+                                    <%= settings.pingEnabled ? 'Bekapcsolva' : 'Kikapcsolva' %>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="toggle-setting">
+                        <span class="toggle-setting__label">Robots.txt engedélyezése</span>
+                        <form method="POST" action="/admin/seo/toggle/robots-enabled" class="status-toggle-form">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button type="submit" class="status-toggle <%= settings.robotsTxtEnabled ? 'status-toggle--active' : 'status-toggle--inactive' %>">
+                                <span class="status-toggle__label">
+                                    <%= settings.robotsTxtEnabled ? 'Bekapcsolva' : 'Kikapcsolva' %>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sitemap Info -->
+            <div class="form-group">
+                <h3 class="seo-section-title">📊 Státusz</h3>
+                <div id="sitemap-info" class="seo-section">
+                    <div class="loading">🔄 Információk betöltése...</div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button onclick="generateSitemap()" class="btn btn-primary">
+                    🔄 Sitemap Generálás Most
+                </button>
+                <button onclick="pingSearchEngines()" class="btn btn-success">
+                    📡 Keresőmotorok Értesítése
+                </button>
+                <a href="/sitemap.xml" target="_blank" class="btn btn-secondary">
+                    👁️ Sitemap Megtekintése
+                </a>
+                <a href="/robots.txt" target="_blank" class="btn btn-secondary">
+                    🤖 Robots.txt Megtekintése
+                </a>
+            </div>
+            <span id="sitemap-status" class="status-message"></span>
+        </div>
+    </div>
+
+    <!-- 2. Google Tag Manager Settings Card -->
+    <div class="data-card">
+        <div class="card-header">
+            <span>🔗 Google Tag Manager</span>
+        </div>
+        <div class="card-body">
+            <form id="google-services-form">
+                <div class="form-group">
+                    <label class="form-label" for="googleTagManagerId">
+                        Google Tag Manager ID
+                    </label>
+                    <input 
+                        type="text" 
+                        name="googleTagManagerId"
+                        id="googleTagManagerId"
+                        class="form-input"
+                        value="<%= settings.googleTagManagerId %>"
+                        placeholder="GTM-XXXXXXX"
+                    >
+                    <small class="form-help">
+                        Pl: GTM-ABC1234 - <strong>Ez kezeli az összes tracking-et (GA4, Meta Pixel, stb.)</strong>
+                    </small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        💾 GTM Mentése
+                    </button>
+                    <span id="google-services-status"></span>
+                </div>
+
+                <!-- GTM Útmutató gomb -->
+                <div class="form-group">
+                    <button type="button" class="btn btn-info" onclick="toggleGtmGuide()">
+                        📋 GTM Beállítási Útmutató
+                    </button>
+                </div>
+                
+                <!-- GTM Útmutató tartalom -->
+                <div id="gtm-guide" class="gtm-guide">
+                    <h4>📋 GTM Beállítási Útmutató</h4>
+                    <div class="gtm-guide-section">
+                        <strong>🔹 1. Google Tag Manager fiók létrehozása</strong><br>
+                        Menj ide: <a href="https://tagmanager.google.com" target="_blank">https://tagmanager.google.com</a><br>
+                        Hozz létre egy új fiókot (Account):
+                        <ul>
+                            <li>Név: pl. a céged neve</li>
+                            <li>Ország: Magyarország</li>
+                            <li>Container neve: pl. „Weboldal"</li>
+                            <li>Platform: Web</li>
+                            <li>Kapsz egy GTM kódot</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="gtm-guide-section">
+                        <strong>🔹 2. GTM kód beillesztése</strong><br>
+                        Ezen az oldalon a <strong>Google Tag Manager ID</strong> mezőbe illeszd be a GTM által adott azonosítót (pl. GTM-XXXXXXX).<br>
+                        Innentől minden követés innen megy, nem kell külön GA vagy Pixel kódot beilleszteni.
+                    </div>
+                    
+                    <div class="gtm-guide-section">
+                        <strong>🔹 3. Google Analytics 4 (GA4) bekötése GTM-be</strong><br>
+                        GTM admin felület → Tags → New → Google Analytics: GA4 Configuration.<br>
+                        Add meg a Measurement ID-t (ilyesmi: G-XXXXXXX), amit a Google Analytics-ben találsz.<br>
+                        Trigger: All Pages (így minden oldalon fut).<br>
+                        Mentés → Publish.
+                    </div>
+                    
+                    <div class="gtm-guide-section">
+                        <strong>🔹 4. Facebook Pixel bekötése GTM-be</strong><br>
+                        GTM → Tags → New → Custom HTML.<br>
+                        Illeszd be a Facebook Pixel kódot (Events Managerből kapod).<br>
+                        Trigger: All Pages (ha minden oldalon fusson), vagy csak bizonyos oldalakon (pl. köszönőoldal).<br>
+                        Ha konverziókat is akarsz mérni (pl. gombkattintás, vásárlás), akkor külön „Event Tag"-et hozol létre.
+                    </div>
+                    
+                    <div class="gtm-guide-section">
+                        <strong>🔹 5. Tesztelés</strong><br>
+                        GTM-ben van Preview Mode → látod, mely tagek futnak.<br>
+                        Google Tag Assistant Chrome bővítménnyel ellenőrizheted.<br>
+                        GA4-ben és a Facebook Events Managerben is látsz majd élő adatokat.
+                    </div>
+                    
+                    <div class="gtm-guide-section">
+                        <strong>🔹 6. Publikálás és karbantartás</strong><br>
+                        Ha minden működik → Publish.<br>
+                        Ha új követést akarsz hozzáadni (pl. LinkedIn, TikTok, Hotjar), csak GTM-ben kell létrehozni, nem kell a weboldalhoz nyúlni.
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. SEO Keywords Card -->
+    <div class="data-card">
+        <div class="card-header">
+            <span>🔤 SEO Kulcsszavak</span>
+        </div>
+        <div class="card-body">
+            <form id="keywords-form">
+                <div class="form-group">
+                    <label class="form-label" for="defaultKeywords">
+                        Alapértelmezett SEO Kulcsszavak
+                    </label>
+                    <textarea 
+                        name="defaultKeywords"
+                        id="defaultKeywords"
+                        class="form-input"
+                        rows="3"
+                        placeholder="koncert, rendezvény, előadó, fellépő..."
+                    ><%= settings.defaultKeywords || 'koncert, rendezvény, előadó, fellépő, zenész, esküvő, céges rendezvény' %></textarea>
+                    <small class="form-help">
+                        📊 Használat: oldal címek, leírások bővítése, Schema.org (vesszővel elválasztva)
+                    </small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Kulcsszavak Mentése
+                    </button>
+                    <span id="keywords-status"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. SEO Info Box -->
+    <div class="data-card seo-tips-box">
+        <h3>ℹ️ SEO Tippek</h3>
+        <ul>
+            <li>A sitemap automatikusan naponta 2:00-kor generálódik és értesíti a keresőmotorokat</li>
+            <li>Manuálisan is generálhatsz sitemap-et, ha új tartalom került az oldalra</li>
+            <li><strong>A robots.txt dinamikusan generálódik</strong> a beállítások alapján</li>
+            <li>Google Analytics és Tag Manager segít követni a látogatókat</li>
+            <li>Search Console verification szükséges a Google webmastertools használatához</li>
+        </ul>
+    </div>
+
+    <!-- Robots.txt Preview Modal -->
+    <div id="robots-preview-modal" class="modal-preview">
+        <div class="modal-preview-content">
+            <div class="modal-preview-header">
+                <h3>🤖 Robots.txt Előnézet</h3>
+                <button onclick="closeRobotsPreview()" class="modal-preview-close">×</button>
+            </div>
+            <div class="modal-preview-body">
+                <div id="robots-stats" class="modal-preview-stats">
+                    <!-- Stats will be inserted here -->
+                </div>
+                <pre id="robots-content" class="modal-preview-code">Betöltés...</pre>
+            </div>
+            <div class="modal-preview-footer">
+                <a href="/robots.txt" target="_blank" class="btn btn-primary">
+                    🌐 Élő Robots.txt Megtekintése
+                </a>
+                <button onclick="closeRobotsPreview()" class="btn btn-secondary">
+                    Bezárás
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sitemap.xml Preview Modal -->
+    <div id="sitemap-preview-modal" class="modal-preview">
+        <div class="modal-preview-content">
+            <div class="modal-preview-header">
+                <h3>📄 Sitemap.xml Előnézet</h3>
+                <button onclick="closeSitemapPreview()" class="modal-preview-close">×</button>
+            </div>
+            <div class="modal-preview-body">
+                <div id="sitemap-stats" class="modal-preview-stats">
+                    <!-- Stats will be inserted here -->
+                </div>
+                <pre id="sitemap-content" class="modal-preview-code">Betöltés...</pre>
+            </div>
+            <div class="modal-preview-footer">
+                <a href="/sitemap.xml" target="_blank" class="btn btn-primary">
+                    🌐 Élő Sitemap.xml Megtekintése
+                </a>
+                <button onclick="closeSitemapPreview()" class="btn btn-secondary">
+                    Bezárás
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div> <!-- /page-container -->
+
+<script>
+    // Load sitemap information on page load
+    async function loadSitemapInfo() {
+        try {
+            const response = await fetch('/admin/seo/sitemap-info');
+            const data = await response.json();
+            
+            if (data.success) {
+                let html = '<div class="seo-info-grid">';
+                
+                // Sitemap info
+                if (data.sitemap.exists) {
+                    const modified = new Date(data.sitemap.modified).toLocaleString('hu-HU');
+                    const sizeKB = (data.sitemap.size / 1024).toFixed(2);
+                    
+                    html += `
+                        <div class="seo-info-card">
+                            <div class="seo-info-card-title">📄 Sitemap.xml</div>
+                            <div class="seo-info-card-content">
+                                <div>✅ Létezik</div>
+                                <div>📊 ${data.sitemap.urlCount} URL</div>
+                                <div>💾 ${sizeKB} KB</div>
+                                <div>🕒 ${modified}</div>
+                                <div class="form-group">
+                                    <button onclick="showSitemapPreview()" class="btn btn-info btn-sm">
+                                        👁️ Előnézet
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="seo-info-card">
+                            <div class="seo-info-card-title">📄 Sitemap.xml</div>
+                            <div class="seo-info-card-content">
+                                ❌ Még nincs generálva
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Robots.txt info (dinamikus)
+                if (data.robots.exists) {
+                    const sizeBytes = data.robots.size || 0;
+                    const stats = data.robots.stats || {};
+                    
+                    html += `
+                        <div class="seo-info-card">
+                            <div class="seo-info-card-title">🤖 Robots.txt</div>
+                            <div class="seo-info-card-content">
+                                <div>✅ Dinamikus generálás</div>
+                                <div>💾 ${sizeBytes} byte</div>
+                                ${stats.userAgents ? `<div>🤵 ${stats.userAgents} user-agent</div>` : ''}
+                                ${stats.disallowRules ? `<div>🚫 ${stats.disallowRules} disallow szabály</div>` : ''}
+                                <div class="form-group">
+                                    <button onclick="showRobotsPreview()" class="btn btn-info btn-sm">
+                                        👁️ Előnézet
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="seo-info-card">
+                            <div class="seo-info-card-title">🤖 Robots.txt</div>
+                            <div class="seo-info-card-content">
+                                ⚠️ Dinamikus generálás aktív
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += '</div>';
+                
+                document.getElementById('sitemap-info').innerHTML = html;
+            } else {
+                document.getElementById('sitemap-info').innerHTML = '<div class="alert alert-error">❌ Hiba az információk betöltésekor</div>';
+            }
+        } catch (error) {
+            console.error('Error loading sitemap info:', error);
+            document.getElementById('sitemap-info').innerHTML = '<div class="alert alert-error">❌ Hiba: ' + error.message + '</div>';
+        }
+    }
+
+    // Generate sitemap
+    async function generateSitemap() {
+        const statusEl = document.getElementById('sitemap-status');
+        statusEl.innerHTML = '<span class="text-info">🔄 Generálás folyamatban...</span>';
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/admin/seo/generate-sitemap', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                await UniversalModal.success(data.message);
+                setTimeout(() => loadSitemapInfo(), 500);
+            } else {
+                await UniversalModal.error(data.message);
+            }
+        } catch (error) {
+            await UniversalModal.error(`Hálózati hiba: ${error.message}`);
+        }
+        
+        statusEl.innerHTML = '';
+    }
+
+    // Ping search engines
+    async function pingSearchEngines() {
+        const statusEl = document.getElementById('sitemap-status');
+        statusEl.innerHTML = '<span class="text-info">📡 Értesítés folyamatban...</span>';
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/admin/seo/ping-search-engines', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                await UniversalModal.success(data.message);
+            } else {
+                await UniversalModal.error(data.message);
+            }
+        } catch (error) {
+            await UniversalModal.error(`Hálózati hiba: ${error.message}`);
+        }
+        
+        statusEl.innerHTML = '';
+    }
+
+    // Save Google Services settings
+    document.getElementById('google-services-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const statusEl = document.getElementById('google-services-status');
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        statusEl.innerHTML = '<span class="text-info">💾 Mentés...</span>';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Mentés...';
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/admin/seo/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                await UniversalModal.success(result.message);
+                statusEl.innerHTML = '';
+            } else {
+                await UniversalModal.error(result.message);
+                statusEl.innerHTML = '';
+            }
+        } catch (error) {
+            console.error('Error saving Google services settings:', error);
+            await UniversalModal.error(`Hálózati hiba: ${error.message}`);
+            statusEl.innerHTML = '';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+
+    // Save Keywords Form
+    document.getElementById('keywords-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const statusEl = document.getElementById('keywords-status');
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Mentés...';
+        statusEl.innerHTML = '';
+        
+        const formData = new FormData(this);
+        const data = {};
+        
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/admin/seo/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                await UniversalModal.success(result.message);
+                statusEl.innerHTML = '';
+            } else {
+                await UniversalModal.error(result.message);
+                statusEl.innerHTML = '';
+            }
+        } catch (error) {
+            console.error('Error saving keywords:', error);
+            await UniversalModal.error(`Hálózati hiba: ${error.message}`);
+            statusEl.innerHTML = '';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+
+    // Toggle GTM Guide
+    function toggleGtmGuide() {
+        const guide = document.getElementById('gtm-guide');
+        if (guide.style.display === 'none' || guide.style.display === '') {
+            guide.style.display = 'block';
+            guide.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            guide.style.display = 'none';
+        }
+    }
+
+    // Show Robots.txt Preview
+    async function showRobotsPreview() {
+        const modal = document.getElementById('robots-preview-modal');
+        const contentEl = document.getElementById('robots-content');
+        const statsEl = document.getElementById('robots-stats');
+        
+        modal.style.display = 'block';
+        contentEl.textContent = '🔄 Betöltés...';
+        statsEl.style.display = 'none';
+        
+        try {
+            const response = await fetch('/admin/seo/robots-preview');
+            const data = await response.json();
+            
+            if (data.success) {
+                contentEl.textContent = data.content;
+                
+                // Display stats if available
+                if (data.stats) {
+                    const stats = data.stats;
+                    statsEl.innerHTML = `
+                        <div class="modal-preview-stats-grid">
+                            <div><strong>Sorok:</strong> ${stats.totalLines}</div>
+                            <div><strong>User-agents:</strong> ${stats.userAgents}</div>
+                            <div><strong>Disallow:</strong> ${stats.disallowRules}</div>
+                            <div><strong>Allow:</strong> ${stats.allowRules}</div>
+                            <div><strong>Sitemaps:</strong> ${stats.sitemaps}</div>
+                            <div><strong>Méret:</strong> ${stats.size} byte</div>
+                        </div>
+                    `;
+                    statsEl.style.display = 'block';
+                }
+            } else {
+                contentEl.textContent = '❌ Hiba a betöltés során: ' + data.message;
+            }
+        } catch (error) {
+            contentEl.textContent = '❌ Hiba: ' + error.message;
+        }
+    }
+
+    // Close Robots.txt Preview
+    function closeRobotsPreview() {
+        document.getElementById('robots-preview-modal').style.display = 'none';
+    }
+
+    // Show Sitemap.xml Preview
+    async function showSitemapPreview() {
+        const modal = document.getElementById('sitemap-preview-modal');
+        const contentEl = document.getElementById('sitemap-content');
+        const statsEl = document.getElementById('sitemap-stats');
+        
+        modal.style.display = 'block';
+        contentEl.textContent = '🔄 Betöltés...';
+        statsEl.style.display = 'none';
+        
+        try {
+            const response = await fetch('/sitemap.xml');
+            const text = await response.text();
+            
+            if (response.ok) {
+                contentEl.textContent = text;
+                
+                // Parse and display stats
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, 'text/xml');
+                const urls = xmlDoc.getElementsByTagName('url');
+                const lastmod = xmlDoc.getElementsByTagName('lastmod');
+                const changefreq = xmlDoc.getElementsByTagName('changefreq');
+                const priority = xmlDoc.getElementsByTagName('priority');
+                
+                statsEl.innerHTML = `
+                    <div class="modal-preview-stats-grid">
+                        <div><strong>URL-ek:</strong> ${urls.length}</div>
+                        <div><strong>Lastmod:</strong> ${lastmod.length}</div>
+                        <div><strong>Changefreq:</strong> ${changefreq.length}</div>
+                        <div><strong>Priority:</strong> ${priority.length}</div>
+                        <div><strong>Méret:</strong> ${(text.length / 1024).toFixed(2)} KB</div>
+                        <div><strong>Karakterek:</strong> ${text.length}</div>
+                    </div>
+                `;
+                statsEl.style.display = 'block';
+            } else {
+                contentEl.textContent = '❌ Hiba a betöltés során: ' + response.status;
+            }
+        } catch (error) {
+            contentEl.textContent = '❌ Hiba: ' + error.message;
+        }
+    }
+
+    // Close Sitemap.xml Preview
+    function closeSitemapPreview() {
+        document.getElementById('sitemap-preview-modal').style.display = 'none';
+    }
+
+    // Close modal on background click
+    document.addEventListener('click', (e) => {
+        const robotsModal = document.getElementById('robots-preview-modal');
+        const sitemapModal = document.getElementById('sitemap-preview-modal');
+        
+        if (e.target === robotsModal) {
+            closeRobotsPreview();
+        }
+        if (e.target === sitemapModal) {
+            closeSitemapPreview();
+        }
+    });
+
+    // Load info on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        loadSitemapInfo();
+    });
+</script>

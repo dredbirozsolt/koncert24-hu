@@ -1,0 +1,46 @@
+# [TYPE] Short description (max 50 chars)
+
+# Longer description (wrap at 72 chars)
+# Explain WHAT and WHY, not HOW
+
+# Design System Compliance:
+# [ ] No inline styles
+# [ ] No hardcoded values
+# [ ] Design System tokens used
+# [ ] Global solution
+
+# Security:
+# [ ] CSRF token added (if POST/PUT/DELETE)
+# [ ] Input validation on backend
+# [ ] No sensitive data in logs
+
+# Error Handling:
+# [ ] Try-catch blocks added
+# [ ] User feedback implemented
+# [ ] Proper logging
+
+# Testing:
+# [ ] Manually tested
+# [ ] No console.log left in code
+# [ ] Works in dark mode
+
+# --- COMMIT TYPES ---
+# feat:     New feature
+# fix:      Bug fix
+# refactor: Code refactoring
+# style:    Design System changes
+# security: Security improvements
+# perf:     Performance improvements
+# docs:     Documentation
+# test:     Tests
+# chore:    Maintenance
+
+# --- EXAMPLE ---
+# feat: Add user profile edit functionality
+#
+# - Implement profile form with validation
+# - Add CSRF protection
+# - Use Design System form components
+# - Add error handling with showAlert()
+#
+# Closes #123

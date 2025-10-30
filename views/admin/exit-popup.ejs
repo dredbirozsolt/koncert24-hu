@@ -1,0 +1,557 @@
+<div class="page-container">
+    <% if (messages.success) { %>
+        <div class="alert alert-success">
+            <span>✅</span>
+            <span><%= messages.success %></span>
+        </div>
+    <% } %>
+
+    <% if (messages.error) { %>
+        <div class="alert alert-error">
+            <span>❌</span>
+            <span><%= messages.error %></span>
+        </div>
+    <% } %>
+
+    <div class="admin-two-col">
+        <!-- Bal oldal: Form -->
+        <div>
+            <form method="POST" action="/admin/exit-popup" id="exitPopup-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                
+                <!-- Általános beállítások -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        🔛 Általános Beállítások
+                    </h3>
+                    
+                    <div class="form__group">
+                        <div class="form__switch-row">
+                            <span class="form__switch-row-label">Popup engedélyezése</span>
+                            <input type="checkbox" 
+                                   class="form-switch-input"
+                                   name="exit_popup.enabled" 
+                                   id="exit_popup.enabled"
+                                   value="true"
+                                   <%= flatSettings['exit_popup.enabled'] === 'true' ? 'checked' : '' %>>
+                        </div>
+                        <small class="form__hint">A popup megjelenítésének be/kikapcsolása a teljes weboldalon</small>
+                    </div>
+                </div>
+
+                <!-- Megjelenítési módok -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        ✨ Megjelenítési Módok
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label class="form__label">Trigger opciók (több is kiválasztható)</label>
+                        <div class="form__toggle-options--stack">
+                            <div class="form__switch-row">
+                                <label class="form__switch-row-label" for="exit_popup.trigger_exit_intent">
+                                    🖱️ Exit Intent (Desktop)
+                                </label>
+                                <input type="checkbox" 
+                                       class="form-switch-input"
+                                       name="exit_popup.trigger_exit_intent" 
+                                       id="exit_popup.trigger_exit_intent"
+                                       value="true"
+                                       <%= flatSettings['exit_popup.trigger_exit_intent'] === 'true' ? 'checked' : '' %>>
+                            </div>
+                            
+                            <div class="form__switch-row">
+                                <label class="form__switch-row-label" for="exit_popup.trigger_mobile_exit">
+                                    📱 Mobil Exit
+                                </label>
+                                <input type="checkbox" 
+                                       class="form-switch-input"
+                                       name="exit_popup.trigger_mobile_exit" 
+                                       id="exit_popup.trigger_mobile_exit"
+                                       value="true"
+                                       <%= flatSettings['exit_popup.trigger_mobile_exit'] === 'true' ? 'checked' : '' %>>
+                            </div>
+                            
+                            <div class="form__switch-row">
+                                <label class="form__switch-row-label" for="exit_popup.trigger_timed">
+                                    ⏱️ Időzített Megjelenés
+                                </label>
+                                <input type="checkbox" 
+                                       class="form-switch-input"
+                                       name="exit_popup.trigger_timed" 
+                                       id="exit_popup.trigger_timed"
+                                       value="true"
+                                       <%= flatSettings['exit_popup.trigger_timed'] === 'true' ? 'checked' : '' %>>
+                            </div>
+                        </div>
+                        <small class="form__hint">Bármelyik trigger aktiválhatja a popupot</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="exit_popup.delay" class="form__label">Időzítés (másodpercben)</label>
+                        <input type="number" 
+                               name="exit_popup.delay" 
+                               id="exit_popup.delay"
+                               class="form__control"
+                               value="<%= flatSettings['exit_popup.delay'] || '10' %>"
+                               min="1"
+                               max="300"
+                               placeholder="10">
+                        <small class="form__hint">Csak időzített popup esetén (1-300 mp)</small>
+                    </div>
+                </div>
+
+                <!-- Popup tartalma -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        ✏️ Popup Tartalma
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label for="exit_popup.title" class="form__label">Címsor <span>*</span></label>
+                        <input type="text" 
+                               name="exit_popup.title" 
+                               id="exit_popup.title"
+                               class="form__control"
+                               value="<%= flatSettings['exit_popup.title'] || 'Ne menj el még!' %>"
+                               placeholder="Ne menj el még!"
+                               required>
+                        <small class="form__hint">Rövid, figyelemfelkeltő címsor</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="exit_popup.message" class="form__label">Üzenet <span>*</span></label>
+                        <input type="text" 
+                               name="exit_popup.message" 
+                               id="exit_popup.message"
+                               class="form__control"
+                               value="<%= flatSettings['exit_popup.message'] || 'Kíváncsi vagy az árakra? Regisztrálj és azonnal láthatod az összes előadó árát!' %>"
+                               placeholder="Kíváncsi vagy az árakra? Regisztrálj és azonnal láthatod az összes előadó árát!"
+                               maxlength="200"
+                               required>
+                        <small class="form__hint">Részletes szöveg, max 200 karakter</small>
+                    </div>
+
+                    <div>
+                        <div class="form__group">
+                            <label for="exit_popup.cta_text" class="form__label">CTA Gomb Szövege <span>*</span></label>
+                            <input type="text" 
+                                   name="exit_popup.cta_text" 
+                                   id="exit_popup.cta_text"
+                                   class="form__control"
+                                   value="<%= flatSettings['exit_popup.cta_text'] || 'Regisztrálok most' %>"
+                                   placeholder="Regisztrálok most"
+                                   maxlength="30"
+                                   required>
+                            <small class="form__hint">Max 30 karakter</small>
+                        </div>
+
+                        <div class="form__group">
+                            <label for="exit_popup.cta_link" class="form__label">CTA Gomb Linkje <span>*</span></label>
+                            <input type="text" 
+                                   name="exit_popup.cta_link" 
+                                   id="exit_popup.cta_link"
+                                   class="form__control"
+                                   value="<%= flatSettings['exit_popup.cta_link'] || '/auth/register' %>"
+                                   placeholder="/auth/register"
+                                   required>
+                            <small class="form__hint">Relatív vagy abszolút URL</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kivétel lista -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        🚫 Kivételek
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label for="exit_popup.excluded_paths" class="form__label">URL-ek ahol NEM jelenik meg</label>
+                        <textarea name="exit_popup.excluded_paths" 
+                                  id="exit_popup.excluded_paths" 
+                                  class="form__control excluded-paths-textarea"
+                                  rows="6"
+                                  placeholder="/auth/login&#10;/auth/register&#10;/foglalas&#10;/eloadok/részletek"
+                                 ><%= flatSettings['exit_popup.excluded_paths'] || '' %></textarea>
+                        <small class="form__hint">
+                            <strong>⚠️ FONTOS:</strong> A <code>/admin</code> útvonal beégetett - ne töröld!<br>
+                            Minden URL-t új sorba írj. Részleges egyezés működik.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="btn__group btn__group--equal">
+                    <button type="button" class="btn btn--secondary" onclick="testExitPopup()">
+                        🧪 Teszt
+                    </button>
+                    <button type="submit" class="btn btn--primary">
+                        💾 Mentés
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Jobb oldal: Info Panels -->
+        <div>
+            <!-- Használati útmutató -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ℹ️ Használat
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>⚠️ Fontos:</strong> A popup csak <strong>nem bejelentkezett</strong> felhasználóknak jelenik meg!
+                    </p>
+                    
+                    <p>
+                        <strong>🧪 Tesztelés:</strong><br>
+                        • Kattints a "Teszt" gombra a popup előnézethez<br>
+                        • Nyisd meg inkognitó módban a főoldalt<br>
+                        • Az admin oldalakon nem jelenik meg
+                    </p>
+                    
+                    <p>
+                        <strong>📊 Gyakoriság:</strong><br>
+                        Sessionönként csak egyszer jelenik meg (bezárás vagy CTA kattintás után).
+                    </p>
+                </div>
+            </div>
+
+            <!-- Trigger módok -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⚡ Trigger Módok
+                </h3>
+                
+                <div>
+                    <div>
+                        <strong>🖱️ Exit Intent (Desktop):</strong><br>
+                        Megjelenik, ha az egér az ablak teteje felé mozdul (kilépési szándék).
+                    </div>
+                    
+                    <div>
+                        <strong>📱 Mobil Exit:</strong><br>
+                        Gyors felfelé scroll vagy vissza gomb érzékeléskor jelenik meg.
+                    </div>
+                    
+                    <div>
+                        <strong>⏱️ Időzített:</strong><br>
+                        X másodperc után automatikusan megjelenik az oldalon.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tippek -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    💡 Tippek
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>✏️ Címsor:</strong><br>
+                        Rövid, figyelemfelkeltő (pl. "Várj! Ne maradj le!")
+                    </p>
+                    
+                    <p>
+                        <strong>💬 Üzenet:</strong><br>
+                        Egyértelmű value proposition (pl. "Regisztrálj és láthatod az árakat!")
+                    </p>
+                    
+                    <p>
+                        <strong>🎯 CTA Gomb:</strong><br>
+                        Konkrét cselekvés (pl. "Mutasd az árakat", "Regisztrálok most")
+                    </p>
+                    
+                    <p>
+                        <strong>⚙️ Trigger Javaslat:</strong><br>
+                        Desktop: Exit intent<br>
+                        Mobil: Mobil exit vagy Időzített (5-10 mp)
+                    </p>
+                </div>
+            </div>
+
+            <!-- GDPR -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🛡️ Adatvédelem
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>🔒 GDPR kompatibilis:</strong><br>
+                        Nem tárol személyes adatokat. Csak a megjelenítési státuszt menti sessionStorage-ban.
+                    </p>
+                    
+                    <p>
+                        <strong>🍪 Nem használ cookie-kat:</strong><br>
+                        A session lejártával minden adat törlődik automatikusan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Példák kivétel listára -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📋 Kivétel Lista Példák
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>Tipikus kizárt oldalak:</strong>
+                    </p>
+                    
+                    <div>
+                        /admin<br>
+                        /auth/login<br>
+                        /auth/register<br>
+                        /foglalas<br>
+                        /profil<br>
+                        /vasarlas
+                    </div>
+                    
+                    <p>
+                        <strong>💡 Tipp:</strong> Ha <code>/eloadok</code> van a listán, akkor <code>/eloadok/kategoria/pop</code> is ki lesz zárva (részleges egyezés).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const csrfToken = '<%= csrfToken %>';
+
+// Auto-save number input (delay field)
+const delayInput = document.getElementById('exit_popup.delay');
+if (delayInput) {
+    delayInput.addEventListener('blur', async function() {
+        const value = parseInt(this.value);
+        const min = parseInt(this.min);
+        const max = parseInt(this.max);
+        
+        // Validate min/max
+        if (value < min || value > max) {
+            showAlert('error', `❌ Érték ${min} és ${max} között kell legyen`);
+            this.value = this.defaultValue;
+            return;
+        }
+        
+        try {
+            const data = {
+                'exit_popup.delay': this.value
+            };
+            
+            const response = await fetch('/admin/exit-popup', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                showAlert('success', '✅ Mentve: Időzítés');
+            } else {
+                throw new Error('Save failed: ' + response.status);
+            }
+        } catch (error) {
+            console.error('❌ Auto-save error:', error);
+            this.value = this.defaultValue;
+            showAlert('error', '❌ Mentés sikertelen: ' + error.message);
+        }
+    });
+}
+
+// Auto-save checkboxes (switches)
+const switches = [
+    'exit_popup.enabled',
+    'exit_popup.trigger_exit_intent',
+    'exit_popup.trigger_mobile_exit',
+    'exit_popup.trigger_timed'
+];
+
+switches.forEach(switchId => {
+    const switchElement = document.getElementById(switchId);
+    if (switchElement) {
+        switchElement.addEventListener('change', async function() {
+            const checkbox = this;
+            const originalState = checkbox.checked;
+            
+            // Force repaint by toggling a dummy class
+            checkbox.classList.add('switching');
+            requestAnimationFrame(() => {
+                checkbox.classList.remove('switching');
+                // Remove focus to prevent glow
+                checkbox.blur();
+            });
+            
+            try {
+                // Send only the current switch value
+                const data = {
+                    [switchId]: checkbox.checked ? 'true' : 'false'
+                };
+                
+                // Send AJAX request with JSON body
+                const response = await fetch('/admin/exit-popup', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    // Show success notification
+                    const labelElement = checkbox.closest('.form__group, .form__toggle-option )?.querySelector('.form__label, .form__toggle-label, .form__switch-row-label');
+                    const label = labelElement ? labelElement.textContent.trim().replace(/[🖱️📱⏱️]/g, '').trim() : switchId;
+                    showAlert('success', '✅ Mentve: ' + label);
+                } else {
+                    throw new Error('Save failed: ' + response.status);
+                }
+            } catch (error) {
+                console.error('❌ Auto-save error:', error);
+                // Revert checkbox state
+                checkbox.checked = originalState;
+                // Force repaint after revert
+                checkbox.classList.add('switching');
+                requestAnimationFrame(() => {
+                    checkbox.classList.remove('switching');
+                });
+                showAlert('error', '❌ Mentés sikertelen: ' + error.message);
+            }
+        });
+    }
+});
+
+// Test Exit Popup - Show exact preview with real CSS
+function testExitPopup() {
+    // Get current form values
+    const form = document.getElementById('exitPopup-form');
+    const title = form.querySelector('[name="exit_popup.title"]').value || 'Ne menj el még!';
+    const message = form.querySelector('[name="exit_popup.message"]').value || '';
+    const ctaText = form.querySelector('[name="exit_popup.cta_text"]').value || 'Regisztrálok most';
+    const ctaLink = form.querySelector('[name="exit_popup.cta_link"]').value || '/auth/register';
+    
+    // Create popup with exact structure from exit-popup.js
+    const popup = document.createElement('div');
+    popup.className = 'exit-popup exit-popup--visible';
+    popup.style.cssText = 'position: fixed !important; z-index: 999999 !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;';
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('aria-labelledby', 'exit-popup-title');
+
+    popup.innerHTML = `
+        <div class="exit-popup__overlay"></div>
+        <div class="exit-popup__content">
+          <button type="button" class="exit-popup__close" aria-label="Bezárás" onclick="this.closest('.exit-popup').remove()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          
+          <div class="exit-popup__body">
+            <h2 id="exit-popup-title" class="exit-popup__title">${escapeHtml(title)}</h2>
+            ${message ? `<p class="exit-popup__message">${escapeHtml(message)}</p>` : ''}
+            
+            <div class="exit-popup__actions">
+              <a href="${escapeHtml(ctaLink)}" class="exit-popup__cta" onclick="event.preventDefault(); alert('🧪 Teszt mód - Link: ${escapeHtml(ctaLink)}');">
+                ${escapeHtml(ctaText)}
+              </a>
+              <button type="button" class="exit-popup__dismiss" onclick="this.closest('.exit-popup').remove()">
+                Nem, köszönöm
+              </button>
+            </div>
+          </div>
+        </div>
+    `;
+
+    // Append to body
+    document.body.appendChild(popup);
+}
+
+// Helper function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+// No local definition needed - automatically available on all admin pages
+
+// Form submit handler - AJAX save without page reload
+document.getElementById('exitPopup-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+    
+    // Disable submit button during save
+    submitButton.disabled = true;
+    submitButton.textContent = '💾 Mentés...';
+    
+    try {
+        // Collect form data
+        const formData = new FormData(form);
+        const data = {};
+        
+        // Convert FormData to object
+        for (let [key, value] of formData.entries()) {
+            // Handle checkboxes - if not in formData, they are unchecked
+            if (key.startsWith('exit_popup.trigger_')) {
+                data[key] = 'true';
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        // Add unchecked checkboxes as 'false'
+        const checkboxes = form.querySelectorAll('input[type="checkbox"][name^="exit_popup.trigger_"]');
+        checkboxes.forEach(cb => {
+            if (!cb.checked) {
+                data[cb.name] = 'false';
+            }
+        });
+        
+        // Send AJAX request
+        const response = await fetch('/admin/exit-popup', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            showAlert('success', '✅ Exit Popup beállítások sikeresen mentve!');
+        } else {
+            const error = await response.json().catch(() => ({ message: 'Ismeretlen hiba' }));
+            throw new Error(error.message || 'Mentés sikertelen');
+        }
+    } catch (error) {
+        console.error('❌ Form save error:', error);
+        showAlert('error', '❌ Mentés sikertelen: ' + error.message);
+    } finally {
+        // Re-enable submit button
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+    }
+});
+</script>

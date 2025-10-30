@@ -1,0 +1,323 @@
+<!-- Admin Backup Management -->
+<style>
+    .admin-container {
+        background: #f5f5f5;
+        min-height: 80vh;
+        padding: 2rem 0;
+    }
+
+    .admin-header {
+        background: white;
+        padding: 1rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .admin-header h1 {
+        color: #667eea;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .back-btn {
+        background: #6c757d;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .back-btn:hover {
+        background: #5a6268;
+    }
+
+    .backup-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .card h2 {
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.25rem 0.5rem 0.25rem 0;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5a6fd8;
+    }
+
+    .btn-warning {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .btn-warning:hover {
+        background: #e0a800;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+    }
+
+    .backup-list {
+        margin-top: 1.5rem;
+    }
+
+    .backup-item {
+        background: #f8f9fa;
+        padding: 1rem;
+        margin: 0.75rem 0;
+        border-radius: 8px;
+        border-left: 4px solid #28a745;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .backup-item .backup-name {
+        font-weight: 500;
+        color: #333;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .backup-item .backup-date {
+        color: #666;
+        font-size: 0.9rem;
+        margin: 0.25rem 1rem;
+    }
+
+    .backup-item .backup-size {
+        color: #667eea;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    .loading {
+        display: block;
+        color: #667eea;
+        font-style: italic;
+        padding: 0.5rem;
+    }
+
+    .success-message {
+        background: #d4edda;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border: 1px solid #c3e6cb;
+    }
+
+    .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border: 1px solid #f5c6cb;
+    }
+
+    .info-box {
+        background: #e7f3ff;
+        border-left: 4px solid #667eea;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-box p {
+        margin: 0.5rem 0;
+        color: #333;
+    }
+
+    @media (max-width: 768px) {
+        .backup-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .backup-item .backup-date,
+        .backup-item .backup-size {
+            margin: 0.25rem 0;
+        }
+    }
+</style>
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>💾 Backup Kezelés</h1>
+        <a href="/admin" class="back-btn">← Vissza a Dashboard-ra</a>
+    </div>
+
+    <div class="backup-container">
+        <!-- Beállítások kártya -->
+        <div class="card">
+            <h2>⚙️ Backup Beállítások</h2>
+            
+            <form id="backup-settings-form" style="max-width: 600px;">
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="maxCount" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333;">
+                        📊 Maximum Backup Darabszám
+                    </label>
+                    <input 
+                        type="number" 
+                        id="maxCount" 
+                        name="maxCount" 
+                        value="<%= settings.maxCount %>"
+                        min="1"
+                        max="100"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;"
+                        required
+                    >
+                    <small style="color: #666; display: block; margin-top: 0.25rem;">
+                        Ennyi backup maradhat meg a rendszerben egyszerre
+                    </small>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="maxAgeDays" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #333;">
+                        📅 Maximum Megőrzési Idő (napokban)
+                    </label>
+                    <input 
+                        type="number" 
+                        id="maxAgeDays" 
+                        name="maxAgeDays" 
+                        value="<%= settings.maxAgeDays %>"
+                        min="1"
+                        max="365"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;"
+                        required
+                    >
+                    <small style="color: #666; display: block; margin-top: 0.25rem;">
+                        Ennél régebbi backupok automatikusan törlődnek
+                    </small>
+                </div>
+                
+                <button type="submit" class="btn btn-success">
+                    💾 Beállítások Mentése
+                </button>
+            </form>
+            
+                        <div id="settings-status" style="margin-top: 1rem;"></div>
+        </div>
+        
+        <!-- Backup lista kártya -->
+        <div class="card">
+            <h2>📂 Backup Lista</h2>
+
+            <% if (backupInfo.backups && backupInfo.backups.length > 0) { %>
+                <div class="backup-list">
+                    <% backupInfo.backups.forEach(backup => { %>
+                        <div class="backup-item">
+                            <div class="backup-name">
+                                📦 <%= backup.name %>
+                            </div>
+                            <div class="backup-date">
+                                📅 <%= new Date(backup.created).toLocaleString('hu-HU') %>
+                            </div>
+                            <div class="backup-size">
+                                💾 <%= (backup.size / 1024 / 1024).toFixed(2) %> MB
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p style="color: #666; text-align: center; padding: 2rem;">
+                    📭 Még nincs egyetlen backup sem.
+                </p>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+<script>
+    // Beállítások mentése
+    document.getElementById('backup-settings-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const statusEl = document.getElementById('settings-status');
+        const maxCount = document.getElementById('maxCount').value;
+        const maxAgeDays = document.getElementById('maxAgeDays').value;
+        
+        statusEl.innerHTML = '<div class="loading">⏳ Beállítások mentése...</div>';
+        
+        fetch('/admin/backup/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ maxCount, maxAgeDays })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                statusEl.innerHTML = '<div class="success-message">✅ ' + data.message + '</div>';
+                // Oldal frissítése 2 másodperc után
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                statusEl.innerHTML = '<div class="error-message">❌ Hiba: ' + data.error + '</div>';
+            }
+        })
+        .catch(error => {
+            statusEl.innerHTML = '<div class="error-message">❌ Hálózati hiba: ' + error.message + '</div>';
+        });
+    });
+</script>

@@ -1,0 +1,398 @@
+<!-- Admin Partners Management -->
+
+
+<div class="page-container">
+    <!-- 2 oszlopos grid -->
+    <div class="admin-two-col">
+        <!-- BAL OSZLOP: Statisztikák, Szűrők, Táblázat -->
+        <div>
+            <!-- Statistics -->
+            <div class="card--data">
+                <h3>📊 Statisztikák</h3>
+                <div class="stats-grid">
+                    <div class="card--stat card--stat--primary">
+                        <h3>📊 Összes Partner</h3>
+                        <div class="stat-value"><%= partners.length %></div>
+                    </div>
+                    <div class="card--stat card--stat--success">
+                        <h3>✅ Aktív</h3>
+                        <div class="stat-value"><%= partners.filter(p => p.status === 'active').length %></div>
+                    </div>
+                    <div class="card--stat card--stat--warning">
+                        <h3>⏳ Függőben</h3>
+                        <div class="stat-value"><%= partners.filter(p => p.status === 'pending').length %></div>
+                    </div>
+                    <div class="card--stat card--stat--primary">
+                        <h3>🔗 Backlinkkel</h3>
+                        <div class="stat-value"><%= partners.filter(p => p.backlinkUrl && p.isVerified).length %></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card--filter mb-4">
+        <form method="GET" action="/admin/partners">
+            <div class="filter-grid-inline grid-cols-3">
+                <div class="form__group mb-0">
+                    <label>Keresés</label>
+                    <input type="text" name="search" class="form__control"
+                           placeholder="Név vagy weboldal..."
+                           value="<%= filters.search || '' %>">
+                </div>
+                <div class="form__group mb-0">
+                    <label>Státusz</label>
+                    <select name="status" class="form__select">
+                        <option value="">Összes</option>
+                        <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Aktív</option>
+                        <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>Inaktív</option>
+                        <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Függőben</option>
+                    </select>
+                </div>
+                <div class="form__group mb-0">
+                    <label>Kategória</label>
+                    <select name="categoryId" class="form__select">
+                        <option value="">Összes</option>
+                        <% if (categories && categories.length > 0) { %>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.id %>" <%= filters.categoryId == cat.id ? 'selected' : '' %>>
+                                    <% if (cat.icon) { %><i class="<%= cat.icon %>"></i> <% } %>
+                                    <%= cat.name %>
+                                </option>
+                            <% }); %>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="btn__group btn__group--equal mt-3">
+                <button type="submit" class="btn btn--primary">
+                    🔍 Szűrés
+                </button>
+            </div>
+        </form>
+    </div>
+
+            <!-- Action Buttons -->
+            <div class="btn__group btn__group--equal mb-4">
+        <a href="/admin/partners/categories" class="btn btn--secondary">
+            ⚙️ Kategóriák kezelése
+        </a>
+        <a href="/admin/partners/new" class="btn btn--primary">
+            ➕ Új Partner
+        </a>
+    </div>
+
+            <!-- Partners Table -->
+            <div class="card--data">
+        <% if (partners.length === 0) { %>
+            <div class="empty-state">
+                🤝 <h3 class="my-4 text-primary">Még nincsenek partnerek</h3>
+                <p>Kezdj el partnereket hozzáadni!</p>
+                <a href="/admin/partners/new" class="btn btn--primary mt-2">
+                    ➕ Első Partner Hozzáadása
+                </a>
+            </div>
+        <% } else { %>
+            <div class="table--responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Logo</th>
+                            <th>Partner</th>
+                            <th>Weboldal</th>
+                            <th>Státusz</th>
+                            <th>Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% partners.forEach(partner => { %>
+                            <tr>
+                                <td data-label="Logo">
+                                    <% if (partner.logo) { %>
+                                        <img src="<%= partner.logo %>" 
+                                             alt="<%= partner.name %> logó" 
+                                             title="<%= partner.name %>" 
+                                             width="100" 
+                                             height="50" 
+                                             class="w-15 h-15 object-contain rounded-lg border-2 p-1">
+                                    <% } else { %>
+                                        🖼️ <% } %>
+                                </td>
+                                <td data-label="Partner">
+                                    <strong><%= partner.name %></strong>
+                                    <% if (partner.contactName) { %>
+                                        <br><small class="text-secondary"><%= partner.contactName %></small>
+                                    <% } %>
+                                </td>
+                                <td data-label="Weboldal">
+                                    <a href="<%= partner.websiteUrl %>" target="_blank">
+                                        <%= partner.websiteUrl.replace(/^https?:\/\/(www\.)?/, '') %>
+                                    </a>
+                                </td>
+                                <td data-label="Státusz">
+                                    <% if (partner.status === 'active') { %>
+                                        <span class="badge badge-success">
+                                            Aktív
+                                        </span>
+                                    <% } else { %>
+                                        <span class="badge badge-error">
+                                            Inaktív
+                                        </span>
+                                    <% } %>
+                                </td>
+                                <td data-label="Műveletek">
+                                    <div class="actions">
+                                        <a href="/admin/partners/<%= partner.id %>/edit" class="btn btn-icon-only btn--secondary" title="Szerkesztés">
+                                            ✏️
+                                        </a>
+                                        <button class="btn btn-icon-only btn-error delete-partner" 
+                                                data-id="<%= partner.id %>" 
+                                                data-name="<%= partner.name %>"
+                                                title="Törlés">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+        </div>
+        <!-- /.bal oszlop -->
+
+        <!-- JOBB OSZLOP: Info Boxok -->
+        <div>
+            
+            <!-- Partner Státuszok -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📶 Státusz Típusok
+                </h3>
+                <div class="card__info-content">
+                    <div class="mb-3">
+                        <strong class="text-success">✅ Aktív:</strong>
+                        <p class="my-1 text-sm">A partner megjelenik a weboldal partner szekciójában</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="text-error">❌ Inaktív:</strong>
+                        <p class="my-1 text-sm">A partner nem jelenik meg, de az adatai megmaradnak</p>
+                    </div>
+                    <div>
+                        <strong class="text-warning">🕐 Függőben:</strong>
+                        <p class="my-1 text-sm">Folyamatban lévő partner regisztráció, még nem aktív</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backlink Ellenőrzés -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🔗 Backlink Ellenőrzés
+                </h3>
+                <div class="card__info-content">
+                    <p class="mb-3">A backlink (visszahivatkozás) ellenőrzése automatikusan történik.</p>
+                    
+                    <p><strong>Hogyan működik?</strong></p>
+                    <ol class="my-2 pl-5 text-sm">
+                        <li class="mb-2">Add meg a partner backlink URL-jét</li>
+                        <li class="mb-2">Kattints az ellenőrzés gombra (🔍)</li>
+                        <li class="mb-2">A rendszer ellenőrzi, hogy a partner oldalán szerepel-e a linkünk</li>
+                        <li>Ha megtalálható, a státusz "✅ Ellenőrizve" lesz</li>
+                    </ol>
+                    
+                    <p class="text-sm text-muted mt-3">
+                        ℹ️ Az újraellenőrzés gombbal (🔄) frissítheted a státuszt.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Kategóriák -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📁 Kategóriák
+                </h3>
+                <div class="card__info-content">
+                    <p>A partner kategóriák segítenek szervezni és csoportosítani a partnereket.</p>
+                    
+                    <p class="mt-3"><strong>Előnyök:</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2">Áttekinthetőbb partner lista</li>
+                        <li class="mb-2">Könnyebb szűrés és keresés</li>
+                        <li class="mb-2">Ikonok és színek vizuális megkülönböztetésre</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Logo és Képek -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🖼️ Logo Követelmények
+                </h3>
+                <div class="card__info-content">
+                    <p><strong>Ajánlott logo specifikációk:</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2">Méret: 400x400px vagy 200x100px</li>
+                        <li class="mb-2">Formátum: PNG (átlátszó háttérrel) vagy SVG</li>
+                        <li class="mb-2">Fájlméret: max 200 KB</li>
+                        <li class="mb-2">Háttér: átlátszó vagy fehér</li>
+                    </ul>
+                    
+                    <p class="mt-3"><strong>Tippek:</strong></p>
+                    <p class="text-sm my-2">
+                        • Használj vektoros (SVG) logót ha lehetséges<br>
+                        • A logo legyen tiszta, jól olvasható<br>
+                        • Kerüld a túl kis vagy túl nagy logókat
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sorrend és Megjelenés -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⇅ Sorrend Kezelése
+                </h3>
+                <div class="card__info-content">
+                    <p>A partnerek megjelenési sorrendje a "Sorrend" mező alapján történik.</p>
+                    
+                    <p class="mt-3"><strong>Hogyan működik?</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2">Alacsonyabb szám = előrébb jelenik meg</li>
+                        <li class="mb-2">Alapértelmezett érték: 0</li>
+                        <li class="mb-2">Azonos sorrend esetén ABC sorrend szerint</li>
+                    </ul>
+                    
+                    <p class="text-sm text-muted mt-3">
+                        💡 Tipp: A legfontosabb partnereket add meg 1, 2, 3... sorrendel!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Partner Adatok -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    💾 Partner Információk
+                </h3>
+                <div class="card__info-content">
+                    <p><strong>Kötelező mezők:</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2"><strong>Név:</strong> A partner cég neve</li>
+                        <li class="mb-2"><strong>Weboldal URL:</strong> A partner honlapja</li>
+                        <li class="mb-2"><strong>Státusz:</strong> Aktív/Inaktív/Függőben</li>
+                    </ul>
+                    
+                    <p class="mt-3"><strong>Opcionális mezők:</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2">Logo, leírás, kapcsolattartó</li>
+                        <li class="mb-2">Backlink URL, email, telefon</li>
+                        <li>Kategória, sorrend</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /.jobb oszlop -->
+    </div>
+    <!-- /.admin-two-col -->
+</div>
+<!-- /.page-container -->
+
+<script src="/js/design-system/modal.js"></script>
+<script>
+let deleteModal = null;
+
+document.querySelectorAll('.delete-partner').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const partnerName = this.dataset.name;
+        const partnerId = this.dataset.id;
+        
+        const content = `
+            <p>Biztosan törölni szeretnéd a(z) <strong>${partnerName}</strong> partnert?</p>
+        `;
+        
+        const footer = `
+            <button type="button" class="btn btn--secondary modal-cancel">Mégse</button>
+            <form method="POST" action="/admin/partners/${partnerId}/delete" class="inline m-0">
+                <button type="submit" class="btn btn-error">Törlés</button>
+            </form>
+        `;
+        
+        deleteModal = Modal.create({
+            title: 'Partner Törlése',
+            content: content,
+            footer: footer,
+            size: 'sm'
+        });
+        
+        deleteModal.open();
+        
+        // Bind cancel button
+        setTimeout(() => {
+            const cancelBtn = deleteModal.modalElement.querySelector('.modal-cancel');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => deleteModal.close());
+            }
+        }, 0);
+    });
+});
+
+// Backlink ellenőrzés
+document.querySelectorAll('.verify-backlink').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const partnerId = this.dataset.id;
+        const originalText = this.innerHTML;
+        
+        // Betöltés jelzése
+        this.innerHTML = '⏳';
+        this.disabled = true;
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch(`/admin/partners/${partnerId}/verify-backlink`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                if (result.isVerified) {
+                    Modal.alert({
+                        title: 'Siker',
+                        message: 'Backlink sikeresen ellenőrizve! A link megtalálható a partner oldalán.',
+                        type: 'success'
+                    });
+                } else {
+                    Modal.alert({
+                        title: 'Hiba',
+                        message: 'A backlink nem található a partner oldalán.',
+                        type: 'error'
+                    });
+                }
+                // Oldal frissítése az új státusz megjelenítéséhez
+                window.location.reload();
+            } else {
+                Modal.alert({
+                    title: 'Hiba',
+                    message: 'Hiba: ' + result.error,
+                    type: 'error'
+                });
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }
+        } catch (error) {
+            console.error('Backlink ellenőrzési hiba:', error);
+            Modal.alert({
+                title: 'Hiba',
+                message: 'Hiba történt az ellenőrzés során.',
+                type: 'error'
+            });
+            this.innerHTML = originalText;
+            this.disabled = false;
+        }
+    });
+});
+</script>

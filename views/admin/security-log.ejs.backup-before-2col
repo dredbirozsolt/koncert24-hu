@@ -1,0 +1,380 @@
+<div class="page-container">
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card stat-error">
+            <div class="stat-label">Kritikus</div>
+            <div class="stat-value"><%= stats.critical.toLocaleString() %></div>
+        </div>
+        <div class="stat-card stat-warning">
+            <div class="stat-label">Magas</div>
+            <div class="stat-value"><%= stats.high.toLocaleString() %></div>
+        </div>
+        <div class="stat-card stat-info">
+            <div class="stat-label">Közepes</div>
+            <div class="stat-value"><%= stats.medium.toLocaleString() %></div>
+        </div>
+        <div class="stat-card stat-success">
+            <div class="stat-label">Alacsony</div>
+            <div class="stat-value"><%= stats.low.toLocaleString() %></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Utolsó 24 óra</div>
+            <div class="stat-value"><%= stats.last24h.toLocaleString() %></div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-card">
+        <form method="GET" action="<%= basePath %>admin/security-log">
+            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-4); margin-bottom: var(--space-4);">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Súlyosság</label>
+                    <select name="severity" class="form-select">
+                        <option value="all" <%= filters.severity === 'all' ? 'selected' : '' %>>Összes</option>
+                        <option value="high" <%= filters.severity === 'high' ? 'selected' : '' %>>Kritikus</option>
+                        <option value="medium" <%= filters.severity === 'medium' ? 'selected' : '' %>>Közepes</option>
+                        <option value="low" <%= filters.severity === 'low' ? 'selected' : '' %>>Alacsony</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Esemény Típus</label>
+                    <select name="eventType" class="form-select">
+                        <option value="all" <%= filters.eventType === 'all' ? 'selected' : '' %>>Összes</option>
+                        <% eventTypes.forEach(type => { %>
+                            <option value="<%= type %>" <%= filters.eventType === type ? 'selected' : '' %>><%= formatEventType(type) %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">IP Cím</label>
+                    <input type="text" name="searchIp" class="form-input" placeholder="pl: 192.168" value="<%= filters.searchIp %>">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Kezdő Dátum</label>
+                    <input type="date" name="startDate" class="form-input" value="<%= filters.startDate %>">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Vég Dátum</label>
+                    <input type="date" name="endDate" class="form-input" value="<%= filters.endDate %>">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">Limit</label>
+                    <select name="limit" class="form-select">
+                        <option value="25" <%= pagination.limit === 25 ? 'selected' : '' %>>25</option>
+                        <option value="50" <%= pagination.limit === 50 ? 'selected' : '' %>>50</option>
+                        <option value="100" <%= pagination.limit === 100 ? 'selected' : '' %>>100</option>
+                        <option value="200" <%= pagination.limit === 200 ? 'selected' : '' %>>200</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
+                <button type="submit" class="btn btn-primary">Szűrés</button>
+                <a href="<%= basePath %>admin/security-log" class="btn btn-secondary">Visszaállítás</a>
+                <a href="<%= basePath %>admin/security-log/export?<%= new URLSearchParams(filters).toString() %>" class="btn btn-success">Exportálás (CSV)</a>
+                <% if (isAdmin) { %>
+                    <button type="button" class="btn btn-danger" onclick="openClearModal()">Régi Logok Törlése</button>
+                <% } %>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="data-card">
+        <div class="table-wrapper">
+            <% if (logs.length === 0) { %>
+                <div style="text-align: center; padding: var(--space-8); color: var(--color-text-muted);">
+                    <h3>Nincs megjeleníthető esemény</h3>
+                    <p>Próbálj meg más szűrési beállításokat</p>
+                </div>
+            <% } else { %>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th style="width: 160px;">Időpont</th>
+                            <th style="width: 100px;">Súlyosság</th>
+                            <th style="width: 150px;">Esemény Típus</th>
+                            <th>Leírás</th>
+                            <th style="width: 120px;">IP Cím</th>
+                            <th style="width: 100px;">Művelet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% logs.forEach(log => { %>
+                            <tr>
+                                <td><%= log.id %></td>
+                                <td style="white-space: nowrap;"><%= new Date(log.createdAt).toLocaleString('hu-HU') %></td>
+                                <td>
+                                    <% if (log.severity === 'critical') { %>
+                                        <span class="badge badge-error">Kritikus</span>
+                                    <% } else if (log.severity === 'high') { %>
+                                        <span class="badge badge-warning">Magas</span>
+                                    <% } else if (log.severity === 'medium') { %>
+                                        <span class="badge badge-info">Közepes</span>
+                                    <% } else { %>
+                                        <span class="badge badge-success">Alacsony</span>
+                                    <% } %>
+                                </td>
+                                <td><%= formatEventType(log.eventType) %></td>
+                                <td><%= log.description %></td>
+                                <td><%= log.ipAddress || '-' %></td>
+                                <td>
+                                    <button onclick="viewDetails(<%= log.id %>)" class="btn btn-sm btn-primary">Részletek</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <% if (pagination.totalPages > 1) { %>
+        <div class="pagination">
+            <% if (pagination.page > 1) { %>
+                <a href="?<%= new URLSearchParams({...filters, page: pagination.page - 1, limit: pagination.limit}).toString() %>" class="pagination-btn">
+                    ← Előző
+                </a>
+            <% } %>
+            
+            <span class="pagination-info">
+                <%= pagination.page %> / <%= pagination.totalPages %> oldal
+                (Összesen: <%= pagination.total.toLocaleString() %> esemény)
+            </span>
+            
+            <% if (pagination.page < pagination.totalPages) { %>
+                <a href="?<%= new URLSearchParams({...filters, page: pagination.page + 1, limit: pagination.limit}).toString() %>" class="pagination-btn">
+                    Következő →
+                </a>
+            <% } %>
+        </div>
+    <% } %>
+</div>
+
+<!-- Clear Modal -->
+<div id="clearModal" class="modal">
+    <div class="modal-content">
+        <h3>Régi Biztonsági Logok Törlése</h3>
+        <p>Hány napnál régebbi logokat szeretnél törölni?</p>
+        
+        <form method="POST" action="<%= basePath %>admin/security-log/clear">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="form-group">
+                <label class="form-label">Napok száma</label>
+                <input type="number" name="days" class="form-input" min="1" value="90" required>
+                <small class="form-text">Ennél régebbi logok törlésre kerülnek</small>
+            </div>
+            
+            <div style="display: flex; gap: var(--space-3); justify-content: flex-end; margin-top: var(--space-6);">
+                <button type="button" onclick="closeClearModal()" class="btn btn-secondary">Mégse</button>
+                <button type="submit" class="btn btn-danger">Törlés</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <h3>Esemény Részletei</h3>
+        <div id="detailsContent"></div>
+        <div style="display: flex; justify-content: flex-end; margin-top: var(--space-6);">
+            <button onclick="closeDetailsModal()" class="btn btn-primary">Bezárás</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        padding: var(--space-6);
+        border-radius: var(--radius-lg);
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .btn-sm {
+        padding: var(--space-1) var(--space-3);
+        font-size: 0.875rem;
+    }
+
+    @media (max-width: 1200px) {
+        .filter-card form > div:first-child {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .filter-card form > div:first-child {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+<%
+// Helper function to format event types
+function formatEventType(type) {
+    const eventTypeMap = {
+        'login_success': 'Sikeres bejelentkezés',
+        'login_failed': 'Sikertelen bejelentkezés',
+        'login_locked': 'Zárolt bejelentkezés',
+        'logout': 'Kijelentkezés',
+        'password_reset_request': 'Jelszó visszaállítás kérés',
+        'password_reset_success': 'Jelszó visszaállítás sikeres',
+        'password_changed': 'Jelszó megváltoztatva',
+        'email_changed': 'Email megváltoztatva',
+        'csrf_violation': 'CSRF védelem megsértése',
+        'xss_attempt': 'XSS támadási kísérlet',
+        'sql_injection_attempt': 'SQL injection kísérlet',
+        'rate_limit_exceeded': 'Túl sok kérés',
+        'account_locked': 'Fiók zárolva',
+        'account_unlocked': 'Fiók feloldva'
+    };
+    return eventTypeMap[type] || type;
+}
+%>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const deleted = urlParams.get('deleted');
+    const days = urlParams.get('days');
+    const error = urlParams.get('error');
+    
+    if (deleted && days) {
+        const div = document.createElement('div');
+        div.className = 'alert alert-success';
+        div.textContent = deleted + ' régi biztonsági log törölve (régebbi mint ' + days + ' nap)';
+        document.querySelector('.page-container').insertBefore(div, document.querySelector('.stats-grid'));
+        setTimeout(() => div.remove(), 5000);
+    }
+    if (error === 'clear_failed') {
+        const div = document.createElement('div');
+        div.className = 'alert alert-error';
+        div.textContent = 'Hiba történt a logok törlése során';
+        document.querySelector('.page-container').insertBefore(div, document.querySelector('.stats-grid'));
+        setTimeout(() => div.remove(), 5000);
+    }
+
+    function openClearModal() {
+        document.getElementById('clearModal').classList.add('active');
+    }
+
+    function closeClearModal() {
+        document.getElementById('clearModal').classList.remove('active');
+    }
+
+    async function viewDetails(id) {
+        const modal = document.getElementById('detailsModal');
+        const content = document.getElementById('detailsContent');
+        
+        const eventTypeMap = {
+            'login_success': 'Sikeres bejelentkezés',
+            'login_failed': 'Sikertelen bejelentkezés',
+            'login_locked': 'Zárolt bejelentkezés',
+            'logout': 'Kijelentkezés',
+            'password_reset_request': 'Jelszó visszaállítás kérés',
+            'password_reset_success': 'Jelszó visszaállítás sikeres',
+            'password_changed': 'Jelszó megváltoztatva',
+            'email_changed': 'Email megváltoztatva',
+            'csrf_violation': 'CSRF védelem megsértése',
+            'xss_attempt': 'XSS támadási kísérlet',
+            'sql_injection_attempt': 'SQL injection kísérlet',
+            'rate_limit_exceeded': 'Túl sok kérés',
+            'account_locked': 'Fiók zárolva',
+            'account_unlocked': 'Fiók feloldva'
+        };
+        
+        content.innerHTML = '<div style="text-align: center; padding: var(--space-6);">Betöltés...</div>';
+        modal.classList.add('active');
+        
+        try {
+            const response = await fetch(`<%= basePath %>admin/security-log/${id}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                const log = data.log;
+                content.innerHTML = `
+                    <div style="display: grid; gap: var(--space-4);">
+                        <div>
+                            <strong>ID:</strong> ${log.id}
+                        </div>
+                        <div>
+                            <strong>Időpont:</strong> ${new Date(log.createdAt).toLocaleString('hu-HU')}
+                        </div>
+                        <div>
+                            <strong>Súlyosság:</strong> ${log.severity}
+                        </div>
+                        <div>
+                            <strong>Esemény Típus:</strong> ${eventTypeMap[log.eventType] || log.eventType}
+                        </div>
+                        <div>
+                            <strong>Leírás:</strong> ${log.description || '-'}
+                        </div>
+                        <div>
+                            <strong>IP Cím:</strong> ${log.ipAddress || '-'}
+                        </div>
+                        <div>
+                            <strong>User Agent:</strong><br>
+                            <code style="display: block; background: var(--color-bg-subtle); padding: var(--space-2); border-radius: var(--radius-sm); font-size: 0.875rem; overflow-wrap: break-word;">${log.userAgent || '-'}</code>
+                        </div>
+                        ${log.metadata ? `
+                        <div>
+                            <strong>Metadata:</strong><br>
+                            <pre style="background: var(--color-bg-subtle); padding: var(--space-3); border-radius: var(--radius-sm); font-size: 0.875rem; overflow-x: auto;">${JSON.stringify(JSON.parse(log.metadata), null, 2)}</pre>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else {
+                content.innerHTML = '<div class="alert alert-error">Hiba a részletek betöltésekor</div>';
+            }
+        } catch (error) {
+            content.innerHTML = '<div class="alert alert-error">Hálózati hiba történt</div>';
+        }
+    }
+
+    function closeDetailsModal() {
+        document.getElementById('detailsModal').classList.remove('active');
+    }
+
+    document.getElementById('clearModal').addEventListener('click', function(e) {
+        if (e.target === this) closeClearModal();
+    });
+
+    document.getElementById('detailsModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDetailsModal();
+    });
+</script>

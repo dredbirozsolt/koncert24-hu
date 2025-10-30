@@ -1,0 +1,147 @@
+<!-- Admin Settings Page - Refactored Version -->
+<!-- Using Design System -->
+
+
+<div class="page-container">
+    <div class="admin-two-col">
+        <!-- Bal oldal: Form -->
+        <div>
+            <form id="general-form">
+                <div class="card--data">
+                    <h3 class="section-title">
+                        ⚙️ Alapvető Beállítások
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label class="form__label" for="general.site_name">Oldal Neve <span class="required-field-asterisk">*</span></label>
+                        <input type="text" 
+                               name="general.site_name" 
+                               id="general.site_name"
+                               class="form__control"
+                               value="<%= flatSettings['general.site_name'] || '' %>"
+                               placeholder="pl. Koncert24.hu"
+                               required>
+                        <small class="form__hint">A weboldal megjelenített neve (böngésző címsorban, emailekben)</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label class="form__label" for="general.domain">Domain <span class="required-field-asterisk">*</span></label>
+                        <input type="text" 
+                               name="general.domain" 
+                               id="general.domain"
+                               class="form__control"
+                               value="<%= flatSettings['general.domain'] || '' %>"
+                               placeholder="https://koncert24.hu"
+                               required>
+                        <small class="form__hint">Teljes URL protokollal együtt (https://...)</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label class="form__label" for="general.locale">Nyelvi Beállítás (Locale)</label>
+                        <select name="general.locale" id="general.locale" class="form__control">
+                            <option value="hu_HU" <%= flatSettings['general.locale'] === 'hu_HU' || !flatSettings['general.locale'] ? 'selected' : '' %>>🇭🇺 Magyar (hu_HU)</option>
+                            <option value="en_US" <%= flatSettings['general.locale'] === 'en_US' ? 'selected' : '' %>>🇺🇸 English (en_US)</option>
+                            <option value="en_GB" <%= flatSettings['general.locale'] === 'en_GB' ? 'selected' : '' %>>🇬🇧 English UK (en_GB)</option>
+                        </select>
+                        <small class="form__hint">Dátumok, számformátumok megjelenítési nyelve</small>
+                    </div>
+
+                    <div class="btn__group btn__group--equal mb-4">
+                        <button type="button" class="btn btn--primary" onclick="saveSection('general')">
+                            💾 Mentés
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Jobb oldal: Info Panels -->
+        <div>
+            <!-- Általános információ -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ℹ️ Alapbeállítások
+                </h3>
+                
+                <div class="settings-card__info-content">
+                    <p>
+                        <strong>🌐 Oldal Neve:</strong><br>
+                        Ez jelenik meg a böngésző címsorában, emailekben és az SEO title tagekben alapértelmezettként.
+                    </p>
+                    
+                    <p>
+                        <strong>🔗 Domain:</strong><br>
+                        A weboldal teljes URL címe. Fontos, hogy a protokollt (https://) is tartalmazza!
+                    </p>
+                    
+                    <p>
+                        <strong>🌍 Locale:</strong><br>
+                        Meghatározza a dátumok, számok és egyéb regionális adatok megjelenítési formátumát.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tippek -->
+            <div class="card--data settings-card-spacing">
+                <h3 class="section-title">
+                    💡 Tippek
+                </h3>
+                
+                <div class="settings-card__info-content">
+                    <p>
+                        <strong>✅ Domain ellenőrzés:</strong><br>
+                        Győződj meg róla, hogy a domain HTTPS protokollt használ és nincs végén perjel (/).
+                    </p>
+                    
+                    <p>
+                        <strong>🔄 Változások érvényesítése:</strong><br>
+                        A mentés után egyes változások csak újratöltés után lesznek láthatók.
+                    </p>
+                    
+                    <p>
+                        <strong>📧 Email hivatkozások:</strong><br>
+                        A domain beállítás befolyásolja az emailekben lévő linkeket is.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const csrfToken = '<%= csrfToken %>';
+
+async function saveSection(section) {
+    const form = document.getElementById(`${section}-form`);
+    const formData = new FormData(form);
+    
+    const settingsObj = {};
+    for (const [key, value] of formData.entries()) {
+        settingsObj[key] = value;
+    }
+    
+    try {
+        const response = await fetch(`/admin/settings/section/${section}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ settings: settingsObj })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', `✅ ${data.message || 'Sikeresen mentve!'}`);
+        } else {
+            showAlert('error', `❌ ${data.message || 'Hiba történt a mentés során'}`);
+        }
+    } catch (error) {
+        showAlert('error', `❌ Hálózati hiba: ${error.message}`);
+    }
+}
+
+// ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+// No local definition needed - automatically available on all admin pages
+</script>

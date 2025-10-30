@@ -1,0 +1,153 @@
+<%
+  const performer = locals.performer || {};
+  const bookingData = locals.bookingData || {};
+  const basePath = locals.basePath || '/';
+%>
+
+<main class="quote-wizard">
+  <div class="quote-wizard__container">
+    
+    <!-- Progress Bar -->
+    <div class="quote-wizard__progress">
+      <div class="quote-wizard__progress-bar">
+        <div class="quote-wizard__progress-fill progress-50"></div>
+      </div>
+      <div class="quote-wizard__progress-text">3. lépés / 6</div>
+    </div>
+
+      <!-- Back Button -->
+      <a href="<%= basePath %>foglalas/<%= performer.slug %>?step=2" class="btn btn--secondary mb-6">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        Vissza az előző lépéshez
+      </a>
+
+      <!-- Performer Card (Mini) -->
+      <div class="quote-wizard__performer-card">
+        <% if (performer.imageUrl) { %>
+          <img src="<%= performer.imageUrl %>" alt="<%= performer.name %>" class="quote-wizard__performer-image">
+        <% } %>
+        <div class="quote-wizard__performer-info">
+          <h3 class="quote-wizard__performer-name"><%= performer.name %></h3>
+          <% if (performer.performanceType) { %>
+            <span class="quote-wizard__performer-type"><%= performer.performanceType %></span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Step Title -->
+      <h1 class="quote-wizard__title">Szerződéskötéshez szükséges adatok</h1>
+      <p class="quote-wizard__subtitle">Az alábbi adatok szükségesek a szerződés elkészítéséhez</p>
+
+      <!-- Form -->
+      <form id="bookingStep3Form" method="POST" action="<%= basePath %>foglalas/<%= performer.slug %>?step=4" class="quote-wizard__form">
+        
+        <!-- Section: Megrendelő adatai -->
+        <div class="form-section">
+          <h2 class="form-section__title">🧾 Megrendelő adatai</h2>
+          
+          <!-- Company or Person Name -->
+          <div class="form-group">
+            <label for="clientName" class="form-label">
+              🏢 Cégnév vagy magánszemély neve <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="clientName" 
+              name="clientName" 
+              class="form-input" 
+              placeholder="Pl. Kovács János vagy ABC Kft."
+              value="<%= bookingData.clientName || '' %>"
+              required>
+          </div>
+
+          <!-- Address -->
+          <div class="form-group">
+            <label for="clientAddress" class="form-label">
+              🏠 Székhely / állandó lakcím <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="clientAddress" 
+              name="clientAddress" 
+              class="form-input" 
+              placeholder="Irányítószám, város, utca, házszám"
+              value="<%= bookingData.clientAddress || '' %>"
+              required>
+            <span class="form-hint">Teljes cím (pl. 1234 Budapest, Kossuth utca 15.)</span>
+          </div>
+
+          <!-- Tax Number -->
+          <div class="form-group">
+            <label for="taxNumber" class="form-label">
+              🧾 Adószám / adóazonosító jel <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="taxNumber" 
+              name="taxNumber" 
+              class="form-input" 
+              placeholder="12345678-1-23"
+              value="<%= bookingData.taxNumber || '' %>"
+              required>
+          </div>
+
+          <!-- Registration Number -->
+          <div class="form-group">
+            <label for="registrationNumber" class="form-label">
+              📄 Cégjegyzékszám / nyilvántartási szám
+              <span class="optional">(ha van)</span>
+            </label>
+            <input 
+              type="text" 
+              id="registrationNumber" 
+              name="registrationNumber" 
+              class="form-input" 
+              placeholder="01-09-123456"
+              value="<%= bookingData.registrationNumber || '' %>">
+          </div>
+
+          <!-- Representative Name / Mother's Name -->
+          <div class="form-group">
+            <label for="representativeName" class="form-label">
+              👤 Képviselő neve / anyja neve <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="representativeName" 
+              name="representativeName" 
+              class="form-input" 
+              placeholder="Teljes név vagy anyja neve"
+              value="<%= bookingData.representativeName || '' %>"
+              required>
+            <span class="form-hint">Cég esetén: képviselő neve, magánszemély esetén: anyja neve</span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions form-actions--split">
+          <a href="<%= basePath %>foglalas/<%= performer.slug %>?step=2" class="btn btn--secondary btn--large">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+            </svg>
+            Vissza az előző lépéshez
+          </a>
+          <button type="submit" class="btn btn--primary btn--large">
+            Tovább a kapcsolattartókhoz
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Custom CSS for this page -->
+  <link rel="stylesheet" href="<%= basePath %>css/pages/quote-wizard.css">
+  
+  <!-- Custom JS for this page -->
+  <script src="<%= basePath %>js/pages/quote-wizard.js"></script>

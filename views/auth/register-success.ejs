@@ -1,0 +1,58 @@
+<!-- Auth register success with Design System -->
+
+<section class="section">
+    <div class="max-w-md mx-auto">
+        <div class="card">
+            <div class="card__header text-center">
+                <div class="mb-4 text-6xl">✅</div>
+                <h1 class="card__title text-2xl">Sikeres regisztráció!</h1>
+            </div>
+
+            <div class="card__body">
+                <div class="alert alert--success mb-6">
+                    <div class="alert__icon">🎉</div>
+                    <div class="alert__content">
+                        <p class="alert__message">
+                            Köszönjük a regisztrációd!
+                        </p>
+                    </div>
+                </div>
+
+                <% if (email) { %>
+                    <div class="alert alert--info mb-6">
+                        <div class="alert__icon">📧</div>
+                        <div class="alert__content">
+                            <p class="alert__message mb-3">
+                                <strong>A regisztráció befejezéséhez kérlek kövesd az alábbi lépéseket:</strong>
+                            </p>
+                            <ol class="text-sm text-gray-700 space-y-2 ml-4" style="list-style: decimal;">
+                                <li>Nyisd meg a postafiókod: <strong class="font-semibold"><%= email %></strong></li>
+                                <li>Keresd meg a "🎉 Üdvözlünk!" tárgyú emailünket</li>
+                                <li>Kattints a megerősítő gombra az emailben</li>
+                                <li>Ezután be tudsz jelentkezni a fiókodba</li>
+                            </ol>
+                            <p class="text-xs text-gray-600 mt-3">
+                                💡 Tipp: Ha nem találod az emailt, nézd meg a spam/levélszemét mappát is!
+                            </p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <div class="mt-6">
+                    <a href="<%= basePath %>auth/login" class="btn btn--primary w-full">
+                        🚪 Bejelentkezés
+                    </a>
+                </div>
+            </div>
+
+            <div class="card__footer border-t text-center">
+                <p class="text-sm text-gray-600">
+                    Vissza a 
+                    <a href="<%= basePath %>" class="text-primary hover:underline font-semibold">
+                        főoldalra
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,407 @@
+
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header page-header-spacing">
+    <a href="/admin/users" class="btn btn--secondary">
+      ← Vissza a felhasználókhoz
+    </a>
+  </div>
+
+  <% if (messages.error) { %>
+  <div class="alert alert-error"><%= messages.error %></div>
+  <% } %>
+
+  <!-- Form -->
+  <form method="POST" action="<%= isEdit ? `/admin/users/${userData.id}` : '/admin/users' %>">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="admin-two-col">
+      <!-- Bal oldal: Alapadatok -->
+      <div>
+        <div class="card--data">
+          <h3 class="section-title">
+            <%= isEdit ? 'Felhasználó Szerkesztése' : 'Új Felhasználó' %>
+          </h3>
+
+          <div class="form__group">
+            <label for="name">Teljes név *</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              class="form__control" 
+              value="<%= userData.name || '' %>" 
+              required
+              placeholder="pl. Nagy János"
+            >
+          </div>
+
+          <div class="form__group">
+            <label for="email">Email cím *</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              class="form__control" 
+              value="<%= userData.email || '' %>" 
+              required
+              placeholder="pelda@email.hu"
+            >
+            <small class="form__hint">Ez lesz a bejelentkezési felhasználónév</small>
+          </div>
+
+          <div class="form__group">
+            <label for="phone">Telefonszám *</label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              class="form__control" 
+              value="<%= userData.phone || '' %>" 
+              required 
+              placeholder="+36301234567"
+            >
+            <small class="form__hint">Nemzetközi formátumban ajánlott (pl. +36301234567)</small>
+          </div>
+
+          <!-- Avatar feltöltés -->
+          <div class="form__group">
+            <label for="avatar">Avatar</label>
+            
+            <% if (userData.avatar) { %>
+            <div class="flex justify-center mb-4">
+              <img src="<%= userData.avatar %>" 
+                   alt="User Avatar" 
+                   class="max-w-xs max-h-200 rounded-lg">
+            </div>
+            <% } %>
+            
+            <div>
+              <input type="file" 
+                     id="avatarFile" 
+                     name="userAvatar"
+                     class="hidden"
+                     accept="image/jpeg,image/png,image/gif,image/webp"
+                     onchange="updateAvatarFileName(this)">
+              <div class="btn__group btn__group--equal">
+                <button type="button" class="btn btn--secondary" onclick="document.getElementById('avatarFile').click()">
+                  📤 Fájl kiválasztása
+                </button>
+                <button type="button" class="btn btn--primary" onclick="uploadAvatar()">
+                  ⬆️ Feltöltés
+                </button>
+                <% if (userData.avatar) { %>
+                <button type="button" class="btn btn--outline" onclick="deleteAvatar()">
+                  🗑️ Törlés
+                </button>
+                <% } %>
+              </div>
+              <small id="avatar-file-name-display" class="form__hint m-0 hidden"></small>
+              <small class="form__hint m-0">Max. 2MB • JPEG, PNG, GIF, WebP</small>
+            </div>
+            
+            <input type="hidden" 
+                   name="avatar" 
+                   id="avatar"
+                   value="<%= userData.avatar || '' %>">
+          </div>
+
+          <div class="form__group">
+            <label for="bio">Szerző bemutatkozás</label>
+            <textarea 
+              id="bio" 
+              name="bio" 
+              class="form__control" 
+              rows="4"
+              placeholder="Koncertszervező és zeneipari szakértő..."
+            ><%= userData.bio || '' %></textarea>
+            <small class="form__hint">Rövid bemutatkozás a blog oldalon történő megjelenéshez</small>
+          </div>
+
+          <div class="form__group">
+            <label for="role">Szerepkör *</label>
+            <select id="role" name="role" class="form__control" required>
+              <option value="">-- Válassz szerepkört --</option>
+              <option value="admin" <%= userData.role === 'admin' ? 'selected' : '' %>>
+                Adminisztrátor
+              </option>
+              <option value="sales" <%= userData.role === 'sales' ? 'selected' : '' %>>
+                Értékesítő
+              </option>
+              <option value="client" <%= userData.role === 'client' ? 'selected' : '' %>>
+                Megrendelő
+              </option>
+              <option value="performer" <%= userData.role === 'performer' ? 'selected' : '' %>>
+                Előadó
+              </option>
+            </select>
+            <small class="form__hint">A szerepkör határozza meg a jogosultságokat</small>
+          </div>
+
+          <div class="form__group">
+            <label for="password">
+              Jelszó <%= isEdit ? '(hagyd üresen, ha nem változtatsz)' : '*' %>
+            </label>
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form__control" 
+              <%= isEdit ? '' : 'required' %>
+              placeholder="Minimum 6 karakter"
+            >
+            <small class="form__hint">
+              <%= isEdit ? 'Csak akkor add meg, ha meg szeretnéd változtatni' : 'Minimum 6 karakter hosszúság szükséges' %>
+            </small>
+          </div>
+
+          <div class="form__group">
+            <div class="form__switch-row">
+              <span class="form__switch-row-label">Aktív felhasználó</span>
+              <input 
+                type="checkbox" 
+                class="form-switch-input"
+                name="isActive" 
+                id="isActive"
+                <%= (userData.isActive === undefined || userData.isActive) ? 'checked' : '' %>
+              >
+            </div>
+            <small class="form__hint">Az inaktív felhasználók nem tudnak bejelentkezni</small>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-actions form-actions-border">
+            <div class="btn__group btn__group--equal">
+              <button type="submit" class="btn btn--primary">
+                <%= isEdit ? 'Mentés' : 'Létrehozás' %>
+              </button>
+              <a href="/admin/users" class="btn btn--secondary">
+                Mégse
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobb oldal: Info Panel -->
+      <div>
+        <!-- Szerepkörök -->
+        <div class="card--data">
+          <h3 class="section-title">
+            Szerepkörök
+          </h3>
+          
+          <div class="role-cards-container">
+            <div class="role-card">
+              <strong>👑 Adminisztrátor</strong><br>
+              <span class="role-description">
+                Teljes hozzáférés minden funkcióhoz, felhasználó kezelés
+              </span>
+            </div>
+
+            <div class="role-card">
+              <strong>💼 Értékesítő</strong><br>
+              <span class="role-description">
+                Chat kezelés, user adatok megtekintése (csak olvasható)
+              </span>
+            </div>
+
+            <div class="role-card">
+              <strong>🎫 Megrendelő</strong><br>
+              <span class="role-description">
+                Foglalási folyamat, saját adatok kezelése
+              </span>
+            </div>
+
+            <div class="role-card">
+              <strong>🎤 Előadó</strong><br>
+              <span class="role-description">
+                Saját profil kezelése, elérhetőség beállítása
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Biztonsági tippek -->
+        <div class="card--data card-margin-top">
+          <h3 class="section-title">
+            Biztonsági tippek
+          </h3>
+          
+          <div class="security-tips">
+            <p>
+              <strong>🔒 Erős jelszó:</strong><br>
+              Használj min. 8 karaktert, számokat és speciális karaktereket
+            </p>
+            
+            <p>
+              <strong>✉️ Email cím:</strong><br>
+              Ellenőrizd, hogy helyesen írtad-e be
+            </p>
+            
+            <p>
+              <strong>🛡️ Szerepkör:</strong><br>
+              Csak a szükséges jogosultságokat add meg
+            </p>
+          </div>
+        </div>
+
+        <% if (isEdit && userData.id) { %>
+        <!-- Felhasználó információk -->
+        <div class="card--data card-margin-top">
+          <h3 class="section-title">
+            Felhasználó info
+          </h3>
+          
+          <div class="user-metadata">
+            <p>
+              <strong>🆔 User ID:</strong><br>
+              #<%= userData.id %>
+            </p>
+            
+            <% if (userData.createdAt) { %>
+            <p>
+              <strong>📅 Regisztráció:</strong><br>
+              <%= new Date(userData.createdAt).toLocaleDateString('hu-HU') %>
+            </p>
+            <% } %>
+            
+            <% if (userData.lastLoginAt) { %>
+            <p>
+              <strong>🕒 Utolsó belépés:</strong><br>
+              <%= new Date(userData.lastLoginAt).toLocaleDateString('hu-HU') %>
+            </p>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </form>
+</div>
+
+<% if (isEdit && userData.id) { %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const isActiveSwitch = document.getElementById('isActive');
+  
+  if (isActiveSwitch) {
+    isActiveSwitch.addEventListener('change', async function() {
+      const isActive = this.checked;
+      const userId = <%= userData.id %>;
+      
+      try {
+        const response = await fetch(`/admin/users/${userId}/toggle-active`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value
+          },
+          body: JSON.stringify({ isActive })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Sikeres mentés - opcionális visszajelzés
+          console.log('Állapot frissítve:', isActive ? 'Aktív' : 'Inaktív');
+        } else {
+          // Hiba esetén visszaállítjuk az eredeti állapotot
+          this.checked = !isActive;
+          alert(data.message || 'Hiba történt a mentés során');
+        }
+      } catch (error) {
+        console.error('Hiba:', error);
+        // Hiba esetén visszaállítjuk az eredeti állapotot
+        this.checked = !isActive;
+        alert('Hiba történt a mentés során');
+      }
+    });
+  }
+});
+
+// Avatar file name display
+function updateAvatarFileName(input) {
+  const fileNameEl = document.getElementById('avatar-file-name-display');
+  
+  if (input.files && input.files[0]) {
+    const fileName = input.files[0].name;
+    const fileSize = (input.files[0].size / 1024).toFixed(2);
+    fileNameEl.textContent = `📄 ${fileName} (${fileSize} KB)`;
+    fileNameEl.classList.remove('hidden', 'text-secondary');
+    fileNameEl.classList.add('text-primary');
+  } else {
+    fileNameEl.classList.add('hidden');
+  }
+}
+
+// Upload avatar
+async function uploadAvatar() {
+  const fileInput = document.getElementById('avatarFile');
+  const userId = <%= userData.id %>;
+  
+  if (!fileInput.files || !fileInput.files[0]) {
+    alert('⚠️ Kérlek válassz ki egy képfájlt!');
+    return;
+  }
+  
+  const formData = new FormData();
+  formData.append('userAvatar', fileInput.files[0]);
+  
+  try {
+    const response = await fetch(`/admin/users/${userId}/upload-avatar`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value
+      },
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      alert(`✅ ${data.message || 'Avatar sikeresen feltöltve!'}`);
+      document.getElementById('avatar').value = data.avatarPath;
+      setTimeout(() => window.location.reload(), 1500);
+    } else {
+      alert(`❌ ${data.message || 'Hiba történt a feltöltés során'}`);
+    }
+  } catch (error) {
+    alert(`❌ Hálózati hiba: ${error.message}`);
+  }
+}
+
+// Delete avatar
+async function deleteAvatar() {
+  const userId = <%= userData.id %>;
+  
+  if (!confirm('Biztosan törölni szeretnéd az avatart? Ez a művelet nem vonható vissza.')) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/admin/users/${userId}/delete-avatar`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      alert(`✅ ${data.message || 'Avatar sikeresen törölve!'}`);
+      document.getElementById('avatar').value = '';
+      setTimeout(() => window.location.reload(), 1500);
+    } else {
+      alert(`❌ ${data.message || 'Hiba történt a törlés során'}`);
+    }
+  } catch (error) {
+    alert(`❌ Hálózati hiba: ${error.message}`);
+  }
+}
+</script>
+<% } %>
+
+

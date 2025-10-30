@@ -1,0 +1,256 @@
+<!-- Events Container -->
+<div class="events__container">
+    
+    <!-- Hero Section -->
+    <div class="page__hero">
+        <div class="container">
+            <h1 class="page__hero__title">Közelgő Események</h1>
+            <p class="page__hero__subtitle">Fedezze fel előadásainkat és koncertjeinket</p>
+            
+            <!-- Search & Filters -->
+            <div class="events__filters">
+                <!-- Search Bar -->
+                <div class="hero-search__form">
+                    <input 
+                        type="text" 
+                        id="eventSearch" 
+                        class="hero-search__input" 
+                        placeholder="Keresés esemény vagy előadó név alapján..."
+                        autocomplete="off"
+                    >
+                    <button type="button" class="hero-search__clear hidden" id="clearSearch" aria-label="Keresés törlése">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button type="submit" class="hero-search__button" aria-label="Keresés">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Date Filters -->
+                <div class="events__date-filters">
+                    <button class="events__filter-btn active" data-filter="all">
+                        Összes
+                    </button>
+                    <button class="events__filter-btn" data-filter="today">
+                        <svg class="events__filter-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                        </svg>
+                        Ma
+                    </button>
+                    <button class="events__filter-btn" data-filter="week">
+                        <svg class="events__filter-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                        </svg>
+                        Ezen a héten
+                    </button>
+                    <button class="events__filter-btn" data-filter="month">
+                        <svg class="events__filter-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                        </svg>
+                        Ebben a hónapban
+                    </button>
+                    
+                    <!-- Mobile Filter Toggle -->
+                    <button class="events__mobile-filter-toggle" id="mobileFilterToggle">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                        </svg>
+                        Szűrők
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        
+        <!-- Empty State -->
+        <% if (events.length === 0) { %>
+            <div class="events__no-events">
+                <div class="events__no-events-icon">📅</div>
+                <h2>Jelenleg nincsenek közelgő események</h2>
+                <p>Kérjük, térjen vissza később vagy tekintse meg <a href="/eloadok">előadóinkat</a>!</p>
+            </div>
+        
+        <!-- Events Grid -->
+        <% } else { %>
+            <div class="events__grid">
+                
+                <!-- Event Cards -->
+                <% events.forEach(event => { %>
+                    <div class="event__card" data-date="<%= event.performanceDate %>">
+                        
+                        <!-- Event Image -->
+                        <% if (event.imageUrl) { %>
+                            <div class="event__image bg-image" style="--bg-image: url('<%= event.imageUrl %>')"></div>
+                        <% } else if (event.performer && event.performer.imageUrl) { %>
+                            <div class="event__image bg-image" style="--bg-image: url('<%= event.performer.imageUrl %>')"></div>
+                        <% } else { %>
+                            <div class="event__image event-image-placeholder">
+                                <div class="placeholder-icon">🎭</div>
+                            </div>
+                        <% } %>
+                        
+                        <!-- Event Content -->
+                        <div class="event__content">
+                            
+                            <!-- Date Badge -->
+                            <div class="event__date">
+                                <div class="event__date-year"><%= new Date(event.performanceDate).getFullYear() %></div>
+                                <div class="event__date-month">
+                                    <%= new Date(event.performanceDate).toLocaleDateString('hu-HU', { month: 'short' }) %>
+                                </div>
+                                <div class="event__date-day"><%= new Date(event.performanceDate).getDate() %></div>
+                            </div>
+                            
+                            <!-- Event Details -->
+                            <div class="event__details">
+                                <h3 class="event__title"><%= event.subject %></h3>
+                                
+                                <!-- Performer -->
+                                <% if (event.performer) { %>
+                                    <div class="event-performer">
+                                        <span class="icon icon--sm icon-microphone"></span>
+                                        <a href="/eloadok/<%= event.performer.slug || event.performer.id %>"><%= event.performer.name %></a>
+                                    </div>
+                                <% } %>
+                                
+                                <!-- Time -->
+                                <% if (event.performanceTime) { %>
+                                    <div class="event-time">
+                                        <span class="icon icon--sm icon-clock"></span>
+                                        <%= event.performanceTime.substring(0, 5) %>
+                                    </div>
+                                <% } %>
+                                
+                                <!-- Location -->
+                                <% if (event.performanceLocation) { %>
+                                    <div class="event-location">
+                                        <span class="icon icon--sm icon-location"></span>
+                                        <%= event.performanceLocation %>
+                                    </div>
+                                <% } %>
+                                
+                                <!-- Item Name -->
+                                <% if (event.itemName && (!event.performer || event.itemName !== event.performer.name)) { %>
+                                    <div class="event__item">
+                                        <span class="icon icon--sm icon-theater"></span>
+                                        <%= event.itemName %>
+                                    </div>
+                                <% } %>
+                            </div>
+                            
+                            <!-- Actions -->
+                            <% if (event.performer) { %>
+                                <div class="event__actions">
+                                    <a href="/eloadok/<%= event.performer.slug || event.performer.id %>" class="btn btn--primary">
+                                        Előadó Megtekintése
+                                    </a>
+                                </div>
+                                
+                                <!-- Secondary Actions -->
+                                <div class="event__secondary-actions">
+                                    <!-- Calendar Dropdown -->
+                                    <div class="event__calendar-dropdown">
+                                        <button class="event__calendar-btn">
+                                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                            </svg>
+                                            Naptárhoz
+                                        </button>
+                                        <div class="event__calendar-menu">
+                                            <a href="https://www.google.com/calendar/render?action=TEMPLATE&text=<%= encodeURIComponent(event.subject) %>&dates=<%= new Date(event.performanceDate).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '') %>/<%= new Date(new Date(event.performanceDate).getTime() + 2*60*60*1000).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '') %>&details=<%= encodeURIComponent(event.performer ? 'Előadó: ' + event.performer.name : '') %>&location=<%= encodeURIComponent(event.performanceLocation || '') %>" target="_blank" class="event__calendar-option">
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-1V1m-1 11h-5v5h5v-5z"/>
+                                                </svg>
+                                                Google Calendar
+                                            </a>
+                                            <a href="/esemenyek/<%= event.id %>/calendar.ics" class="event__calendar-option" download>
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M19 19H5V8h14m0-5h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2m-2.47 8.06L15.47 10l-4.88 4.88-2.12-2.12-1.06 1.06L10.59 17l5.94-5.94z"/>
+                                                </svg>
+                                                Apple / Outlook
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Share Dropdown -->
+                                    <div class="event__share-dropdown">
+                                        <button class="event__share-btn">
+                                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                                            </svg>
+                                            Megosztás
+                                        </button>
+                                        <div class="event__share-menu">
+                                            <button class="event__share-option" data-platform="facebook" data-title="<%= event.subject %>" data-url="<%= process.env.SITE_DOMAIN || 'http://localhost:3000' %>/esemenyek">
+                                                <svg viewBox="0 0 24 24" fill="#1877F2">
+                                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                                </svg>
+                                                Facebook
+                                            </button>
+                                            <button class="event__share-option" data-platform="instagram" data-title="<%= event.subject %>" data-url="<%= process.env.SITE_DOMAIN || 'http://localhost:3000' %>/esemenyek">
+                                                <svg viewBox="0 0 24 24" fill="url(#instagram-gradient)">
+                                                    <defs>
+                                                        <linearGradient id="instagram-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                                                            <stop offset="0%" style="stop-color:#FD5949;stop-opacity:1" />
+                                                            <stop offset="50%" style="stop-color:#D6249F;stop-opacity:1" />
+                                                            <stop offset="100%" style="stop-color:#285AEB;stop-opacity:1" />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                                </svg>
+                                                Instagram
+                                            </button>
+                                            <button class="event__share-option" data-platform="whatsapp" data-title="<%= event.subject %>" data-url="<%= process.env.SITE_DOMAIN || 'http://localhost:3000' %>/esemenyek">
+                                                <svg viewBox="0 0 24 24" fill="#25D366">
+                                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                                </svg>
+                                                WhatsApp
+                                            </button>
+                                            <button class="event__share-option" data-platform="tiktok" data-title="<%= event.subject %>" data-url="<%= process.env.SITE_DOMAIN || 'http://localhost:3000' %>/esemenyek">
+                                                <svg viewBox="0 0 24 24" fill="#000000">
+                                                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                                                </svg>
+                                                TikTok
+                                            </button>
+                                            <button class="event__share-option" data-platform="youtube" data-title="<%= event.subject %>" data-url="<%= process.env.SITE_DOMAIN || 'http://localhost:3000' %>/esemenyek">
+                                                <svg viewBox="0 0 24 24" fill="#FF0000">
+                                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                                </svg>
+                                                YouTube
+                                            </button>
+                                            <button class="event__share-option" data-platform="email" data-title="<%= event.subject %>" data-url="<%= process.env.SITE_DOMAIN || 'http://localhost:3000' %>/esemenyek">
+                                                <svg viewBox="0 0 24 24" fill="#666">
+                                                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                                </svg>
+                                                Email
+                                            </button>
+                                            <button class="event__share-option" data-platform="copy" data-title="<%= event.subject %>" data-url="<%= process.env.SITE_DOMAIN || 'http://localhost:3000' %>/esemenyek">
+                                                <svg viewBox="0 0 24 24" fill="#666">
+                                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                                </svg>
+                                                Link másolása
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+                            
+                        </div>
+                    </div>
+                <% }); %>
+                
+            </div>
+        <% } %>
+        
+    </div>
+</div>
+
+<!-- Events Page JavaScript -->
+<script src="/js/events.js"></script>

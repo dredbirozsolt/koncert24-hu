@@ -1,0 +1,1178 @@
+<!-- Performer Booking Wizard -->
+<!-- Performer Booking Wizard -->
+<section class="hero" x-data="performerBookingWizard('<%= performer.id %>', '<%= performer.name %>')" x-init="init()">
+    <div class="container">
+        <div class="booking-system" @date-confirmed="handleDateConfirmed($event)"
+            @time-confirmed="handleTimeConfirmed($event)" @location-selected="handleLocationSelected($event)">
+            <div class="booking-header">
+                <h1 class="booking-title">
+                    Ajánlatkérés -
+                    <span class="text-primary">
+                        <%= performer.name %>
+                    </span>
+                </h1>
+                <div class="performer-showcase">
+                    <div class="performer-info">
+                        <% if (performer.imageUrl) { %>
+                            <div class="performer__image">
+                                <img src="<%= performer.imageUrl %>" alt="<%= performer.name %>" loading="lazy">
+                            </div>
+                            <% } %>
+                                <div class="performer-details">
+                                    <h2 class="performer__name">
+                                        <%= performer.name %>
+                                    </h2>
+                                    <p class="performer-category">
+                                        <%= performer.getCategoryDisplayName() %>
+                                    </p>
+                                </div>
+                    </div>
+                </div>
+            </div>
+
+            <form class="booking-form" @submit.prevent="submitBooking">
+                <!-- Date Selection -->
+                <div class="form__group">
+                    <label class="form__label">
+                        <span class="label-icon">📅</span>
+                        Melyik napon rendeznéd az eseményt?
+                    </label>
+                    <div class="date-picker" x-data="datePicker()" x-init="init()">
+                        <!-- Selected Date Display -->
+                        <div class="selected-date-display" @click="showCalendar = !showCalendar" tabindex="0">
+                            <div class="date-display">
+                                <span x-show="!selectedDate" class="placeholder">Válassz dátumot</span>
+                                <span x-show="selectedDate" class="selected-date-text"
+                                    x-text="formatSelectedDate()"></span>
+                            </div>
+                            <svg class="dropdown-icon" :class="{ 'rotate-180': showCalendar }" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+
+                        <!-- Calendar Popup -->
+                        <div x-show="showCalendar" x-transition @click.outside="showCalendar = false"
+                            class="calendar-popup">
+
+                            <!-- Calendar Header -->
+                            <div class="calendar-header">
+                                <button type="button" @click="previousMonth()" class="nav-button">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <h3 class="month-year" x-text="formatMonthYear()"></h3>
+
+                                <button type="button" @click="nextMonth()" class="nav-button">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Days of Week -->
+                            <div class="weekdays">
+                                <div class="weekday">H</div>
+                                <div class="weekday">K</div>
+                                <div class="weekday">Sze</div>
+                                <div class="weekday">Cs</div>
+                                <div class="weekday">P</div>
+                                <div class="weekday">Szo</div>
+                                <div class="weekday">V</div>
+                            </div>
+
+                            <!-- Calendar Grid -->
+                            <div class="calendar-grid">
+                                <template x-for="date in calendarDates" :key="date.key">
+                                    <button type="button" @click="selectDate(date)" :disabled="date.disabled" :class="{
+                                            'calendar-day': true,
+                                            'other-month': date.otherMonth,
+                                            'selected': date.selected,
+                                            'today': date.today,
+                                            'disabled': date.disabled
+                                        }" x-text="date.day">
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Selection -->
+                <div class="form__group">
+                    <label class="form__label">
+                        <span class="label-icon">🕐</span>
+                        Hány órakor kezdődjön az esemény?
+                    </label>
+                    <div class="time-picker" x-data="timePicker()" x-init="init()">
+                        <!-- Selected Time Display -->
+                        <div class="selected-time-display" @click="showTimePicker = !showTimePicker" tabindex="0">
+                            <div class="time-display">
+                                <span x-show="!selectedHour && !selectedMinute" class="placeholder">Válassz
+                                    időpontot</span>
+                                <span x-show="selectedHour !== null && selectedMinute !== null"
+                                    class="selected-time-text" x-text="selectedHour + ':' + selectedMinute"></span>
+                            </div>
+                            <svg class="dropdown-icon" :class="{ 'rotate-180': showTimePicker }" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+
+                        <!-- Time Picker Popup -->
+                        <div x-show="showTimePicker" x-transition @click.outside="handleTimePickerClose()"
+                            class="time-picker-popup">
+
+                            <h4 class="time-title">Időpont kiválasztása</h4>
+                            <div class="time-picker-container">
+                                <!-- Hour Wheel -->
+                                <div class="wheel-picker hour-wheel">
+                                    <div class="wheel-label">Óra</div>
+                                    <div class="wheel-container" @wheel.prevent="handleHourWheel($event)"
+                                        @touchstart="handleHourTouchStart($event)"
+                                        @touchmove.prevent="handleHourTouchMove($event)"
+                                        @touchend="handleHourTouchEnd($event)">
+                                        <div class="wheel-mask">
+                                            <div class="wheel-selection-overlay"></div>
+                                            <div class="wheel-items" :style="`transform: translateY(${hourOffset}px)`">
+                                                <template x-for="(hour, index) in availableHours" :key="index">
+                                                    <div class="wheel-item"
+                                                        :class="{ 'selected': index === selectedHourIndex }"
+                                                        @click="selectHour(index)" x-text="hour">
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="time-separator-wheel">:</div>
+
+                                <!-- Minute Wheel -->
+                                <div class="wheel-picker minute-wheel">
+                                    <div class="wheel-label">Perc</div>
+                                    <div class="wheel-container" @wheel.prevent="handleMinuteWheel($event)"
+                                        @touchstart="handleMinuteTouchStart($event)"
+                                        @touchmove.prevent="handleMinuteTouchMove($event)"
+                                        @touchend="handleMinuteTouchEnd($event)">
+                                        <div class="wheel-mask">
+                                            <div class="wheel-selection-overlay"></div>
+                                            <div class="wheel-items"
+                                                :style="`transform: translateY(${minuteOffset}px)`">
+                                                <template x-for="(minute, index) in availableMinutes" :key="index">
+                                                    <div class="wheel-item"
+                                                        :class="{ 'selected': index === selectedMinuteIndex }"
+                                                        @click="selectMinute(index)" x-text="minute">
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="time-picker-actions">
+                                <button type="button" @click="confirmTime()" class="confirm-btn"
+                                    x-show="selectedHour && selectedMinute">
+                                    Időpont megerősítése
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }" x-text="date.day">
+                </button>
+                </template>
+        </div>
+    </div>
+    </div>
+    </div>>
+    <div class="container">
+        <div class="booking-system">
+            <div class="booking-header">
+                <h1 class="booking-title">
+                    Ajánlatkérés
+                </h1>
+                <div class="performer-showcase">
+                    <div class="performer-info">
+                        <% if (performer.imageUrl) { %>
+                            <div class="performer__image">
+                                <img src="<%= performer.imageUrl %>" alt="<%= performer.name %>" loading="lazy">
+                            </div>
+                            <% } %>
+                                <div class="performer-details">
+                                    <h2 class="performer__name">
+                                        <%= performer.name %>
+                                    </h2>
+                                    <p class="performer-category">
+                                        <%= performer.getCategoryDisplayName() %>
+                                    </p>
+                                </div>
+                    </div>
+                </div>
+                <p class="hero-subtitle">
+                    Töltse ki az alábbi adatokat az ajánlatkéréshez
+                </p>
+            </div>
+
+            <!-- Booking Wizard Form -->
+            <form class="booking-form">
+                <!-- Progress Indicator -->
+                <div class="progress-steps">
+                    <div class="step"
+                        :class="{ 'completed': completedSteps.includes('date'), 'active': currentStep === 'date' }">
+                        <span class="step-number">1</span>
+                        <span class="step-title">Dátum</span>
+                    </div>
+                    <div class="step"
+                        :class="{ 'completed': completedSteps.includes('time'), 'active': currentStep === 'time' }">
+                        <span class="step-number">2</span>
+                        <span class="step-title">Időpont</span>
+                    </div>
+                    <div class="step"
+                        :class="{ 'completed': completedSteps.includes('location'), 'active': currentStep === 'location' }">
+                        <span class="step-number">3</span>
+                        <span class="step-title">Helyszín</span>
+                    </div>
+                    <div class="step"
+                        :class="{ 'completed': completedSteps.includes('eventType'), 'active': currentStep === 'eventType' }">
+                        <span class="step-number">4</span>
+                        <span class="step-title">Típus</span>
+                    </div>
+                </div>
+
+                <!-- Date Selection -->
+                <div class="form__group" x-show="currentStep === 'date'">
+                    <label class="form__label">
+                        <span class="label-icon">📅</span>
+                        Melyik napon rendeznéd az eseményt?
+                    </label>
+                    <div class="date-picker" x-data="datePicker()" x-init="init()">
+                        <!-- Selected Date Display -->
+                        <div class="selected-date-display" @click="showCalendar = !showCalendar" tabindex="0">
+                            <div class="date-display">
+                                <span x-show="!selectedDate" class="placeholder">Válassz dátumot</span>
+                                <span x-show="selectedDate" class="selected-date-text"
+                                    x-text="formatSelectedDate()"></span>
+                            </div>
+                            <svg class="dropdown-icon" :class="{ 'rotate-180': showCalendar }" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+
+                        <!-- Calendar Popup -->
+                        <div x-show="showCalendar" x-transition @click.outside="showCalendar = false"
+                            class="calendar-popup">
+
+                            <!-- Calendar Header -->
+                            <div class="calendar-header">
+                                <button type="button" @click="previousMonth()" class="nav-button">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <h3 class="month-year" x-text="formatMonthYear()"></h3>
+
+                                <button type="button" @click="nextMonth()" class="nav-button">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Days of Week -->
+                            <div class="weekdays">
+                                <div class="weekday">H</div>
+                                <div class="weekday">K</div>
+                                <div class="weekday">Sze</div>
+                                <div class="weekday">Cs</div>
+                                <div class="weekday">P</div>
+                                <div class="weekday">Szo</div>
+                                <div class="weekday">V</div>
+                            </div>
+
+                            <!-- Calendar Days -->
+                            <div class="calendar-days">
+                                <template x-for="date in calendarDates" :key="date.key">
+                                    <button type="button" class="calendar-day" :class="{
+                                        'other-month': date.otherMonth,
+                                        'selected': date.selected,
+                                        'today': date.today,
+                                        'disabled': date.disabled
+                                    }" :disabled="date.disabled" @click="selectDate(date)" x-text="date.day">
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions" x-show="booking.date">
+                        <button type="button" class="btn btn--primary" @click="nextStep()">
+                            Tovább
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Time Selection -->
+                <div class="form__group" x-show="currentStep === 'time'">
+                    <label class="form__label">
+                        <span class="label-icon">🕐</span>
+                        Hány órakor kezdődjön az esemény?
+                    </label>
+                    <div class="time-picker" x-data="timePicker()">
+                        <input type="text" class="form__input" :value="timeDisplayText" @click="showPicker = !showPicker"
+                            readonly placeholder="Válassz időpontot">
+
+                        <div class="time-popup" x-show="showPicker" x-transition>
+                            <div class="time-wheels">
+                                <div class="wheel hour-wheel">
+                                    <div class="wheel-container">
+                                        <div class="wheel-items" :style="`transform: translateY(${hourOffset}px)`">
+                                            <template x-for="(hour, index) in availableHours" :key="index">
+                                                <div class="wheel-item"
+                                                    :class="{ 'selected': index === selectedHourIndex }"
+                                                    @click="selectHour(index)" x-text="hour">
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="wheel-separator">:</div>
+
+                                <div class="wheel minute-wheel">
+                                    <div class="wheel-container">
+                                        <div class="wheel-items" :style="`transform: translateY(${minuteOffset}px)`">
+                                            <template x-for="(minute, index) in availableMinutes" :key="index">
+                                                <div class="wheel-item"
+                                                    :class="{ 'selected': index === selectedMinuteIndex }"
+                                                    @click="selectMinute(index)" x-text="minute">
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="time-picker-actions">
+                                <button type="button" @click="confirmTime()" class="confirm-btn"
+                                    x-show="selectedHour && selectedMinute">
+                                    Időpont megerősítése
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn btn--outline" @click="previousStep()">
+                            Vissza
+                        </button>
+                        <button type="button" class="btn btn--primary" @click="nextStep()" x-show="booking.time">
+                            Tovább
+                        </button>
+                        <button type="button" class="btn btn--primary" @click="skipTime()" x-show="!booking.time">
+                            Kihagyom
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Location Selection -->
+                <div class="form__group" x-show="currentStep === 'location'">
+                    <label class="form__label">
+                        <span class="label-icon">📍</span>
+                        Hol rendeznéd az eseményt?
+                    </label>
+                    <div class="location-search" x-data="locationSearch()">
+                        <input type="text" class="form__input" placeholder="Írd be a helységnevet" x-model="query"
+                            @input="handleInput()" @focus="showSuggestions = true" @blur="hideSuggestions()"
+                            @keydown.arrow-down.prevent="highlightNext()"
+                            @keydown.arrow-up.prevent="highlightPrevious()" @keydown.enter.prevent="selectHighlighted()"
+                            @keydown.escape="hideSuggestions()" autocomplete="off">
+
+                        <div class="location-suggestions" x-show="showSuggestions && suggestions.length > 0"
+                            x-transition>
+                            <template x-for="(suggestion, index) in suggestions" :key="index">
+                                <div class="suggestion-item" :class="{ 'highlighted': index === highlightedIndex }"
+                                    @mousedown.prevent="selectLocation(suggestion)"
+                                    @mouseenter="highlightedIndex = index">
+                                    <div class="suggestion-name" x-text="suggestion.name"></div>
+                                    <div class="suggestion-country" x-text="suggestion.country"></div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="step-actions" x-show="booking.location">
+                        <button type="button" class="btn btn--outline" @click="previousStep()">
+                            Vissza
+                        </button>
+                        <button type="button" class="btn btn--primary" @click="nextStep()">
+                            Tovább
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Event Type Selection -->
+                <div class="form__group" x-show="currentStep === 'eventType'">
+                    <label class="form__label">
+                        <span class="label-icon">🎪</span>
+                        Milyen műsor típusú eseményt szeretnél rendezni?
+                    </label>
+                    <select x-model="booking.eventType" class="form__select" required>
+                        <option value="">Válassz műsor típust</option>
+                        <option value="outdoor_free">Nyilvános ingyenes rendezvény szabadtéren</option>
+                        <option value="outdoor_paid">Nyilvános belépőjegyes rendezvény szabadtéren</option>
+                        <option value="indoor_free">Nyilvános ingyenes rendezvény zárt helyiségben</option>
+                        <option value="indoor_paid">Nyilvános belépőjegyes rendezvény zárt helyiségben</option>
+                        <option value="private_personal">Zártkörű magánrendezvény</option>
+                        <option value="private_corporate">Zártkörű céges rendezvény</option>
+                    </select>
+
+                    <div class="step-actions" x-show="booking.eventType">
+                        <button type="button" class="btn btn--outline" @click="previousStep()">
+                            Vissza
+                        </button>
+                        <button type="button" class="btn btn--primary" @click="submitBooking()" :disabled="isSubmitting">
+                            <span x-show="!isSubmitting">Ajánlatot kérek</span>
+                            <span x-show="isSubmitting">Küldés...</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notification -->
+                <div x-show="notification.show" x-transition class="notification"
+                    :class="notification.type === 'error' ? 'notification-error' : 'notification-success'">
+                    <span x-text="notification.message"></span>
+                    <button type="button" @click="hideNotification()" class="notification-close">×</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Use home page styles for consistency */
+    .label-icon {
+        font-size: var(--text-xl);
+    }
+
+    /* Date and Time Picker Styles - COPIED FROM HOME PAGE */
+    .date-picker,
+    .time-picker {
+        position: relative;
+    }
+
+    .selected-date-display,
+    .selected-time-display {
+        padding: var(--space-4);
+        border: 2px solid var(--border-base);
+        border-radius: var(--radius-lg);
+        font-size: var(--text-base);
+        background: var(--color-white);
+        transition: var(--transition-base);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        height: 56px;
+        line-height: 1.5;
+    }
+
+    .selected-date-display:hover,
+    .selected-time-display:hover,
+    .selected-date-display:focus,
+    .selected-time-display:focus {
+        border-color: var(--color-primary-600);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .date-display,
+    .time-display {
+        flex: 1;
+    }
+
+    .placeholder {
+        color: var(--color-gray-600);
+        font-style: italic;
+    }
+
+    .selected-date-text,
+    .selected-time-text {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .dropdown-icon {
+        width: 20px;
+        height: 20px;
+        color: var(--text-secondary);
+        transition: transform 0.2s ease;
+    }
+
+    .dropdown-icon.rotate-180 {
+        transform: rotate(180deg);
+    }
+
+    .calendar-popup,
+    .time-picker-popup {
+        position: absolute;
+        top: calc(100% + var(--space-2));
+        left: 0;
+        right: 0;
+        background: var(--color-white);
+        border: 1px solid var(--border-base);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        z-index: 50;
+        padding: var(--space-6);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .time-picker-popup {
+        max-width: 350px;
+    }
+
+    .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-4);
+    }
+
+    .nav-button {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: var(--color-gray-100);
+        color: var(--text-secondary);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: var(--transition-base);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-button:hover {
+        background: var(--color-gray-200);
+        color: var(--text-primary);
+    }
+
+    .nav-button svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .month-year {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: var(--space-1);
+        margin-bottom: var(--space-3);
+    }
+
+    .weekday {
+        text-align: center;
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--text-secondary);
+        padding: var(--space-2);
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: var(--space-1);
+        margin-bottom: var(--space-6);
+    }
+
+    .calendar-day {
+        aspect-ratio: 1;
+        border: none;
+        background: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: var(--transition-base);
+        font-size: var(--text-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .calendar-day:hover:not(.disabled) {
+        background: var(--color-primary-400);
+        color: var(--color-white);
+    }
+
+    .calendar-day.other-month {
+        color: var(--color-gray-600);
+    }
+
+    .calendar-day.today {
+        background: var(--color-gray-100);
+        font-weight: 600;
+    }
+
+    .calendar-day.selected {
+        background: var(--color-primary-600);
+        color: var(--color-white);
+        font-weight: 600;
+    }
+
+    .calendar-day.disabled {
+        color: var(--color-gray-600);
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .time-selection {
+        border-top: 1px solid var(--border-light);
+        padding-top: var(--space-4);
+        margin-bottom: var(--space-4);
+    }
+
+    .time-title {
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+        text-align: center;
+    }
+
+    .time-picker-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-4);
+        margin-bottom: var(--space-4);
+    }
+
+    .wheel-picker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-2);
+    }
+
+    .wheel-label {
+        font-size: var(--text-sm);
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .wheel-container {
+        position: relative;
+        width: 80px;
+        height: 200px;
+        overflow: hidden;
+        border-radius: var(--radius-md);
+        background: var(--bg-secondary);
+        cursor: grab;
+        user-select: none;
+    }
+
+    .wheel-container:active {
+        cursor: grabbing;
+    }
+
+    .wheel-mask {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .wheel-selection-overlay {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 40px;
+        transform: translateY(-50%);
+        background: rgba(37, 99, 235, 0.1);
+        border: 2px solid var(--color-primary-600);
+        border-radius: var(--radius-sm);
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .wheel-items {
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease-out;
+        padding: 80px 0;
+    }
+
+    .wheel-item {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--text-lg);
+        font-weight: 500;
+        color: var(--text-secondary);
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .wheel-item:hover {
+        background: rgba(37, 99, 235, 0.05);
+    }
+
+    .wheel-item.selected {
+        color: var(--color-primary-600);
+        font-weight: 600;
+        font-size: var(--text-xl);
+        transform: scale(1.1);
+    }
+
+    .time-separator-wheel {
+        font-size: var(--text-2xl);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 var(--space-2);
+        margin-top: var(--space-6);
+    }
+
+    .calendar-actions,
+    .time-picker-actions {
+        border-top: 1px solid var(--border-light);
+        padding-top: var(--space-4);
+        text-align: center;
+    }
+
+    .confirm-btn {
+        background: var(--color-primary-600);
+        color: var(--color-white);
+        border: none;
+        padding: var(--space-3) var(--space-6);
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-base);
+    }
+
+    .confirm-btn:hover {
+        background: var(--color-primary-700);
+    }
+
+    .form-select,
+    .form-input {
+        padding: var(--space-4);
+        border: 2px solid var(--border-base);
+        border-radius: var(--radius-lg);
+        font-size: var(--text-base);
+        background: var(--color-white);
+        transition: var(--transition-base);
+        width: 100%;
+        box-sizing: border-box;
+        height: 56px;
+    }
+
+    .form-select:focus,
+    .form-input:focus {
+        outline: none;
+        border-color: var(--color-primary-600);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Location search styles - copied from home page */
+    .location-search {
+        position: relative;
+    }
+
+    .location-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--color-white);
+        border: 1px solid var(--border-base);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        z-index: 50;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 2px;
+    }
+
+    .suggestion-item {
+        padding: var(--space-3) var(--space-4);
+        cursor: pointer;
+        border-bottom: 1px solid var(--border-light);
+        transition: var(--transition-base);
+    }
+
+    .suggestion-item:hover,
+    .suggestion-item.highlighted {
+        background: var(--color-gray-50);
+    }
+
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+
+    .suggestion-name {
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: var(--text-base);
+    }
+
+    .suggestion-country {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        margin-top: var(--space-1);
+    }
+
+    /* Performer showcase styles */
+    .performer-showcase {
+        margin: var(--space-4) 0;
+        padding: var(--space-4);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(10px);
+    }
+
+    .performer-info {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    .performer-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .performer-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .performer-details {
+        flex: 1;
+    }
+
+    .performer-name {
+        color: var(--color-white);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 var(--space-1) 0;
+    }
+
+    .performer-category {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    /* Progress steps */
+    .progress-steps {
+        display: flex;
+        justify-content: center;
+        gap: var(--space-4);
+        margin-bottom: var(--space-6);
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-1);
+        opacity: 0.5;
+        transition: opacity 0.3s;
+    }
+
+    .step.active,
+    .step.completed {
+        opacity: 1;
+    }
+
+    .step-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--color-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        transition: background-color 0.3s;
+    }
+
+    .step.active .step-number {
+        background: var(--color-primary-600);
+    }
+
+    .step.completed .step-number {
+        background: var(--color-success-600);
+    }
+
+    .step-title {
+        font-size: 0.875rem;
+        color: var(--color-white);
+        font-weight: 500;
+    }
+
+    /* Step actions */
+    .step-actions {
+        display: flex;
+        gap: var(--space-3);
+        justify-content: center;
+        margin-top: var(--space-4);
+    }
+
+    /* Notification styles */
+    .notification {
+        position: fixed;
+        top: var(--space-4);
+        right: var(--space-4);
+        padding: var(--space-4);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        z-index: 1000;
+        max-width: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+    }
+
+    .notification-success {
+        background: var(--color-success-600);
+        color: var(--color-white);
+    }
+
+    .notification-error {
+        background: var(--color-error-600);
+        color: var(--color-white);
+    }
+
+    .notification-close {
+        background: none;
+        border: none;
+        color: inherit;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .progress-steps {
+            gap: var(--space-2);
+        }
+
+        .step-title {
+            font-size: 0.75rem;
+        }
+
+        .performer-info {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .step-actions {
+            flex-direction: column;
+        }
+
+        .calendar-popup,
+        .time-picker-popup {
+            max-width: none;
+            margin: 0 var(--space-4);
+        }
+    }
+</style>
+
+<script>
+    function performerBookingWizard(performerId, performerName) {
+        return {
+            // State
+            currentStep: 'date',
+            completedSteps: [],
+            isSubmitting: false,
+            performerId: performerId,
+            performerName: performerName,
+
+            // Form data
+            booking: {
+                date: '',
+                time: '',
+                location: '',
+                eventType: '',
+                performer: performerName,
+                performerId: performerId
+            },
+
+            // Notification
+            notification: {
+                show: false,
+                message: '',
+                type: 'success'
+            },
+
+            // Methods
+            init() {
+                // Listen for custom events from date/time/location pickers
+                document.addEventListener('date-confirmed', (event) => {
+                    console.log('Date confirmed:', event.detail);
+                    this.booking.date = event.detail.date;
+                    this.nextStep();
+                });
+
+                document.addEventListener('time-confirmed', (event) => {
+                    console.log('Time confirmed:', event.detail);
+                    this.booking.time = event.detail.time;
+                    this.nextStep();
+                });
+
+                document.addEventListener('location-confirmed', (event) => {
+                    console.log('Location confirmed:', event.detail);
+                    this.booking.location = event.detail.location;
+                    this.nextStep();
+                });
+            },
+
+            nextStep() {
+                const steps = ['date', 'time', 'location', 'eventType'];
+                const currentIndex = steps.indexOf(this.currentStep);
+
+                // Mark current step as completed
+                if (!this.completedSteps.includes(this.currentStep)) {
+                    this.completedSteps.push(this.currentStep);
+                }
+
+                // Move to next step
+                if (currentIndex < steps.length - 1) {
+                    this.currentStep = steps[currentIndex + 1];
+                }
+            },
+
+            previousStep() {
+                const steps = ['date', 'time', 'location', 'eventType'];
+                const currentIndex = steps.indexOf(this.currentStep);
+
+                if (currentIndex > 0) {
+                    this.currentStep = steps[currentIndex - 1];
+                }
+            },
+
+            skipTime() {
+                this.booking.time = '';
+                this.nextStep();
+            },
+
+            showNotification(message, type = 'success') {
+                this.notification = {
+                    show: true,
+                    message: message,
+                    type: type
+                };
+
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    this.hideNotification();
+                }, 5000);
+            },
+
+            hideNotification() {
+                this.notification.show = false;
+            },
+
+            async submitBooking() {
+                if (this.isSubmitting) return;
+
+                // Validate required fields
+                if (!this.booking.date) {
+                    this.showNotification('Kérjük, válassza ki az esemény dátumát!', 'error');
+                    this.currentStep = 'date';
+                    return;
+                }
+
+                if (!this.booking.location) {
+                    this.showNotification('Kérjük, adja meg az esemény helyszínét!', 'error');
+                    this.currentStep = 'location';
+                    return;
+                }
+
+                if (!this.booking.eventType) {
+                    this.showNotification('Kérjük, válassza ki a műsor típusát!', 'error');
+                    this.currentStep = 'eventType';
+                    return;
+                }
+
+                this.isSubmitting = true;
+                this.showNotification('Ajánlatkérés összekészítése...', 'success');
+
+                try {
+                    // Format booking data
+                    const bookingData = {
+                        eventDate: this.booking.date,
+                        eventTime: this.booking.time,
+                        location: this.booking.location,
+                        eventType: this.booking.eventType,
+                        performerName: this.performerName,
+                        performerId: this.performerId,
+                        source: 'performer_wizard'
+                    };
+
+                    // Redirect to quote form with data
+                    const params = new URLSearchParams(bookingData);
+                    window.location.href = `/foglalas/${this.performerId}?${params.toString()}`;
+
+                } catch (error) {
+                    console.error('Booking submission error:', error);
+                    this.showNotification('Hiba történt az ajánlatkérés során. Kérjük, próbálja újra!', 'error');
+                    this.isSubmitting = false;
+                }
+            }
+        };
+    }
+
+    // Include date picker, time picker, and location search functions from home page
+    // These would be the same implementations as in the home page
+</script>
+
+<!-- Include wizard JavaScript functions -->
+<script src="/js/modules/form-components.js"></script>
+<script src="/js/wizard.js"></script>

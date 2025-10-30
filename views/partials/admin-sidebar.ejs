@@ -1,0 +1,118 @@
+<aside class="admin-sidebar">
+    <div class="admin-sidebar__logo">
+        <a href="/admin">
+            <% if (locals.flatSettings && locals.flatSettings['company.logo']) { %>
+            <img src="<%= flatSettings['company.logo'] %>" alt="Logo">
+            <% } %>
+            <span class="admin-sidebar__logo-text">Admin</span>
+        </a>
+    </div>
+    
+    <nav class="admin-sidebar__nav">
+        <!-- Global Navigation -->
+        <a href="/" class="admin-sidebar__link">
+            <span class="admin-sidebar__icon">🏠</span>
+            <span>Főoldal</span>
+        </a>
+        <a href="/admin" class="admin-sidebar__link <%= (currentPath === '/admin' || currentPath === '/admin/') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">📊</span>
+            <span>Dashboard</span>
+        </a>
+        
+        <!-- Értékesítés Section (visible to: sales, admin) -->
+        <% if (locals.user && (user.role === 'sales' || user.role === 'admin')) { %>
+        <div class="admin-sidebar__section-title">Értékesítés</div>
+        <a href="/admin/chat" class="admin-sidebar__link <%= currentPath.startsWith('/admin/chat') && !currentPath.startsWith('/admin/chat/settings') && !currentPath.startsWith('/admin/chat/offline-messages') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">💬</span>
+            <span>Chat</span>
+        </a>
+        <a href="/admin/chat/offline-messages" class="admin-sidebar__link <%= currentPath.startsWith('/admin/chat/offline-messages') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">📨</span>
+            <span>Offline Üzenetek</span>
+        </a>
+        <% } %>
+        
+        <!-- Tartalom Section (admin only) -->
+        <% if (locals.user && user.role === 'admin') { %>
+        <div class="admin-sidebar__section-title">Tartalom</div>
+        <a href="/admin/blog" class="admin-sidebar__link <%= currentPath.startsWith('/admin/blog') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">📝</span>
+            <span>Blog</span>
+        </a>
+        <a href="/admin/company" class="admin-sidebar__link <%= currentPath.startsWith('/admin/company') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">🏢</span>
+            <span>Company</span>
+        </a>
+        <a href="/admin/events" class="admin-sidebar__link <%= currentPath.startsWith('/admin/events') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">🎫</span>
+            <span>Events</span>
+        </a>
+        <a href="/admin/faq" class="admin-sidebar__link <%= currentPath.startsWith('/admin/faq') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">❓</span>
+            <span>FAQ</span>
+        </a>
+        <a href="/admin/partners" class="admin-sidebar__link <%= currentPath.startsWith('/admin/partners') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">🤝</span>
+            <span>Partners</span>
+        </a>
+        <a href="/admin/social" class="admin-sidebar__link <%= currentPath.startsWith('/admin/social') ? 'admin-sidebar__link--active' : '' %>">
+          <span class="admin-sidebar__icon">🌐</span>
+          <span>Social Media</span>
+        </a>
+        
+        <!-- Felhasználók Section (admin only) -->
+        <div class="admin-sidebar__section-title">Felhasználók</div>
+        <a href="/admin/users" class="admin-sidebar__link <%= currentPath.startsWith('/admin/users') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">👥</span>
+            <span>Users</span>
+        </a>
+        
+        <!-- Rendszer Section (admin only) -->
+        <div class="admin-sidebar__section-title">Rendszer</div>
+        <a href="/admin/backup" class="admin-sidebar__link <%= currentPath.startsWith('/admin/backup') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">💾</span>
+            <span>Backup</span>
+        </a>
+        <a href="/admin/ai-behavior" class="admin-sidebar__link <%= currentPath.startsWith('/admin/ai-behavior') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">🤖</span>
+            <span>AI Behavior</span>
+        </a>
+        <a href="/admin/chat/settings" class="admin-sidebar__link <%= currentPath.startsWith('/admin/chat/settings') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">⚙️</span>
+            <span>Chat Settings</span>
+        </a>
+        <a href="/admin/cron" class="admin-sidebar__link <%= currentPath.startsWith('/admin/cron') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">⏰</span>
+            <span>Cron Jobs</span>
+        </a>
+        <a href="/admin/email" class="admin-sidebar__link <%= currentPath.startsWith('/admin/email') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">📧</span>
+            <span>Email</span>
+        </a>
+        <a href="/admin/exit-popup" class="admin-sidebar__link <%= currentPath.startsWith('/admin/exit-popup') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">🚪</span>
+            <span>Exit Popup</span>
+        </a>
+        <a href="/admin/integrations" class="admin-sidebar__link <%= currentPath.startsWith('/admin/integrations') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">🔌</span>
+            <span>Integrations</span>
+        </a>
+        <a href="/admin/logs" class="admin-sidebar__link <%= currentPath.startsWith('/admin/logs') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">📋</span>
+            <span>Logs</span>
+        </a>
+        <a href="/admin/security-log" class="admin-sidebar__link <%= currentPath.startsWith('/admin/security-log') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">🛡️</span>
+            <span>Security Log</span>
+        </a>
+        <a href="/admin/seo" class="admin-sidebar__link <%= currentPath.startsWith('/admin/seo') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">🔍</span>
+            <span>SEO</span>
+        </a>
+        <a href="/admin/settings" class="admin-sidebar__link <%= currentPath.startsWith('/admin/settings') ? 'admin-sidebar__link--active' : '' %>">
+            <span class="admin-sidebar__icon">⚙️</span>
+            <span>Settings</span>
+        </a>
+        <% } %>
+    </nav>
+</aside>

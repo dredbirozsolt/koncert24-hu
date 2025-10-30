@@ -1,0 +1,279 @@
+<!-- Partner Kategória Szerkesztése -->
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header mb-4">
+    <a href="/admin/partners/categories" class="btn btn--secondary">
+      ← Vissza
+    </a>
+  </div>
+
+  <!-- Form -->
+  <form method="POST" action="/admin/partners/categories<%= isEdit ? '/' + category.id : '' %>" id="partnerCategoryForm">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="admin-two-col">
+      <!-- Bal oldal: Alapadatok -->
+      <div>
+        <div class="card--data">
+          <h3 class="section-title">Alapadatok</h3>
+
+          <div class="form__group">
+            <label for="name">Kategória neve *</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              class="form__control"
+              placeholder="pl. Szolgáltató"
+              value="<%= category.name || '' %>"
+              required
+              oninput="updateSlug()"
+            >
+          </div>
+
+          <div class="form__group">
+            <label for="slug">URL slug *</label>
+            <input 
+              type="text" 
+              id="slug" 
+              name="slug" 
+              class="form__control"
+              placeholder="pl. szolgaltato"
+              value="<%= category.slug || '' %>"
+              pattern="[a-z0-9\-]+"
+              title="Csak kisbetűk, számok és kötőjel"
+              required
+            >
+            <small class="form__hint">
+              Automatikusan generálódik a névből. Csak kisbetűk, számok és kötőjel.
+            </small>
+          </div>
+
+          <div class="form__group">
+            <label for="description">Leírás</label>
+            <textarea 
+              id="description" 
+              name="description" 
+              class="form__control"
+              rows="4"
+              placeholder="Rövid leírás a kategóriáról..."
+            ><%= category.description || '' %></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form__group">
+              <label for="displayOrder">Megjelenítési sorrend</label>
+              <input 
+                type="number" 
+                id="displayOrder" 
+                name="displayOrder" 
+                class="form__control"
+                value="<%= category.displayOrder || 0 %>"
+                min="0"
+              >
+              <small class="form__hint">Alacsonyabb szám = előrébb</small>
+            </div>
+
+            <div class="form__group">
+              <label>&nbsp;</label>
+              <div class="form__switch-row">
+                <span class="form__switch-row-label">Aktív kategória</span>
+                <input type="checkbox" 
+                       class="form-switch-input"
+                       name="isActive" 
+                       <%= (isEdit && category.isActive) || (!isEdit) ? 'checked' : '' %>>
+              </div>
+            </div>
+          </div>
+
+          <% if (isEdit && category.partners && category.partners.length > 0) { %>
+            <div class="mt-6 pt-6 border-t-2">
+              <h4 class="text-base mb-4">
+                🤝 Kapcsolódó partnerek (<%= category.partners.length %> db)
+              </h4>
+              <div class="max-h-200 overflow-y-auto">
+                <% category.partners.forEach(partner => { %>
+                  <div class="p-2 border-b flex justify-between items-center">
+                    <div>
+                      <strong><%= partner.name %></strong>
+                      <% if (partner.status === 'active') { %>
+                        <span class="badge badge-success ml-2">Aktív</span>
+                      <% } else if (partner.status === 'pending') { %>
+                        <span class="badge badge-warning ml-2">Függőben</span>
+                      <% } else { %>
+                        <span class="badge badge-error ml-2"><%= partner.status %></span>
+                      <% } %>
+                      <br><small class="text-secondary"><%= partner.websiteUrl %></small>
+                    </div>
+                    <a href="/admin/partners/<%= partner.id %>/edit" target="_blank" class="btn btn--secondary">
+                      Szerkesztés
+                    </a>
+                  </div>
+                <% }); %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Jobb oldal: SEO -->
+      <div>
+        <div class="card--data">
+          <h3 class="section-title">SEO Beállítások</h3>
+
+          <div class="form__group">
+            <label for="metaTitle">
+              Meta cím
+              <span id="metaTitleCount" class="text-primary font-normal">(0/70)</span>
+            </label>
+            <input 
+              type="text" 
+              id="metaTitle" 
+              name="metaTitle" 
+              class="form__control"
+              placeholder="SEO optimalizált cím"
+              value="<%= category.metaTitle || '' %>"
+              maxlength="70"
+              oninput="updateCount('metaTitle', 70)"
+            >
+            <small class="form__hint">Optimális: 50-60 karakter</small>
+          </div>
+
+          <div class="form__group">
+            <label for="metaDescription">
+              Meta leírás
+              <span id="metaDescriptionCount" class="text-primary font-normal">(0/165)</span>
+            </label>
+            <textarea 
+              id="metaDescription" 
+              name="metaDescription" 
+              class="form__control"
+              rows="4"
+              placeholder="Rövid leírás keresőmotoroknak..."
+              maxlength="165"
+              oninput="updateCount('metaDescription', 165)"
+            ><%= category.metaDescription || '' %></textarea>
+            <small class="form__hint">Optimális: 150-160 karakter</small>
+          </div>
+
+          <% if (isEdit) { %>
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+              <div class="text-sm text-secondary">
+                <div><strong>Létrehozva:</strong> <%= new Date(category.createdAt).toLocaleString('hu-HU') %></div>
+                <div class="mt-1"><strong>Módosítva:</strong> <%= new Date(category.updatedAt).toLocaleString('hu-HU') %></div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Mentés gomb -->
+        <div class="card--data mt-3">
+          <button type="submit" class="btn btn--primary btn--block">
+            💾 <%= isEdit ? 'Mentés' : 'Létrehozás' %>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+// Slug automatikus generálás
+function updateSlug() {
+  const nameInput = document.getElementById('name');
+  const slugInput = document.getElementById('slug');
+  
+  // Csak akkor generálunk ha üres vagy még nem szerkesztették
+  if (!slugInput.dataset.manuallyEdited) {
+    const slug = nameInput.value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Ékezetek eltávolítása
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    
+    slugInput.value = slug;
+  }
+}
+
+// Slug manuális szerkesztés jelzése
+document.getElementById('slug').addEventListener('input', function() {
+  this.dataset.manuallyEdited = 'true';
+});
+
+// Karakter számláló
+function updateCount(fieldId, maxLength) {
+  const field = document.getElementById(fieldId);
+  const counter = document.getElementById(fieldId + 'Count');
+  const length = field.value.length;
+  
+  counter.textContent = `(${length}/${maxLength})`;
+  
+  if (length > maxLength * 0.9) {
+    counter.style.color = 'var(--color-error-600)';
+  } else if (length > maxLength * 0.7) {
+    counter.style.color = 'var(--color-warning-600)';
+  } else {
+    counter.style.color = 'var(--color-primary-600)';
+  }
+}
+
+// Inicializálás
+window.addEventListener('DOMContentLoaded', function() {
+  updateCount('metaTitle', 70);
+  updateCount('metaDescription', 165);
+  
+  // Partner category form submit handler
+  document.getElementById('partnerCategoryForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Mentés...';
+    
+    try {
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      
+      const response = await fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= csrfToken %>'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        Modal.alert({
+          title: 'Siker',
+          message: result.message || 'Kategória sikeresen mentve!',
+          type: 'success'
+        });
+        window.location.href = '/admin/partners/categories';
+      } else {
+        throw new Error(result.message || 'Hiba történt a mentés során');
+      }
+    } catch (error) {
+      Modal.alert({
+        title: 'Hiba',
+        message: '❌ Hiba: ' + error.message,
+        type: 'error'
+      });
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+  });
+});
+</script>
+
+

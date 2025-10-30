@@ -1,0 +1,204 @@
+<main class="quote-wizard">
+  <div class="quote-wizard__container">
+    
+    <!-- Progress Bar -->
+    <div class="quote-wizard__progress">
+      <div class="quote-wizard__progress-bar">
+        <div class="quote-wizard__progress-fill progress-100"></div>
+      </div>
+      <div class="quote-wizard__progress-text">3. lépés / 3</div>
+    </div>
+
+      <!-- Back Button -->
+      <a href="<%= basePath %>ajanlat/<%= performer ? performer.slug : '' %>?step=2" class="btn btn--secondary mb-6">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        Vissza a módosításhoz
+      </a>
+
+      <!-- Step Title -->
+      <h1 class="quote-wizard__title">Ellenőrizd az adatokat!</h1>
+      <p class="quote-wizard__subtitle">Mielőtt elküldöd az ajánlatkérést, nézd át még egyszer a részleteket.</p>
+
+      <!-- Summary Card -->
+      <div class="quote-summary">
+        
+        <!-- Performer Section -->
+        <% if (performer) { %>
+          <div class="quote-summary__section quote-summary__performer">
+            <% if (performer.imageUrl) { %>
+              <img src="<%= performer.imageUrl %>" alt="<%= performer.name %>" class="quote-summary__performer-image">
+            <% } %>
+            <div class="quote-summary__performer-info">
+              <h2 class="quote-summary__performer-name"><%= performer.name %></h2>
+              <% if (performer.performanceType) { %>
+                <span class="quote-summary__performer-type"><%= performer.performanceType %></span>
+              <% } %>
+              <% if (performer.style && performer.style.length > 0) { %>
+                <div class="quote-summary__performer-styles">
+                  <% performer.style.forEach(function(style) { %>
+                    <span class="style-tag"><%= style %></span>
+                  <% }); %>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="quote-summary__section">
+            <h3 class="quote-summary__heading">🎯 Ajánlatkérés</h3>
+            <dl class="quote-summary__list">
+              <dt>Típus:</dt>
+              <dd>Előadó ajánlás - Kollégáink kiválasztják a legjobb előadókat az igényeid alapján.</dd>
+              
+              <% if (quoteData.performerCount) { %>
+                <dt>Előadók száma:</dt>
+                <dd><%= quoteData.performerCount === '1' ? 'Egy előadó' : 'Több előadó' %></dd>
+              <% } %>
+              
+              <% if (quoteData.budget) { %>
+                <dt>Költségkeret:</dt>
+                <dd><%= new Intl.NumberFormat('hu-HU').format(quoteData.budget) %> Ft</dd>
+              <% } %>
+              
+              <% if (quoteData.styles && quoteData.styles.length > 0) { %>
+                <dt>Preferált stílusok:</dt>
+                <dd>
+                  <div class="quote-summary__performer-styles">
+                    <% quoteData.styles.forEach(function(style) { %>
+                      <span class="style-tag"><%= style %></span>
+                    <% }); %>
+                  </div>
+                </dd>
+              <% } %>
+            </dl>
+          </div>
+        <% } %>
+
+        <!-- Event Details -->
+        <div class="quote-summary__section">
+          <h3 class="quote-summary__heading">📅 Rendezvény adatok</h3>
+          <dl class="quote-summary__list">
+            <dt>Dátum:</dt>
+            <dd>
+              <%= quoteData.eventDate %>
+              <% if (quoteData.eventDateFlexible) { %>
+                <span class="badge badge--subtle">(Még nem fix a dátum)</span>
+              <% } %>
+            </dd>
+
+            <dt>Időpont:</dt>
+            <dd>
+              <%= quoteData.eventTime %>
+              <% if (quoteData.eventTimeFlexible) { %>
+                <span class="badge badge--subtle">(Még nem fix az időpont)</span>
+              <% } %>
+            </dd>
+
+            <dt>Helyszín:</dt>
+            <dd><%= quoteData.eventLocation %></dd>
+
+            <% if (quoteData.eventType) { %>
+              <dt>Műsor típusa:</dt>
+              <dd>
+                <% if (quoteData.eventType === 'outdoor_free') { %>Nyilvános ingyenes rendezvény szabadtéren<% } %>
+                <% if (quoteData.eventType === 'outdoor_paid') { %>Nyilvános belépőjegyes rendezvény szabadtéren<% } %>
+                <% if (quoteData.eventType === 'indoor_free') { %>Nyilvános ingyenes rendezvény zárt helyiségben<% } %>
+                <% if (quoteData.eventType === 'indoor_paid') { %>Nyilvános belépőjegyes rendezvény zárt helyiségben<% } %>
+                <% if (quoteData.eventType === 'private_personal') { %>Zártkörű magánrendezvény<% } %>
+                <% if (quoteData.eventType === 'private_corporate') { %>Zártkörű céges rendezvény<% } %>
+              </dd>
+            <% } %>
+
+            <% if (quoteData.eventTypes && quoteData.eventTypes.length > 0) { %>
+              <dt>Rendezvény típusok:</dt>
+              <dd>
+                <% if (Array.isArray(quoteData.eventTypes)) { %>
+                  <%= quoteData.eventTypes.join(', ') %>
+                <% } else { %>
+                  <%= quoteData.eventTypes %>
+                <% } %>
+              </dd>
+            <% } %>
+
+            <dt>Vendégszám:</dt>
+            <dd><%= quoteData.guestCount %> fő</dd>
+
+            <dt>Rendezvény neve:</dt>
+            <dd><strong><%= quoteData.eventName %></strong></dd>
+
+            <dt>Esemény jellege:</dt>
+            <dd><%= quoteData.eventCategory %></dd>
+          </dl>
+        </div>
+
+        <!-- Contact Details -->
+        <div class="quote-summary__section">
+          <h3 class="quote-summary__heading">👤 Kapcsolattartó</h3>
+          <dl class="quote-summary__list">
+            <dt>Név:</dt>
+            <dd><%= quoteData.contactName %></dd>
+
+            <dt>E-mail:</dt>
+            <dd><%= quoteData.contactEmail %></dd>
+
+            <% if (quoteData.contactPhone) { %>
+              <dt>Telefon:</dt>
+              <dd><%= quoteData.contactPhone %></dd>
+            <% } %>
+
+            <% if (quoteData.notes) { %>
+              <dt>Megjegyzés:</dt>
+              <dd class="notes"><%= quoteData.notes %></dd>
+            <% } %>
+          </dl>
+        </div>
+
+        <!-- Agreement Notice -->
+        <div class="quote-summary__notice">
+          <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+          </svg>
+          <div>
+            <strong>Fontos információ:</strong>
+            <p>Az ajánlatkérésed még nem minősül foglalásnak. A pontos időpontot és részleteket telefonon vagy e-mailben egyeztetjük veled 24 órán belül.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <form id="step3Form" class="quote-wizard__form">
+        <!-- Privacy Consent -->
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="privacyConsent" id="privacyConsent" required>
+            <span>Elfogadom az <a href="<%= basePath %>info/adatkezeles" target="_blank" class="privacy-link">adatkezelési tájékoztatót</a> és hozzájárulok személyes adataim kezeléséhez az ajánlat elkészítése céljából.</span>
+          </label>
+        </div>
+
+        <div class="form-actions form-actions--split">
+          <a href="<%= basePath %>ajanlat/<%= performer ? performer.slug : '' %>?step=2" class="btn btn--secondary btn--large">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+            </svg>
+            Módosítás
+          </a>
+          <button type="submit" class="btn btn--primary btn--large">
+            Ajánlatot kérek
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Custom CSS for this page -->
+  <link rel="stylesheet" href="<%= basePath %>css/pages/quote-wizard.css">
+  
+  <!-- Custom JS for this page -->
+  <script src="<%= basePath %>js/pages/quote-wizard.js"></script>

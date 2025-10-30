@@ -1,0 +1,221 @@
+<!-- Social Media Settings Page -->
+<div class="page-container">
+    <div class="admin-two-col">
+        
+        <!-- Bal oldal: Social Media Links -->
+        <div>
+            <div class="card--data">
+                <h3 class="section-title">
+                    🔗 Közösségi Média Linkek
+                </h3>
+                
+                <form id="social-form">
+                    <div class="form__group">
+                        <label for="social.facebook">
+                            📘 Facebook
+                        </label>
+                        <input 
+                            type="url" 
+                            name="social.facebook" 
+                            id="social.facebook"
+                            class="form__control"
+                            value="<%= flatSettings['social.facebook'] || '' %>"
+                            placeholder="https://www.facebook.com/yourpage"
+                        >
+                        <small class="form__hint">A Facebook oldal teljes URL-je</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="social.instagram">
+                            📷 Instagram
+                        </label>
+                        <input 
+                            type="url" 
+                            name="social.instagram" 
+                            id="social.instagram"
+                            class="form__control"
+                            value="<%= flatSettings['social.instagram'] || '' %>"
+                            placeholder="https://www.instagram.com/yourprofile"
+                        >
+                        <small class="form__hint">Az Instagram profil teljes URL-je</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="social.tiktok">
+                            🎵 TikTok
+                        </label>
+                        <input 
+                            type="url" 
+                            name="social.tiktok" 
+                            id="social.tiktok"
+                            class="form__control"
+                            value="<%= flatSettings['social.tiktok'] || '' %>"
+                            placeholder="https://www.tiktok.com/@yourhandle"
+                        >
+                        <small class="form__hint">A TikTok profil teljes URL-je</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="social.linkedin">
+                            💼 LinkedIn
+                        </label>
+                        <input 
+                            type="url" 
+                            name="social.linkedin" 
+                            id="social.linkedin"
+                            class="form__control"
+                            value="<%= flatSettings['social.linkedin'] || '' %>"
+                            placeholder="https://www.linkedin.com/company/yourcompany"
+                        >
+                        <small class="form__hint">A LinkedIn vállalati oldal URL-je</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="social.youtube">
+                            📺 YouTube
+                        </label>
+                        <input 
+                            type="url" 
+                            name="social.youtube" 
+                            id="social.youtube"
+                            class="form__control"
+                            value="<%= flatSettings['social.youtube'] || '' %>"
+                            placeholder="https://www.youtube.com/@yourchannel"
+                        >
+                        <small class="form__hint">A YouTube csatorna teljes URL-je</small>
+                    </div>
+
+                    <div class="btn__group btn__group--equal mb-4">
+                        <button type="button" class="btn btn--primary" onclick="saveSocial()">
+                            💾 Mentés
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Jobb oldal: Info Panel -->
+        <div>
+            <!-- Tippek -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ℹ️ Használati útmutató
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>📱 Linkek megjelenése:</strong><br>
+                        A megadott linkek a weboldal láblécében jelennek meg közösségi média ikonokként.
+                    </p>
+                    
+                    <p>
+                        <strong>🔗 URL formátum:</strong><br>
+                        Mindig a teljes URL-t add meg, a <code>https://</code> előtaggal együtt.
+                    </p>
+                    
+                    <p>
+                        <strong>✓ Ellenőrzés:</strong><br>
+                        Mentés után ellenőrizd, hogy a linkek helyesen működnek-e a publikus oldalon.
+                    </p>
+                    
+                    <p>
+                        <strong>🎯 Üresen hagyás:</strong><br>
+                        Ha egy platformot nem használsz, hagyd üresen a mezőt - nem fog megjelenni az oldalon.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Előnézet -->
+            <div class="card--data mt-3">
+                <h3 class="section-title">
+                    👁️ Kitöltött platformok
+                </h3>
+                
+                <div id="filled-platforms">
+                    <!-- JavaScript által generált lista -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    const csrfToken = '<%= csrfToken %>';
+
+    // Kitöltött platformok előnézete
+    function updateFilledPlatforms() {
+        const platforms = [
+            { id: 'social.facebook', name: 'Facebook', icon: '📘', color: '#1877f2' },
+            { id: 'social.instagram', name: 'Instagram', icon: '📷', color: '#e4405f' },
+            { id: 'social.tiktok', name: 'TikTok', icon: '🎵', color: '#000000' },
+            { id: 'social.linkedin', name: 'LinkedIn', icon: '💼', color: '#0077b5' },
+            { id: 'social.youtube', name: 'YouTube', icon: '📺', color: '#ff0000' }
+        ];
+
+        const container = document.getElementById('filled-platforms');
+        const filled = platforms.filter(p => {
+            const input = document.getElementById(p.id);
+            return input && input.value.trim() !== '';
+        });
+
+        if (filled.length === 0) {
+            container.innerHTML = '<p>Még nincs kitöltött platform</p>';
+        } else {
+            container.innerHTML = filled.map(p => `
+                <div>
+                    <i class="${p.icon}"></i>
+                    <span>${p.name}</span>
+                    ✓ </div>
+            `).join('');
+        }
+    }
+
+    // Input mezők figyelése
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = ['social.facebook', 'social.instagram', 'social.tiktok', 'social.linkedin', 'social.youtube'];
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', updateFilledPlatforms);
+            }
+        });
+        updateFilledPlatforms();
+    });
+
+    // Save social media links
+    async function saveSocial() {
+        const form = document.getElementById('social-form');
+        const formData = new FormData(form);
+        
+        // Convert FormData to settings object
+        const settingsObj = {};
+        for (const [key, value] of formData.entries()) {
+            settingsObj[key] = value;
+        }
+        
+        try {
+            const response = await fetch('/admin/social/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({ settings: settingsObj })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('success', `✅ ${data.message || 'Sikeresen mentve!'}`);
+                updateFilledPlatforms();
+            } else {
+                showAlert('error', `❌ ${data.message || 'Hiba történt a mentés során'}`);
+            }
+        } catch (error) {
+            showAlert('error', `❌ Hálózati hiba: ${error.message}`);
+        }
+    }
+
+    // ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+</script>

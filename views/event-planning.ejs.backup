@@ -1,0 +1,960 @@
+<!-- Event Planning Page -->
+
+<!-- Hero Section -->
+<div class="page__hero">
+    <div class="container">
+        <h1 class="page__hero__title">Találd meg a tökéletes előadót rendezvényedre</h1>
+        <p class="page__hero__subtitle">
+            Több mint 500 professzionális előadó, zenész, műsorvezető és humorista - egyszerű foglalási rendszerrel
+        </p>
+        
+        <div class="page__hero__cta">
+            <div class="hero-search">
+                <form action="<%= basePath %>eloadok" method="GET" class="hero-search__form" id="hero-search-form">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        id="hero-search-input"
+                        class="hero-search__input" 
+                        placeholder="Keresés előadók között (pl. zenész, humorista, dj...)"
+                        autocomplete="off"
+                    >
+                    <div id="hero-search-results" class="hero-search__results"></div>
+                    <button type="submit" class="hero-search__button">
+                        Keresés
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="hero-actions">
+                <a href="<%= basePath %>ajanlat" class="btn btn--primary btn--large">
+                    Ki ér rá, ajánljatok nekem
+                </a>
+                <a href="<%= basePath %>eloadok" class="btn btn--secondary btn--large">
+                    Böngészek az előadók között
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for hero search -->
+<script src="<%= basePath %>js/pages/alternative-search.js"></script>
+
+<!-- Style Showcase Section -->
+<section id="eloado-stilus" class="style-showcase" role="region" aria-labelledby="style-showcase-title">
+    <div class="container">
+        <div class="style-showcase__header">
+            <h2 id="style-showcase-title" class="style-showcase__title">
+                Találd meg a hozzád illő előadói stílust
+            </h2>
+            <p class="style-showcase__subtitle">
+                Válaszd ki a hangulatot, amit keresel – mi megmutatjuk a legjobb előadókat.
+            </p>
+        </div>
+
+        <div class="style-grid">
+            <% if (styles && styles.length > 0) { %>
+                <% styles.forEach((style) => { %>
+            <a href="/eloadok?style=<%= style.urlParam %>" 
+               class="style-card style-card--<%= style.slug %>" 
+               data-style="<%= style.name %>" 
+               data-slug="<%= style.slug %>" 
+               role="link" 
+               tabindex="0" 
+               aria-label="Felfedezem: <%= style.name %>">
+                <div class="style-card__background"></div>
+                <div class="style-card__content">
+                    <span class="style-card__icon" aria-hidden="true"><%= style.icon %></span>
+                    <h3 class="style-card__name"><%= style.name %></h3>
+                </div>
+            </a>
+                <% }); %>
+            <% } else { %>
+            <!-- Fallback if no styles found -->
+            <p class="empty-state-text">
+                Jelenleg nincsenek elérhető stílusok.
+            </p>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<!-- Event Type Section -->
+<section class="section section--subtle">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Esemény típusa</h2>
+            <p class="section-subtitle">
+                Válaszd ki, milyen eseményt szervezel – mi megtaláljuk hozzá a tökéletes előadót.
+            </p>
+        </div>
+
+        <div class="event-types">
+            <!-- Magán / családi alkalmak -->
+            <div class="event-type-category">
+                <h3 class="event-type-category__title">
+                    <span class="event-type-category__icon">💝</span>
+                    Magán / családi alkalmak
+                </h3>
+                <div class="event-type-list">
+                    <a href="/eloadok" class="event-type-item">Esküvő</a>
+                    <a href="/eloadok" class="event-type-item">Eljegyzés</a>
+                    <a href="/eloadok" class="event-type-item">Lány-/legénybúcsú</a>
+                    <a href="/eloadok" class="event-type-item">Babaváró party / gender reveal party</a>
+                    <a href="/eloadok" class="event-type-item">Gyermek születése / keresztelő</a>
+                    <a href="/eloadok" class="event-type-item">Születésnap</a>
+                    <a href="/eloadok" class="event-type-item">Névnapi buli</a>
+                    <a href="/eloadok" class="event-type-item">Évforduló (házassági, baráti)</a>
+                    <a href="/eloadok" class="event-type-item">Házavató</a>
+                    <a href="/eloadok" class="event-type-item">Ballagás</a>
+                    <a href="/eloadok" class="event-type-item">Érettségi / diplomaosztó buli</a>
+                    <a href="/eloadok" class="event-type-item">Nyugdíjba vonuló ünneplés</a>
+                    <a href="/eloadok" class="event-type-item">Meglepetés party</a>
+                    <a href="/eloadok" class="event-type-item">Kerti party / házibuli / grillparty</a>
+                </div>
+            </div>
+
+            <!-- Közösségi / kulturális események -->
+            <div class="event-type-category">
+                <h3 class="event-type-category__title">
+                    <span class="event-type-category__icon">🎪</span>
+                    Közösségi / kulturális események
+                </h3>
+                <div class="event-type-list">
+                    <a href="/eloadok" class="event-type-item">Március 15. – nemzeti ünnep</a>
+                    <a href="/eloadok" class="event-type-item">Augusztus 20. – államalapítás ünnepe</a>
+                    <a href="/eloadok" class="event-type-item">Október 23. – nemzeti ünnep</a>
+                    <a href="/eloadok" class="event-type-item">Falunap / városnap</a>
+                    <a href="/eloadok" class="event-type-item">Szüreti fesztivál</a>
+                    <a href="/eloadok" class="event-type-item">Búcsú</a>
+                    <a href="/eloadok" class="event-type-item">Adventi vásár / városi karácsonyi rendezvény</a>
+                    <a href="/eloadok" class="event-type-item">Újévi koncert</a>
+                    <a href="/eloadok" class="event-type-item">Hagyományőrző nap</a>
+                    <a href="/eloadok" class="event-type-item">Fesztivál (gasztro / zenei / kulturális)</a>
+                    <a href="/eloadok" class="event-type-item">Helyi kézműves vásár</a>
+                    <a href="/eloadok" class="event-type-item">Közösségi piknik / családi nap</a>
+                    <a href="/eloadok" class="event-type-item">Térzene / szabadtéri koncert</a>
+                    <a href="/eloadok" class="event-type-item">Kiállítás / galéria megnyitó</a>
+                    <a href="/eloadok" class="event-type-item">Irodalmi est / könyvbemutató</a>
+                    <a href="/eloadok" class="event-type-item">Sportnap / futóverseny / bringanap</a>
+                </div>
+            </div>
+
+            <!-- Céges események -->
+            <div class="event-type-category">
+                <h3 class="event-type-category__title">
+                    <span class="event-type-category__icon">💼</span>
+                    Céges események
+                </h3>
+                <div class="event-type-list">
+                    <a href="/eloadok" class="event-type-item">Céges évzáró</a>
+                    <a href="/eloadok" class="event-type-item">Karácsonyi party</a>
+                    <a href="/eloadok" class="event-type-item">Gála / díjátadó</a>
+                    <a href="/eloadok" class="event-type-item">Konferencia</a>
+                    <a href="/eloadok" class="event-type-item">Csapatépítő</a>
+                    <a href="/eloadok" class="event-type-item">Termékbemutató / brand launch</a>
+                    <a href="/eloadok" class="event-type-item">Ügyféltalálkozó</a>
+                    <a href="/eloadok" class="event-type-item">Partnernap</a>
+                    <a href="/eloadok" class="event-type-item">Workshop / tréning</a>
+                    <a href="/eloadok" class="event-type-item">Kick-off meeting / évindító rendezvény</a>
+                    <a href="/eloadok" class="event-type-item">Sales meeting / országos találkozó</a>
+                    <a href="/eloadok" class="event-type-item">Sajtótájékoztató / PR-esemény</a>
+                    <a href="/eloadok" class="event-type-item">Befektetői prezentáció / shareholder meeting</a>
+                    <a href="/eloadok" class="event-type-item">CSR nap / jótékonysági esemény</a>
+                    <a href="/eloadok" class="event-type-item">Nyílt nap / gyárlátogatás</a>
+                    <a href="/eloadok" class="event-type-item">Networking est / üzleti reggeli / meet-up</a>
+                    <a href="/eloadok" class="event-type-item">Startup pitch night / hackathon</a>
+                </div>
+            </div>
+
+            <!-- Gyerek- és ifjúsági események -->
+            <div class="event-type-category">
+                <h3 class="event-type-category__title">
+                    <span class="event-type-category__icon">🧸</span>
+                    Gyerek- és ifjúsági események
+                </h3>
+                <div class="event-type-list">
+                    <a href="/eloadok" class="event-type-item">Gyermeknap</a>
+                    <a href="/eloadok" class="event-type-item">Mikulás-nap</a>
+                    <a href="/eloadok" class="event-type-item">Halloween party</a>
+                    <a href="/eloadok" class="event-type-item">Sulibuli / gólyabál</a>
+                    <a href="/eloadok" class="event-type-item">Táborzáró</a>
+                    <a href="/eloadok" class="event-type-item">Iskolakezdés / tanévnyitó</a>
+                    <a href="/eloadok" class="event-type-item">Gyerekszínház / bábműsor</a>
+                    <a href="/eloadok" class="event-type-item">Gyerekkoncert</a>
+                    <a href="/eloadok" class="event-type-item">Iskolai vásár / jótékonysági sütivásár</a>
+                    <a href="/eloadok" class="event-type-item">Tematikus tábori napok (sportnap, jelmezes nap)</a>
+                    <a href="/eloadok" class="event-type-item">Karnevál / iskolai felvonulás</a>
+                </div>
+            </div>
+
+            <!-- Ünnepek és szezonális események -->
+            <div class="event-type-category">
+                <h3 class="event-type-category__title">
+                    <span class="event-type-category__icon">🎄</span>
+                    Ünnepek és szezonális események
+                </h3>
+                <div class="event-type-list">
+                    <a href="/eloadok" class="event-type-item">Advent / karácsony</a>
+                    <a href="/eloadok" class="event-type-item">Szilveszter / Újév</a>
+                    <a href="/eloadok" class="event-type-item">Valentin-nap</a>
+                    <a href="/eloadok" class="event-type-item">Húsvét</a>
+                    <a href="/eloadok" class="event-type-item">Pünkösd</a>
+                    <a href="/eloadok" class="event-type-item">Anyák napja</a>
+                    <a href="/eloadok" class="event-type-item">Apák napja / Férfinap</a>
+                    <a href="/eloadok" class="event-type-item">Nőnap</a>
+                    <a href="/eloadok" class="event-type-item">Farsang</a>
+                    <a href="/eloadok" class="event-type-item">Föld napja / Környezetvédelmi világnap</a>
+                    <a href="/eloadok" class="event-type-item">Őszi / szüreti mulatságok</a>
+                    <a href="/eloadok" class="event-type-item">Márton-nap / Libanapok / Gasztrohétvégék</a>
+                    <a href="/eloadok" class="event-type-item">Adventi gyertyagyújtás</a>
+                    <a href="/eloadok" class="event-type-item">Karácsonyfa-állítás / Mikulás-futás</a>
+                </div>
+            </div>
+
+            <!-- Speciális / tematikus események -->
+            <div class="event-type-category">
+                <h3 class="event-type-category__title">
+                    <span class="event-type-category__icon">✨</span>
+                    Speciális / tematikus események
+                </h3>
+                <div class="event-type-list">
+                    <a href="/eloadok" class="event-type-item">Jótékonysági gála / adománygyűjtő est / aukció</a>
+                    <a href="/eloadok" class="event-type-item">Kulturális tematikájú est (olasz est, retro party, latin night)</a>
+                    <a href="/eloadok" class="event-type-item">Divatbemutató / beauty event</a>
+                    <a href="/eloadok" class="event-type-item">Autó- vagy motor show / veterán találkozó</a>
+                    <a href="/eloadok" class="event-type-item">Esküvői kiállítás / rendezvényszervező expo</a>
+                    <a href="/eloadok" class="event-type-item">Egészségnap / sportfesztivál</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Performers Section -->
+<% if (featuredPerformers && featuredPerformers.length > 0) { %>
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Kiemelt előadók</h2>
+            <p class="section-subtitle">
+                Legnépszerűbb előadóink
+            </p>
+        </div>
+
+        <div class="performers__grid">
+            <% featuredPerformers.forEach(function(performer) { %>
+              <div class="performer__card">
+                <div class="performer__image">
+                  <a href="<%= basePath %>eloadok/<%= performer.slug %>">
+                    <% if (performer.imageUrl) { %>
+                      <img src="<%= performer.imageUrl %>" 
+                           alt="<%= performer.name %>" 
+                           loading="lazy">
+                      <% } else { %>
+                        <div class="performer__placeholder">
+                          <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                              clip-rule="evenodd" />
+                          </svg>
+                        </div>
+                        <% } %>
+                  </a>
+                  
+                  <!-- Status Badge on Image -->
+                  <% if (performer.status) { 
+                    let badgeClass = '';
+                    let badgeEmoji = '';
+                    if (performer.status === 'Kiemelt') {
+                      badgeClass = 'badge--featured';
+                      badgeEmoji = '⭐';
+                    } else if (performer.status === 'Népszerű') {
+                      badgeClass = 'badge--popular';
+                      badgeEmoji = '🔥';
+                    } else if (performer.status === 'Kedvezményes' || performer.status === 'Akciós') {
+                      badgeClass = 'badge--discount';
+                      badgeEmoji = '💰';
+                    }
+                  %>
+                    <span class="badge <%= badgeClass %> performer__status-badge"><%= badgeEmoji %> <%= performer.status %></span>
+                  <% } %>
+                </div>
+                <div class="performer__content">
+                  <div class="performer__header">
+                    <% if (performer.performanceType) { %>
+                      <div class="performer-category">
+                        <%= performer.performanceType %>
+                      </div>
+                    <% } %>
+                    <% if (isLoggedIn && user && user.emailVerified && performer.price) { %>
+                      <div class="performer-price-badge">
+                        <%= new Intl.NumberFormat('hu-HU').format(performer.price) %> Ft-tól
+                      </div>
+                      <% } %>
+                  </div>
+
+                  <h2 class="performer__name">
+                    <a href="<%= basePath %>eloadok/<%= performer.slug %>">
+                      <%= performer.name %>
+                    </a>
+                  </h2>
+
+                  <% if (performer.shortDescription) { %>
+                    <p class="performer__description">
+                      <%= performer.shortDescription %>
+                    </p>
+                    <% } %>
+
+                  <!-- Style Badges -->
+                  <% if (performer.style && performer.style.length > 0) { %>
+                    <div class="performer__styles">
+                      <% performer.style.forEach(function(style) { %>
+                        <span class="badge badge--style"><%= style %></span>
+                      <% }); %>
+                    </div>
+                  <% } %>
+
+                      <div class="performer__actions">
+                        <a href="<%= basePath %>eloadok/<%= performer.slug %>" class="btn btn--outline">
+                          <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                            <path fill-rule="evenodd"
+                              d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                              clip-rule="evenodd" />
+                          </svg>
+                          Részletek
+                        </a>
+                        <a href="<%= basePath %>foglalas/<%= performer.id %>" class="btn btn--primary">
+                          <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                            <path fill-rule="evenodd"
+                              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                              clip-rule="evenodd" />
+                          </svg>
+                          Foglalás
+                        </a>
+                      </div>
+                </div>
+              </div>
+              <% }); %>
+        </div>
+
+        <div class="section-footer">
+            <a href="<%= basePath %>eloadok" class="btn btn--outline btn-large">
+                Minden előadó megtekintése
+            </a>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<!-- Miért válasszon minket? Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Miért válasszon minket?</h2>
+        </div>
+
+        <div class="features-grid">
+            <div class="card--feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h3 class="feature-title">Professzionális szolgáltatás</h3>
+                <p class="feature-description">
+                    Évtizedes tapasztalat a rendezvényszervezés területén, megbízható partnerek.
+                </p>
+            </div>
+
+            <div class="card--feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path
+                            d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                    </svg>
+                </div>
+                <h3 class="feature-title">Egyszerű foglalás</h3>
+                <p class="feature-description">
+                    Gyors és könnyű foglalási folyamat, átlátható kommunikáció.
+                </p>
+            </div>
+
+            <div class="card--feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h3 class="feature-title">Minőségi előadók</h3>
+                <p class="feature-description">
+                    Gondosan válogatott, tapasztalt előadók minden kategóriában.
+                </p>
+            </div>
+
+            <div class="card--feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                        <path
+                            d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+                    </svg>
+                </div>
+                <h3 class="feature-title">24/7 támogatás</h3>
+                <p class="feature-description">
+                    Kérdése van? Csapatunk készségesen áll rendelkezésére.
+                </p>
+            </div>
+
+            <div class="card--feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h3 class="feature-title">⚡ Villámgyors ajánlat</h3>
+                <p class="feature-description">
+                    Garantált válasz 24 órán belül minden megkeresésre. Nincs hetek óta tartó várakozás, oda-vissza emailezgetés.
+                </p>
+            </div>
+
+            <div class="card--feature">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h3 class="feature-title">💎 Kristálytiszta árképzés</h3>
+                <p class="feature-description">
+                    Minden költség előre egyeztetett és árajánlatban szerepel. Zero rejtett díj, zero meglepetés az eseményen.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Partners Section -->
+<% if (typeof homepagePartners !== 'undefined' && homepagePartners && homepagePartners.length > 0) { %>
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Partnereink</h2>
+            <p class="section-subtitle">Megbízható kapcsolatok a magyar zeneipar és rendezvényszervezés területén</p>
+        </div>
+
+        <div class="partners-grid">
+            <% homepagePartners.forEach(partner => { %>
+                <div class="partner-logo-item">
+                    <a href="<%= partner.websiteUrl %>" target="_blank" rel="noopener noreferrer" title="<%= partner.name %>">
+                        <% if (partner.logo) { %>
+                            <img src="<%= partner.logo %>" 
+                                 alt="<%= partner.name %> logó" 
+                                 title="<%= partner.name %>" 
+                                 width="150" 
+                                 height="75" 
+                                 class="partner-logo-image">
+                        <% } else { %>
+                            🤝
+                        <% } %>
+                    </a>
+                </div>
+            <% }); %>
+        </div>
+
+        <div class="section-footer">
+            <a href="<%= basePath %>partners" class="btn btn--outline btn-large">
+                Összes partner megtekintése
+            </a>
+        </div>
+    </div>
+</section>
+<% } %>
+
+<!-- Lazy Load Images Script for Featured Performers -->
+<script>
+  (function() {
+    // Enhanced Lazy Load with Blur-up Effect for featured performers
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          
+          // Add loaded class when image fully loads
+          img.addEventListener('load', function() {
+            img.classList.add('loaded');
+          }, { once: true });
+          
+          // If image is already cached, add class immediately
+          if (img.complete) {
+            img.classList.add('loaded');
+          }
+          
+          imageObserver.unobserve(img);
+        }
+      });
+    }, {
+      rootMargin: '50px',
+      threshold: 0.01
+    });
+    
+    // Observe all lazy images in performers section
+    document.querySelectorAll('.performers__grid .performer__image img[loading="lazy"]').forEach(img => {
+      imageObserver.observe(img);
+    });
+  })();
+</script>
+
+<!-- ============================================
+     STYLE SHOWCASE STYLES
+     ============================================ -->
+<style>
+    /* Section wrapper */
+    .style-showcase {
+        padding: var(--space-24) 0;
+        background: linear-gradient(180deg, var(--bg-base) 0%, var(--bg-subtle) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .style-showcase::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border-base), transparent);
+    }
+
+    /* Header */
+    .style-showcase__header {
+        text-align: center;
+        margin-bottom: var(--space-16);
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .style-showcase__title {
+        font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+        font-weight: var(--font-weight-extrabold);
+        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+        line-height: 1.1;
+    }
+
+    .style-showcase__subtitle {
+        font-size: clamp(var(--text-lg), 2.5vw, var(--text-xl));
+        color: var(--text-secondary);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* Grid - Uniform square layout */
+    .style-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--space-6);
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 var(--space-4);
+    }
+
+    /* Style Card - Base - Square aspect ratio */
+    .style-card {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        aspect-ratio: 1;
+        height: 0;
+        padding-bottom: 100%;
+        border-radius: var(--radius-3xl);
+        text-decoration: none !important;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform-style: preserve-3d;
+        animation: fadeInScale 0.6s ease-out backwards;
+    }
+    
+    .style-card:hover,
+    .style-card:focus,
+    .style-card:active,
+    .style-card:visited {
+        text-decoration: none !important;
+    }
+
+    /* Staggered animation delays */
+    .style-card:nth-child(1) { animation-delay: 0.05s; }
+    .style-card:nth-child(2) { animation-delay: 0.1s; }
+    .style-card:nth-child(3) { animation-delay: 0.15s; }
+    .style-card:nth-child(4) { animation-delay: 0.2s; }
+    .style-card:nth-child(5) { animation-delay: 0.25s; }
+    .style-card:nth-child(6) { animation-delay: 0.3s; }
+    .style-card:nth-child(7) { animation-delay: 0.35s; }
+    .style-card:nth-child(8) { animation-delay: 0.4s; }
+    .style-card:nth-child(9) { animation-delay: 0.45s; }
+    .style-card:nth-child(10) { animation-delay: 0.5s; }
+
+    /* Animated gradient background */
+    .style-card__background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+        background-size: 200% 200%;
+        transition: all 0.6s ease;
+        z-index: 0;
+    }
+
+    /* Genre-specific gradients - vibrant and animated */
+    .style-card--pop .style-card__background {
+        background: linear-gradient(135deg, #ec4899, #d946ef, #f472b6);
+    }
+
+    .style-card--rock .style-card__background {
+        background: linear-gradient(135deg, #1a1a1a, #dc2626, #7f1d1d);
+    }
+
+    .style-card--retro .style-card__background {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24, #fb923c);
+    }
+
+    .style-card--mulatos .style-card__background {
+        background: linear-gradient(135deg, #a16207, #ca8a04, #d97706);
+    }
+
+    .style-card--party-zenekar .style-card__background {
+        background: linear-gradient(135deg, #8b5cf6, #6366f1, #a855f7);
+    }
+
+    .style-card--influencer .style-card__background {
+        background: linear-gradient(135deg, #06b6d4, #0ea5e9, #22d3ee);
+        animation: neonPulse 3s ease-in-out infinite;
+    }
+
+    .style-card--szinhaz .style-card__background {
+        background: linear-gradient(135deg, #991b1b, #dc2626, #1f2937);
+    }
+
+    .style-card--dj .style-card__background {
+        background: linear-gradient(135deg, #4f46e5, #6366f1, #818cf8);
+        animation: glowPulse 4s ease-in-out infinite;
+    }
+
+    .style-card--musorvezeto .style-card__background {
+        background: linear-gradient(135deg, #475569, #1e3a8a, #64748b);
+    }
+
+    .style-card--egyeb .style-card__background {
+        background: linear-gradient(135deg, #ec4899, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ec4899);
+        background-size: 400% 400%;
+        animation: rainbowShift 8s ease infinite;
+    }
+
+    .style-card--acapella .style-card__background {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa, #93c5fd);
+    }
+
+    .style-card--tancprodukcio .style-card__background {
+        background: linear-gradient(135deg, #ec4899, #f472b6, #fda4af);
+    }
+
+    .style-card--gyermekmusor .style-card__background {
+        background: linear-gradient(135deg, #f97316, #fb923c, #fdba74);
+    }
+
+    .style-card--tribute .style-card__background {
+        background: linear-gradient(135deg, #eab308, #facc15, #fde047);
+    }
+
+    .style-card--musical---operett .style-card__background {
+        background: linear-gradient(135deg, #d946ef, #e879f9, #f0abfc);
+    }
+
+    .style-card--folk---world---country .style-card__background {
+        background: linear-gradient(135deg, #84cc16, #a3e635, #bef264);
+    }
+
+    .style-card--rap---hip-hop---trap .style-card__background {
+        background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+    }
+
+    .style-card--jazz---blues---swing .style-card__background {
+        background: linear-gradient(135deg, #0369a1, #0284c7, #38bdf8);
+    }
+
+    .style-card--stand-up---humor .style-card__background {
+        background: linear-gradient(135deg, #facc15, #fef08a, #fde047);
+    }
+    
+    .style-card__content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1;
+        padding: var(--space-8);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        transform: translateZ(20px);
+    }
+
+    .style-card__icon {
+        font-size: 4rem;
+        line-height: 1;
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: inline-block;
+    }
+
+    .style-card__name {
+        font-size: var(--text-2xl);
+        font-weight: var(--font-weight-bold);
+        color: white;
+        margin: 0;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+        transition: transform 0.4s ease;
+    }
+
+    /* Hover effects */
+    .style-card:hover,
+    .style-card:focus {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        outline: none;
+    }
+
+    .style-card:hover .style-card__background,
+    .style-card:focus .style-card__background {
+        background-position: 100% 100%;
+        transform: scale(1.1);
+    }
+
+    .style-card:hover .style-card__icon,
+    .style-card:focus .style-card__icon {
+        transform: scale(1.15) rotate(-5deg);
+    }
+
+    .style-card:hover .style-card__name,
+    .style-card:focus .style-card__name {
+        transform: translateX(4px);
+    }
+
+    .style-card:focus-visible {
+        outline: 4px solid var(--color-primary-500);
+        outline-offset: 4px;
+    }
+
+    .style-card:active {
+        transform: translateY(-8px) scale(1.01);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes neonPulse {
+        0%, 100% { filter: brightness(1) saturate(1); }
+        50% { filter: brightness(1.2) saturate(1.3); }
+    }
+
+    @keyframes glowPulse {
+        0%, 100% { 
+            filter: brightness(1);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        50% { 
+            filter: brightness(1.15);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+        }
+    }
+
+    @keyframes rainbowShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 640px) {
+        .style-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-3);
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: var(--space-4);
+        }
+
+        .style-card {
+            scroll-snap-align: start;
+        }
+
+        .style-card__content {
+            padding: var(--space-6);
+        }
+
+        .style-card__icon {
+            font-size: 3rem;
+        }
+
+        .style-card__name {
+            font-size: var(--text-lg);
+        }
+    }
+
+    /* Tablet */
+    @media (min-width: 641px) and (max-width: 1024px) {
+        .style-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-4);
+        }
+    }
+
+    /* Desktop large */
+    @media (min-width: 1025px) {
+        .style-grid {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+
+    /* Dark mode enhancements */
+    [data-theme="dark"] .style-showcase {
+        background: linear-gradient(180deg, var(--color-gray-900) 0%, var(--color-gray-950) 100%);
+    }
+
+    [data-theme="dark"] .style-card__name {
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+    }
+</style>
+
+<!-- ============================================
+     STYLE SHOWCASE INTERACTION SCRIPT
+     ============================================ -->
+<script>
+    /**
+     * Initialize Style Showcase
+     * Adds parallax effects and interaction tracking
+     */
+    function initStyleShowcase() {
+        const styleCards = document.querySelectorAll('.style-card');
+        
+        if (!styleCards.length) {
+            console.warn('Style showcase cards not found');
+            return;
+        }
+
+        // Parallax effect on mousemove
+        styleCards.forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const deltaX = (x - centerX) / centerX;
+                const deltaY = (y - centerY) / centerY;
+                
+                const rotateX = deltaY * 8;
+                const rotateY = deltaX * -8;
+                
+                this.style.transform = `translateY(-12px) scale(1.02) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                
+                const bg = this.querySelector('.style-card__background');
+                if (bg) {
+                    bg.style.transform = `scale(1.1) translate(${deltaX * 10}px, ${deltaY * 10}px)`;
+                }
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                const bg = this.querySelector('.style-card__background');
+                if (bg) {
+                    bg.style.transform = '';
+                }
+            });
+
+            // Keyboard support
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const slug = this.dataset.slug;
+                    const styleName = this.dataset.style;
+                    
+                    console.log('style_selected', { slug, styleName, interaction: 'keyboard' });
+                    
+                    // Track analytics if available
+                    if (window.analytics && typeof window.analytics.track === 'function') {
+                        window.analytics.track('style_selected', {
+                            slug: slug,
+                            styleName: styleName,
+                            source: 'event_planning_showcase',
+                            interaction: 'keyboard'
+                        });
+                    }
+                    
+                    window.location.href = this.href;
+                }
+            });
+
+            // Click tracking
+            card.addEventListener('click', function(e) {
+                const slug = this.dataset.slug;
+                const styleName = this.dataset.style;
+                
+                console.log('style_selected', { slug, styleName, interaction: 'click' });
+                
+                // Track analytics if available
+                if (window.analytics && typeof window.analytics.track === 'function') {
+                    window.analytics.track('style_selected', {
+                        slug: slug,
+                        styleName: styleName,
+                        source: 'event_planning_showcase',
+                        interaction: 'click'
+                    });
+                }
+            });
+        });
+
+        console.log('✨ Style showcase initialized:', styleCards.length, 'cards with parallax effects');
+    }
+
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initStyleShowcase);
+    } else {
+        initStyleShowcase();
+    }
+</script>
+
+

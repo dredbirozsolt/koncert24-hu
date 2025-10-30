@@ -1,0 +1,42 @@
+# Koncert24.hu Robots.txt
+# Generálva: 2025-10-30T15:12:03.090Z
+# Automatikusan generált fájl
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://koncert24.hu/sitemap.xml
+
+# Tiltott területek
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /install/
+Disallow: /*.json$
+Disallow: /logs/
+Disallow: /backup/
+Disallow: /config/
+Disallow: /node_modules/
+
+# Crawl delay (másodpercekben)
+Crawl-delay: 1
+
+# Google Bot
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /auth/
+
+# Bing Bot
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+
+# Rossz botok blokkolása
+User-agent: SemrushBot
+User-agent: AhrefsBot
+User-agent: MJ12bot
+User-agent: DotBot
+Disallow: /
+

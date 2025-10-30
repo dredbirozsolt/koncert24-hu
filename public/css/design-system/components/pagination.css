@@ -1,0 +1,318 @@
+/**
+ * Pagination Component
+ * Navigation between pages of content
+ */
+
+/* ==========================================
+   PAGINATION CONTAINER
+   ========================================== */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  list-style: none;
+  margin: 0;
+}
+
+/* ==========================================
+   PAGINATION ITEMS
+   ========================================== */
+
+.pagination__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+  user-select: none;
+}
+
+.pagination__item:hover:not(.pagination__item--disabled):not(.pagination__item--active) {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.pagination__item:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.pagination__item:active:not(.pagination__item--disabled) {
+  transform: scale(0.95);
+}
+
+/* ==========================================
+   STATES
+   ========================================== */
+
+/* Active/Current Page */
+.pagination__item--active,
+.pagination__item[aria-current="page"] {
+  background-color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: var(--color-white);
+  pointer-events: none;
+}
+
+/* Disabled State */
+.pagination__item--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ==========================================
+   PREV/NEXT BUTTONS
+   ========================================== */
+
+.pagination__prev,
+.pagination__next {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+}
+
+.pagination__prev svg,
+.pagination__next svg,
+.pagination__prev .icon,
+.pagination__next .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   ELLIPSIS
+   ========================================== */
+
+.pagination__ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+/* ==========================================
+   SIZES
+   ========================================== */
+
+/* Small */
+.pagination--sm .pagination__item,
+.pagination--sm .pagination__ellipsis {
+  min-width: 32px;
+  height: 32px;
+  font-size: var(--text-xs);
+}
+
+.pagination--sm .pagination__prev,
+.pagination--sm .pagination__next {
+  padding: 0 var(--space-3);
+}
+
+/* Large */
+.pagination--lg .pagination__item,
+.pagination--lg .pagination__ellipsis {
+  min-width: 48px;
+  height: 48px;
+  font-size: var(--text-base);
+}
+
+.pagination--lg .pagination__prev,
+.pagination--lg .pagination__next {
+  padding: 0 var(--space-5);
+}
+
+/* ==========================================
+   VARIANTS
+   ========================================== */
+
+/* Rounded Pills */
+.pagination--pill .pagination__item {
+  border-radius: var(--radius-full);
+}
+
+/* No Borders */
+.pagination--borderless .pagination__item {
+  border: none;
+  background-color: transparent;
+}
+
+.pagination--borderless .pagination__item:hover:not(.pagination__item--disabled):not(.pagination__item--active) {
+  background-color: var(--bg-surface-hover);
+}
+
+.pagination--borderless .pagination__item--active {
+  background-color: var(--color-primary-600);
+}
+
+/* Compact (no gaps) */
+.pagination--compact {
+  gap: 0;
+}
+
+.pagination--compact .pagination__item {
+  border-radius: 0;
+  border-right-width: 0;
+}
+
+.pagination--compact .pagination__item:first-child {
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.pagination--compact .pagination__item:last-child {
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  border-right-width: 1px;
+}
+
+/* ==========================================
+   PAGINATION INFO
+   ========================================== */
+
+.pagination__info {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ==========================================
+   ALIGNMENT
+   ========================================== */
+
+.pagination--left {
+  justify-content: flex-start;
+}
+
+.pagination--right {
+  justify-content: flex-end;
+}
+
+.pagination--between {
+  justify-content: space-between;
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE
+   ========================================== */
+
+@media (max-width: 640px) {
+  .pagination {
+    gap: var(--space-1);
+  }
+
+  .pagination__item {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 var(--space-2);
+    font-size: var(--text-xs);
+  }
+
+  /* Hide page numbers on mobile, keep prev/next/active */
+  .pagination--responsive .pagination__item:not(.pagination__item--active):not(.pagination__prev):not(.pagination__next) {
+    display: none;
+  }
+
+  /* Show only active and adjacent pages */
+  .pagination--responsive .pagination__item--active,
+  .pagination--responsive .pagination__item--active + .pagination__item,
+  .pagination--responsive .pagination__item:has(+ .pagination__item--active) {
+    display: inline-flex;
+  }
+
+  .pagination__info {
+    font-size: var(--text-xs);
+    padding: 0 var(--space-2);
+  }
+}
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+
+/* Dark Mode Theme Selector */
+  .pagination__item {
+    background-color: var(--bg-surface);
+    border-color: var(--border-base);
+    color: var(--text-primary);
+  }
+
+  .pagination__item:hover:not(.pagination__item--disabled):not(.pagination__item--active) {
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-strong);
+  }
+
+  .pagination__item--active {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+  }
+}
+
+[data-theme="dark"] {
+  .pagination__item {
+    background-color: var(--bg-surface);
+    border-color: var(--border-base);
+    color: var(--text-primary);
+  }
+
+  .pagination__item:hover:not(.pagination__item--disabled):not(.pagination__item--active) {
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-strong);
+  }
+
+  .pagination__item--active {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+
+/* Screen reader only text */
+.pagination__item .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: calc(var(--space-0.25) * -1);
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .pagination__item {
+    border-width: 2px;
+  }
+
+  .pagination__item--active {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}

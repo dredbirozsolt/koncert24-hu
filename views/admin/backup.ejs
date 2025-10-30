@@ -1,0 +1,339 @@
+<!-- Backup Page - 2 Column Layout -->
+<!-- Using Design System -->
+
+<div class="page-container">
+    <% if (messages && messages.success) { %>
+        <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+    <% if (messages && messages.error) { %>
+        <div class="alert alert-error"><%= messages.error %></div>
+    <% } %>
+
+    <div class="admin-two-col">
+        <!-- Bal oldal: Backup Management -->
+        <div>
+            <!-- 1. Backup Beállítások -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⚙️ Backup Beállítások
+                </h3>
+                
+                <form id="backup-settings-form">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken || '' %>">
+                    
+                    <div>
+                        <div class="form__group">
+                            <label for="maxCount" class="form__label">
+                                📊 Maximum Darabszám
+                            </label>
+                            <input 
+                                type="number" 
+                                id="maxCount" 
+                                name="maxCount" 
+                                value="<%= settings.maxCount %>"
+                                min="1"
+                                max="100"
+                                class="form__control"
+                                required
+                            >
+                            <small class="form__hint">
+                                Ennyi backup maradhat meg egyszerre
+                            </small>
+                        </div>
+                        
+                        <div class="form__group">
+                            <label for="maxAgeDays" class="form__label">
+                                📅 Maximum Kor (napok)
+                            </label>
+                            <input 
+                                type="number" 
+                                id="maxAgeDays" 
+                                name="maxAgeDays" 
+                                value="<%= settings.maxAgeDays %>"
+                                min="1"
+                                max="365"
+                                class="form__control"
+                                required
+                            >
+                            <small class="form__hint">
+                                Ennél régebbi backupok törlődnek
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Manual Backup Action -->
+            <div class="btn__group btn__group--equal mb-4">
+                <button type="button" class="btn btn--primary" onclick="runManualBackup()">
+                    Manuális Backup Indítása
+                </button>
+            </div>
+
+            <!-- 2. Backup Lista -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📂 Backup Lista
+                </h3>
+                
+                <% if (backupInfo.backups && backupInfo.backups.length > 0) { %>
+                    <div class="table--responsive">
+                        <table class="table table-hover table-compact">
+                            <thead>
+                                <tr>
+                                    <th>Fájlnév</th>
+                                    <th>Létrehozva</th>
+                                    <th>Méret</th>
+                                    <th>Műveletek</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% backupInfo.backups.forEach(backup => { %>
+                                <tr>
+                                    <td data-label="Fájlnév">
+                                        <strong><%= backup.name %></strong>
+                                    </td>
+                                    <td data-label="Létrehozva">
+                                        <%= new Date(backup.created).toLocaleString('hu-HU') %>
+                                    </td>
+                                    <td data-label="Méret">
+                                        <%= (backup.size / 1024 / 1024).toFixed(2) %> MB
+                                    </td>
+                                    <td data-label="Műveletek">
+                                        <button type="button" class="btn btn--primary btn--sm" onclick="downloadBackup('<%= backup.name %>')">
+                                            Letöltés
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <h3>📭 Még nincs egyetlen backup sem</h3>
+                        <p>Kattints a "Manuális Backup" gombra az első mentés létrehozásához.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Jobb oldal: Info Panels -->
+        <div>
+            <!-- Backup Info -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ℹ️ Mi az a Backup?
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>💾 Biztonsági Mentés:</strong><br>
+                        A backup egy teljes másolat az adatbázisról, feltöltött fájlokról és konfigurációs állományokról.
+                    </p>
+                    
+                    <p>
+                        <strong>🔄 Automatikus mentés:</strong><br>
+                        A rendszer naponta automatikusan készít backup-ot a beállított időpontban.
+                    </p>
+                    
+                    <p>
+                        <strong>⚡ Manuális mentés:</strong><br>
+                        A "Manuális Backup" gombbal bármikor készíthetsz azonnali mentést.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Backup Stratégia -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🛡️ Backup Stratégia
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>📊 Max Darabszám:</strong><br>
+                        Ennyi backup marad meg a rendszerben. Ha több készül, a legrégebbit törli.
+                    </p>
+                    
+                    <p>
+                        <strong>📅 Max Kor:</strong><br>
+                        Az ennél régebbi backupok automatikusan törlődnek, függetlenül a darabszámtól.
+                    </p>
+                    
+                    <p>
+                        <strong>🔒 Biztonság:</strong><br>
+                        Mindkét szabály együtt érvényesül, így garantált a friss és korlátozott tárhely.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Backup Tartalom -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📦 Mit Tartalmaz?
+                </h3>
+                
+                <div>
+                    <div>
+                        <strong>🗄️ Adatbázis</strong><br>
+                        Teljes MySQL dump az összes táblával és adattal.
+                    </div>
+                    
+                    <div>
+                        <strong>📁 Fájlok</strong><br>
+                        Feltöltött képek, dokumentumok, média fájlok.
+                    </div>
+                    
+                    <div>
+                        <strong>⚙️ Konfiguráció</strong><br>
+                        .env fájl, beállítások, egyéb konfigok.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visszaállítás -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ↩️ Visszaállítás
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>⬇️ Letöltés:</strong><br>
+                        Kattints a "Letöltés" gombra bármelyik backup mellett.
+                    </p>
+                    
+                    <p>
+                        <strong>📦 Formátum:</strong><br>
+                        A backup .tar.gz formátumú, tömörített archívum.
+                    </p>
+                    
+                    <p>
+                        <strong>🔧 Helyreállítás:</strong><br>
+                        Használd a <code>restore.sh</code> scriptet vagy állítsd vissza manuálisan.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Automatizálás -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⏰ Automatizálás
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>⏰ Cron Job:</strong><br>
+                        A <code>backup.sh</code> script fut naponta a megadott időpontban.
+                    </p>
+                    
+                    <p>
+                        <strong>🧹 Automatikus Tisztítás:</strong><br>
+                        A régi backupok törlése a beállításoknak megfelelően.
+                    </p>
+                    
+                    <p>
+                        <strong>📊 Statisztika:</strong><br>
+                        Jelenleg <strong><%= backupInfo.backups ? backupInfo.backups.length : 0 %></strong> backup van mentve.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const csrfToken = '<%= csrfToken || "" %>';
+
+// Auto-save for number inputs (maxCount, maxAgeDays)
+document.querySelectorAll('#backup-settings-form input[type="number"]').forEach(input => {
+    input.addEventListener('blur', async function() {
+        const value = parseInt(this.value);
+        const min = parseInt(this.min);
+        const max = parseInt(this.max);
+        
+        // Validate min/max
+        if (value < min || value > max) {
+            showAlert('error', `❌ Érték ${min} és ${max} között kell legyen`);
+            this.value = this.defaultValue;
+            return;
+        }
+        
+        await saveSingleSetting(this.name, this.value);
+    });
+});
+
+// Auto-save single setting function
+async function saveSingleSetting(fieldName, value) {
+    const maxCount = document.getElementById('maxCount').value;
+    const maxAgeDays = document.getElementById('maxAgeDays').value;
+    
+    try {
+        const response = await fetch('/admin/backup/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ maxCount, maxAgeDays })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const label = fieldName === 'maxCount' ? 'Maximum Darabszám' : 'Maximum Kor';
+            showAlert('success', `✅ Mentve: ${label}`);
+        } else {
+            showAlert('error', `❌ ${data.error || 'Hiba történt'}`);
+        }
+    } catch (error) {
+        showAlert('error', '❌ Hálózati hiba történt');
+    }
+}
+
+// ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+// No local definition needed - automatically available on all admin pages
+
+// Manual backup function
+async function runManualBackup() {
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = 'Backup folyamatban...';
+    
+    try {
+        const response = await fetch('/admin/backup/run', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', 'Backup sikeresen elkészült');
+            setTimeout(() => window.location.reload(), 1500);
+        } else {
+            showAlert('error', data.error || 'Backup hiba történt');
+        }
+    } catch (error) {
+        console.error('Backup error:', error);
+        showAlert('error', error.message || 'Hálózati hiba történt');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+// No local definition needed - automatically available on all admin pages
+
+// Download backup function
+function downloadBackup(backupName) {
+    window.location.href = `/admin/backup/download/${encodeURIComponent(backupName)}`;
+}
+</script>

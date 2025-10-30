@@ -1,0 +1,266 @@
+<!-- Success Page -->
+<section class="section">
+    <div class="container">
+        <div class="success-container">
+            <div class="success-icon">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+
+            <h1 class="success-title">Foglalási kérés elküldve!</h1>
+
+            <p class="success-message">
+                Köszönjük foglalási kérését! Hamarosan felvesszük Önnel a kapcsolatot a részletek egyeztetésére.
+            </p>
+
+            <div class="next-steps">
+                <h2 class="steps-title">Mi történik ezután?</h2>
+                <div class="steps-list">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Visszajelzés</h3>
+                            <p>24 órán belül felvesszük Önnel a kapcsolatot a megadott elérhetőségeken.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Részletek egyeztetése</h3>
+                            <p>Megbeszéljük az esemény részleteit és elkészítjük az ajánlatunkat.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Szerződéskötés</h3>
+                            <p>Az ajánlat elfogadása után szerződést kötünk és rögzítjük a foglalást.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-info">
+                <h3 class="contact-title">Sürgős esetben elérhet minket:</h3>
+                <div class="contact-details">
+                    <a href="tel:<%= companyPhone.replace(/\s/g, '') %>" class="contact-link">
+                        <svg viewBox="0 0 20 20" fill="currentColor" class="contact-icon">
+                            <path
+                                d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                        </svg>
+                        <%= companyPhone %>
+                    </a>
+
+                    <a href="mailto:<%= companyEmail %>" class="contact-link">
+                        <svg viewBox="0 0 20 20" fill="currentColor" class="contact-icon">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        <%= companyEmail %>
+                    </a>
+                </div>
+            </div>
+
+            <div class="success-actions">
+                <a href="<%= basePath %>eloadok/<%= performer.slug %>" class="btn btn--outline btn-large">
+                    Vissza az előadóhoz
+                </a>
+                <a href="<%= basePath %>" class="btn btn--primary btn-large">
+                    Főoldal
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Success page styles */
+    .success-container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        color: var(--color-success-600);
+        margin: 0 auto var(--space-6);
+    }
+
+    .success-icon svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .success-title {
+        font-size: var(--text-3xl);
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+    }
+
+    @media (min-width: 768px) {
+        .success-title {
+            font-size: var(--text-4xl);
+        }
+    }
+
+    .success-message {
+        font-size: var(--text-lg);
+        color: var(--text-secondary);
+        margin-bottom: var(--space-12);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+
+    .next-steps {
+        margin-bottom: var(--space-12);
+        text-align: left;
+    }
+
+    .steps-title {
+        font-size: var(--text-xl);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--space-6);
+        text-align: center;
+    }
+
+    .steps-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-6);
+    }
+
+    @media (min-width: 768px) {
+        .steps-list {
+            flex-direction: row;
+        }
+    }
+
+    .step-item {
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-4);
+    }
+
+    @media (min-width: 768px) {
+        .step-item {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: var(--color-primary-600);
+        color: var(--color-white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--text-lg);
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .step-content h3 {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--space-2);
+    }
+
+    .step-content p {
+        color: var(--text-secondary);
+        font-size: var(--text-sm);
+    }
+
+    .contact-info {
+        background: var(--color-white);
+        padding: var(--space-6);
+        border-radius: var(--radius-xl);
+        border: 2px solid var(--color-primary-600);
+        margin-bottom: var(--space-12);
+    }
+
+    .contact-title {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+    }
+
+    .contact-details {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        align-items: center;
+    }
+
+    @media (min-width: 768px) {
+        .contact-details {
+            flex-direction: row;
+            justify-content: center;
+            gap: var(--space-8);
+        }
+    }
+
+    .contact-link {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        color: var(--color-primary-600);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition-base);
+    }
+
+    .contact-link:hover {
+        color: var(--color-primary-700);
+        transform: translateY(-2px);
+    }
+
+    .contact-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+
+    .success-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-4);
+    }
+
+    .success-actions .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    /* Desktop enhancements */
+    @media (min-width: 768px) {
+        .success-actions {
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .success-actions .btn {
+            width: auto;
+            max-width: none;
+        }
+    }
+</style>

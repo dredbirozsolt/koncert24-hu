@@ -1,0 +1,62 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sqlite
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+backup/
+*.bak
+*.bak2
+
+# Cookies and sensitive data
+cookies.txt
+fresh_cookies.txt
+
+# Reports
+eslint-*.json
+eslint-*.html
+eslint-*.txt
+eslint-*.md
+jscpd-report/
+jscpd-analysis-summary.md
+
+# Temporary files
+*.tmp
+*.temp
+
+# PM2
+.pm2/
+ecosystem.config.json
+
+# Build files
+dist/
+build/
+
+# Test files
+test-*.html
+test-*.js

@@ -1,0 +1,579 @@
+<!-- Blog Edit Page -->
+<div class="page-container">
+
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <a href="/admin/blog" class="btn btn--secondary">
+            ← Vissza a bloghoz
+        </a>
+    </div>
+
+    <!-- Main Form -->
+    <form method="POST" action="<%= isEdit ? `/admin/blog/${post.id}` : '/admin/blog' %>" enctype="multipart/form-data" id="blogPostForm">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        
+        <div class="admin-two-col">
+            
+            <!-- Left Column: Main Content -->
+            <div class="flex flex-col gap-4">
+                
+                <!-- Basic Info Card -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        ✏️ Alapadatok
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label for="title">Cím *</label>
+                        <input type="text" id="title" name="title" class="form__control" value="<%= post ? post.title : '' %>" placeholder="5 tipp a sikeres koncertszervezéshez" required>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="slug">URL slug</label>
+                        <input type="text" id="slug" name="slug" class="form__control" value="<%= post ? post.slug : '' %>" placeholder="5-tipp-sikeres-koncertszervezes">
+                        <small class="text-secondary text-sm">Üres esetén a címből generálódik automatikusan</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="excerpt">Bevezető szöveg *</label>
+                        <textarea id="excerpt" name="excerpt" class="form__control" rows="3" placeholder="Összegyűjtöttük a legfontosabb tippeket, amikre figyelned kell egy koncert szervezésekor." required><%= post ? post.excerpt : '' %></textarea>
+                        <small class="text-secondary text-sm">Rövid leírás, ami a listaoldalon jelenik meg</small>
+                    </div>
+
+                    <div class="form__group mb-0">
+                        <label for="content">Tartalom *</label>
+                        <textarea id="content" name="content" class="form__control" rows="15" placeholder="<h2>1. Kezd időben a szervezéssel</h2><p>A koncertszervezés időigényes folyamat...</p>" required><%= post ? post.content : '' %></textarea>
+                        <small class="text-secondary text-sm">HTML tartalom. H2-H6 címeket, p bekezdéseket használhatsz.</small>
+                    </div>
+                </div>
+
+                <!-- SEO Card -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        🔍 SEO beállítások
+                    </h3>
+
+                    <div class="form__group">
+                        <label for="metaTitle">Meta cím</label>
+                        <input type="text" id="metaTitle" name="metaTitle" class="form__control" value="<%= post ? post.metaTitle : '' %>" placeholder="5 tipp a sikeres koncertszervezéshez | Koncert24.hu" maxlength="70">
+                        <div class="flex justify-between mt-1">
+                            <small class="text-secondary text-sm">
+                                Optimális hossz: 50-60 karakter<br>
+                                <strong>Példa:</strong> "5 tipp a sikeres koncertszervezéshez | Koncert24.hu"<br>
+                                Tartalmazza a fő kulcsszót és a brand nevet.
+                            </small>
+                            <span id="metaTitleCount" class="text-sm font-semibold text-primary whitespace-nowrap ml-4">0 / 70</span>
+                        </div>
+                    </div>
+
+                    <div class="form__group mb-0">
+                        <label for="metaDescription">Meta leírás</label>
+                        <textarea id="metaDescription" name="metaDescription" class="form__control" rows="3" placeholder="Összegyűjtöttük a legfontosabb tippeket, amikre figyelned kell egy koncert szervezésekor. Professzionális tanácsok kezdőknek és haladóknak." maxlength="165"><%= post ? post.metaDescription : '' %></textarea>
+                        <div class="flex justify-between mt-1">
+                            <small class="text-secondary text-sm">
+                                Optimális hossz: 150-160 karakter<br>
+                                <strong>Példa:</strong> "Összegyűjtöttük a legfontosabb tippeket..."<br>
+                                Rövid összefoglaló 2-3 kulcsszóval, cselekvésre ösztönző.
+                            </small>
+                            <span id="metaDescCount" class="text-sm font-semibold text-primary whitespace-nowrap ml-4">0 / 165</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <div class="flex flex-col gap-4">
+                
+                <!-- Publish Card -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        📅 Publikálás
+                    </h3>
+                    
+                    <div class="form__group">
+                        <label for="status">Státusz *</label>
+                        <select id="status" name="status" class="form__control" onchange="togglePublishDateField()">
+                            <option value="draft" <%= post && post.status === 'draft' ? 'selected' : '' %>>Piszkozat</option>
+                            <option value="scheduled" <%= post && post.status === 'scheduled' ? 'selected' : '' %>>Időzített</option>
+                            <option value="published" <%= post && post.status === 'published' ? 'selected' : '' %>>Publikált</option>
+                            <option value="archived" <%= post && post.status === 'archived' ? 'selected' : '' %>>Archivált</option>
+                        </select>
+                        <small class="form__hint hidden text-primary font-medium" id="statusHelpText">
+                            📅 A cikk automatikusan publikálásra kerül a megadott időpontban
+                        </small>
+                    </div>
+
+                    <div class="form__group" id="publishDateGroup">
+                        <label for="publishedAt">
+                            Publikálás dátuma
+                            <span id="publishDateRequired" class="text-error hidden">*</span>
+                        </label>
+                        <input type="datetime-local" id="publishedAt" name="publishedAt" class="form__control" 
+                               value="<%= post && post.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 16) : '' %>">
+                        <small class="form__hint" id="publishDateHelp">
+                            <span id="publishDateHelpScheduled" class="hidden text-primary">
+                                ⏰ Válaszd ki, mikor legyen publikálva a cikk
+                            </span>
+                            <span id="publishDateHelpPublished" class="hidden">
+                                Ha üres, az aktuális időpont lesz használva
+                            </span>
+                        </small>
+                    </div>
+
+                    <div class="form__group mb-0">
+                        <label for="author">Szerző</label>
+                        <input type="text" id="author" name="author" class="form__control" value="<%= post ? post.author : '' %>" placeholder="Koncert24 Csapat">
+                    </div>
+
+                    <div class="form__group mb-0">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="featured" name="featured" value="1" 
+                                   <%= post && post.featured ? 'checked' : '' %> 
+                                   class="form__checkbox">
+                            <label for="featured" class="mb-0 cursor-pointer">
+                                ⭐ Kiemelt cikk
+                            </label>
+                        </div>
+                        <small class="text-secondary text-sm block mt-1">
+                            A kiemelt cikk kiemelten jelenik meg a blog főoldalon
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Category Card -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        📁 Kategória
+                    </h3>
+                    
+                    <div class="form__group mb-0">
+                        <select id="categoryId" name="categoryId" class="form__control">
+                            <option value="">Válassz kategóriát...</option>
+                            <% if (categories && categories.length > 0) { %>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat.id %>" <%= post && post.categoryId === cat.id ? 'selected' : '' %>>
+                                        <%= cat.name %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tags Card -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        🏷️ Címkék
+                    </h3>
+                    
+                    <div id="selectedTags" class="flex flex-wrap gap-2 mb-4">
+                        <% if (post && post.tags && post.tags.length > 0) { %>
+                            <% post.tags.forEach(tag => { %>
+                                <span class="badge badge-primary" data-tag-id="<%= tag.id %>">
+                                    #<%= tag.name %>
+                                    <button type="button" onclick="removeTag(<%= tag.id %>)" class="bg-transparent border-0 ml-1 cursor-pointer">×</button>
+                                    <input type="hidden" name="tags[]" value="<%= tag.id %>">
+                                </span>
+                            <% }); %>
+                        <% } %>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="tagSelect">Meglévő címkék</label>
+                        <select id="tagSelect" class="form__control">
+                            <option value="">Válassz címkét...</option>
+                            <% if (tags && tags.length > 0) { %>
+                                <% tags.forEach(tag => { %>
+                                    <option value="<%= tag.id %>" data-name="<%= tag.name %>">
+                                        #<%= tag.name %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="form__group mb-0">
+                        <label for="newTag">Új címke létrehozása</label>
+                        <input type="text" id="newTag" class="form__control mb-2" placeholder="Új címke neve...">
+                        <button type="button" onclick="addNewTag()" class="btn btn--secondary btn--block">
+                            💾 Mentés
+                        </button>
+                        <small class="text-secondary text-sm block mt-1">
+                            Írd be az új címke nevét és kattints a gombra
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Featured Image Card -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        🖼️ Kiemelt kép
+                    </h3>
+                    
+                    <div id="imagePreview" class="mb-4 <%= post && post.featuredImage ? '' : 'hidden' %>">
+                        <img id="previewImg" src="<%= post && post.featuredImage ? post.featuredImage : '' %>" alt="Előnézet" class="w-full h-auto rounded-lg border-2 border-base">
+                        <button type="button" onclick="removeImage()" class="btn btn-error btn--block mt-2">
+                            🗑️ Kép eltávolítása
+                        </button>
+                    </div>
+
+                    <div class="form__group mb-0">
+                        <label for="featuredImage">Kiemelt kép</label>
+                        <div class="flex gap-3 items-center flex-wrap">
+                            <input 
+                                type="file" 
+                                id="featuredImage" 
+                                name="featuredImage" 
+                                class="hidden"
+                                accept="image/*"
+                                onchange="previewImage(event)"
+                            >
+                            <button type="button" class="btn btn--secondary" onclick="document.getElementById('featuredImage').click()">
+                                📤 Fájl kiválasztása
+                            </button>
+                        </div>
+                        <div id="featured-image-file-name" class="text-secondary text-sm italic mt-2">
+                            Nincs fájl kiválasztva
+                        </div>
+                        <small class="text-secondary text-sm block mt-2">
+                            <strong>Ajánlott méret:</strong> 1200x630 px (1.91:1 arány)<br>
+                            Max 5MB, JPG, PNG, GIF vagy WebP formátum
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="form-actions flex flex-col gap-3">
+                    <button type="submit" class="btn btn--primary btn--block">
+                        💾 <%= isEdit ? 'Mentés' : 'Létrehozás' %>
+                    </button>
+                    <% if (isEdit && post) { %>
+                    <a href="/blog/<%= post.slug %>" target="_blank" class="btn btn--outline btn--block">
+                        👁️ Előnézet
+                    </a>
+                    <button type="button" onclick="deleteBlogPost(<%= post.id %>)" 
+                            class="btn btn-error btn--block">
+                        🗑️ Törlés
+                    </button>
+                    <% } %>
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Delete Form -->
+    <% if (isEdit) { %>
+    <form id="deleteForm" method="POST" action="/admin/blog/<%= post.id %>/delete" class="hidden">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    </form>
+    <% } %>
+
+</div>
+
+<script>
+// Delete blog post function
+async function deleteBlogPost(postId) {
+    const confirmed = await Modal.confirm({
+        title: 'Bejegyzés törlése',
+        message: 'Biztosan törlöd ezt a bejegyzést?',
+        confirmText: 'Törlés',
+        cancelText: 'Mégse'
+    });
+    
+    if (confirmed) {
+        try {
+            const response = await fetch(`/admin/blog/${postId}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= csrfToken %>'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                Modal.alert({
+                    title: 'Siker',
+                    message: data.message || 'Bejegyzés sikeresen törölve!',
+                    type: 'success'
+                });
+                window.location.href = '/admin/blog';
+            } else {
+                throw new Error(data.message || 'Hiba történt a törlés során');
+            }
+        } catch (error) {
+            Modal.alert({
+                title: 'Hiba',
+                message: '❌ Hiba: ' + error.message,
+                type: 'error'
+            });
+        }
+    }
+}
+
+// Auto-generate slug from title
+</script>
+
+<script>
+    // Character counters
+    const metaTitle = document.getElementById('metaTitle');
+    const metaTitleCount = document.getElementById('metaTitleCount');
+    const metaDesc = document.getElementById('metaDescription');
+    const metaDescCount = document.getElementById('metaDescCount');
+
+    function updateCount(input, counter, max) {
+        const count = input.value.length;
+        counter.textContent = `${count} / ${max}`;
+        
+        if (count > max * 0.9) {
+            counter.style.color = 'var(--color-error-600)';
+        } else if (count > max * 0.7) {
+            counter.style.color = 'var(--color-warning-600)';
+        } else {
+            counter.style.color = 'var(--color-primary-600)';
+        }
+    }
+
+    if (metaTitle) {
+        updateCount(metaTitle, metaTitleCount, 70);
+        metaTitle.addEventListener('input', () => updateCount(metaTitle, metaTitleCount, 70));
+    }
+
+    if (metaDesc) {
+        updateCount(metaDesc, metaDescCount, 165);
+        metaDesc.addEventListener('input', () => updateCount(metaDesc, metaDescCount, 165));
+    }
+
+    // Auto-generate slug from title
+    const titleInput = document.getElementById('title');
+    const slugInput = document.getElementById('slug');
+
+    if (titleInput && slugInput) {
+        titleInput.addEventListener('blur', () => {
+            if (!slugInput.value) {
+                const slug = titleInput.value
+                    .toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+                slugInput.value = slug;
+            }
+        });
+    }
+
+    // Tag management
+    const tagSelect = document.getElementById('tagSelect');
+    const selectedTagsDiv = document.getElementById('selectedTags');
+
+    if (tagSelect) {
+        tagSelect.addEventListener('change', function() {
+            const tagId = this.value;
+            const tagName = this.options[this.selectedIndex].dataset.name;
+            
+            if (tagId && !document.querySelector(`[data-tag-id="${tagId}"]`)) {
+                addTagBadge(tagId, tagName);
+                this.value = '';
+            }
+        });
+    }
+
+    function addTagBadge(id, name) {
+        const badge = document.createElement('span');
+        badge.className = 'badge badge-primary';
+        badge.setAttribute('data-tag-id', id);
+        badge.innerHTML = `
+            #${name}
+            <button type="button" onclick="removeTag('${id}')" class="bg-transparent border-0 ml-1 cursor-pointer">×</button>
+            <input type="hidden" name="tags[]" value="${id}">
+        `;
+        selectedTagsDiv.appendChild(badge);
+    }
+
+    function removeTag(tagId) {
+        const badge = document.querySelector(`[data-tag-id="${tagId}"]`);
+        if (badge) {
+            badge.remove();
+        }
+        
+        // Ha új tag volt (newTags[]), azt is töröljük
+        if (String(tagId).startsWith('new_')) {
+            const newTagInputs = document.querySelectorAll('input[name="newTags[]"]');
+            newTagInputs.forEach(input => {
+                // A badge-ben lévő hidden input már törlődött a badge.remove()-val
+                // de ha mégis maradna valami, töröljük
+            });
+        }
+    }
+
+    function addNewTag() {
+        const newTagInput = document.getElementById('newTag');
+        const tagName = newTagInput.value.trim().replace(/^#/, '');
+        
+        if (tagName) {
+            // Create temporary ID (will be created on server)
+            const tempId = 'new_' + Date.now();
+            addTagBadge(tempId, tagName);
+            
+            // Add hidden input for new tag name
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'newTags[]';
+            hiddenInput.value = tagName;
+            selectedTagsDiv.appendChild(hiddenInput);
+            
+            newTagInput.value = '';
+        }
+    }
+
+    // Image preview
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const fileNameDiv = document.getElementById('featured-image-file-name');
+        
+        if (file) {
+            // Fájlnév megjelenítése
+            fileNameDiv.textContent = '📄 ' + file.name;
+            fileNameDiv.classList.remove('text-secondary', 'italic');
+            fileNameDiv.classList.add('text-primary');
+            
+            // Előnézet betöltése
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewImg = document.getElementById('previewImg');
+                const imagePreview = document.getElementById('imagePreview');
+                previewImg.src = e.target.result;
+                imagePreview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Ha nincs fájl, visszaállítjuk az alapértelmezett szöveget
+            fileNameDiv.textContent = 'Nincs fájl kiválasztva';
+            fileNameDiv.classList.remove('text-primary');
+            fileNameDiv.classList.add('text-secondary', 'italic');
+        }
+    }
+
+    function removeImage() {
+        const imagePreview = document.getElementById('imagePreview');
+        const featuredImage = document.getElementById('featuredImage');
+        const previewImg = document.getElementById('previewImg');
+        const fileNameDiv = document.getElementById('featured-image-file-name');
+        
+        imagePreview.classList.add('hidden');
+        previewImg.src = '';
+        featuredImage.value = '';
+        
+        // Fájlnév visszaállítása alapértelmezettre
+        fileNameDiv.textContent = 'Nincs fájl kiválasztva';
+        fileNameDiv.classList.remove('text-primary');
+        fileNameDiv.classList.add('text-secondary', 'italic');
+        
+        // Add hidden input to mark for deletion
+        const deleteInput = document.createElement('input');
+        deleteInput.type = 'hidden';
+        deleteInput.name = 'deleteImage';
+        deleteInput.value = 'true';
+        document.querySelector('form').appendChild(deleteInput);
+    }
+
+    // Toggle publish date field based on status
+    function togglePublishDateField() {
+        const status = document.getElementById('status').value;
+        const publishDateGroup = document.getElementById('publishDateGroup');
+        const publishDateInput = document.getElementById('publishedAt');
+        const publishDateRequired = document.getElementById('publishDateRequired');
+        const statusHelpText = document.getElementById('statusHelpText');
+        const publishDateHelpScheduled = document.getElementById('publishDateHelpScheduled');
+        const publishDateHelpPublished = document.getElementById('publishDateHelpPublished');
+        
+        // Hide all help texts first
+        statusHelpText.classList.add('hidden');
+        publishDateHelpScheduled.classList.add('hidden');
+        publishDateHelpPublished.classList.add('hidden');
+        
+        if (status === 'scheduled') {
+            // Időzített: dátum kötelező
+            publishDateInput.required = true;
+            publishDateRequired.classList.remove('hidden');
+            statusHelpText.classList.remove('hidden');
+            publishDateHelpScheduled.classList.remove('hidden');
+            publishDateGroup.classList.remove('hidden');
+            
+            // Ha nincs kitöltve, állítsunk be egy alapértelmezett jövőbeli dátumot
+            if (!publishDateInput.value) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(9, 0, 0, 0);
+                publishDateInput.value = tomorrow.toISOString().slice(0, 16);
+            }
+        } else if (status === 'published') {
+            // Publikált: dátum opcionális
+            publishDateInput.required = false;
+            publishDateRequired.classList.add('hidden');
+            publishDateHelpPublished.classList.remove('hidden');
+            publishDateGroup.classList.remove('hidden');
+        } else {
+            // Piszkozat/Archivált: dátum elrejtése
+            publishDateInput.required = false;
+            publishDateRequired.classList.add('hidden');
+            publishDateGroup.classList.add('hidden');
+        }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        togglePublishDateField();
+        
+        // Blog post form submit handler
+        document.getElementById('blogPostForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Mentés...';
+            
+            try {
+                const formData = new FormData(form);
+                
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': '<%= csrfToken %>',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    Modal.alert({
+                        title: 'Siker',
+                        message: data.message || 'Blog bejegyzés sikeresen mentve!',
+                        type: 'success'
+                    });
+                    
+                    // Always redirect to blog list after save
+                    window.location.href = '/admin/blog';
+                } else {
+                    throw new Error(data.message || 'Hiba történt a mentés során');
+                }
+            } catch (error) {
+                Modal.alert({
+                    title: 'Hiba',
+                    message: '❌ Hiba: ' + error.message,
+                    type: 'error'
+                });
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+    });
+</script>

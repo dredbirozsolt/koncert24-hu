@@ -1,0 +1,89 @@
+<!-- Hero Section -->
+<div class="page__hero">
+    <div class="container">
+        <h1 class="page__hero__title">Rólunk</h1>
+        <p class="page__hero__subtitle">Ismerje meg a <%= companyName %>-t és csapatunkat</p>
+    </div>
+</div>
+
+<!-- About Page -->
+<section class="section">
+    <div class="container">
+    <div class="mb-16 info__first-section">
+        <h2 class="info__section-title">Több évtizedes tapasztalat</h2>
+        <p class="info__text">
+            A <%= companyName %> évtizedek óta a magyar rendezvényipar meghatározó szereplője.
+            Cégünk alapítása óta több ezer sikeres rendezvény megszervezésében vettünk részt,
+            legyen szó esküvőkről, céges eseményekről, fesztiválokról, falunapokról, városnapokról vagy
+            magánrendezvényekről.
+        </p>
+        <p class="info__text">
+            Szakmai tapasztalatunk és kiterjedt kapcsolatrendszerünk révén minden eseményt
+            egyedi igények szerint állítunk össze, garantálva ügyfeleinket számára az
+            emlékezetes élményeket.
+        </p>
+    </div>
+
+    <div class="mb-16">
+        <h2 class="info__section-title">Szolgáltatásaink</h2>
+        <div class="info__service-grid">
+            <div class="info__service-card">
+                <h3 class="info__service-card__title">Előadók közvetítése</h3>
+                <p class="info__service-card__description">
+                    Széles előadói portfóliónkból választhat: pop, mulatós, retro,
+                    táncműsorok, műsorvezetők és még sok más.
+                </p>
+            </div>
+            <div class="info__service-card">
+                <h3 class="info__service-card__title">Rendezvényszervezés</h3>
+                <p class="info__service-card__description">
+                    Teljes körű rendezvényszervezés az ötlettől a megvalósításig,
+                    minden részlet átgondolásával.
+                </p>
+            </div>
+            <div class="info__service-card">
+                <h3 class="info__service-card__title">Tanácsadás</h3>
+                <p class="info__service-card__description">
+                    Szakértő tanácsadás a program összeállításától a költségvetés
+                    tervezésig minden kérdésben.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-16">
+        <h2 class="info__section-title">Miért válasszon minket?</h2>
+        <ul class="info__feature-list">
+            <li class="info__feature-list__item">Több évtizedes tapasztalat a rendezvényszervezésben</li>
+            <li class="info__feature-list__item">Megbízható, professzionális előadók</li>
+            <li class="info__feature-list__item">Személyre szabott szolgáltatások</li>
+            <li class="info__feature-list__item">Versenyképes árak</li>
+            <li class="info__feature-list__item">24/7 ügyfélszolgálat</li>
+            <li class="info__feature-list__item">Teljes körű felelősségbiztosítás</li>
+            <li class="info__feature-list__item">Rugalmas fizetési feltételek</li>
+            <li class="info__feature-list__item">Országos lefedettség</li>
+        </ul>
+    </div>
+
+    <div class="mb-8">
+        <h2 class="info__section-title">Kapcsolat</h2>
+        <div class="info__contact-grid">
+            <div class="info__contact-item">
+                <h3 class="info__contact-item__title">Telefon</h3>
+                <a href="tel:<%= companyPhone.replace(/\s/g, '') %>" class="info__contact-item__link"><%= companyPhone %></a>
+            </div>
+            <div class="info__contact-item">
+                <h3 class="info__contact-item__title">E-mail</h3>
+                <a href="mailto:<%= companyEmail %>" class="info__contact-item__link"><%= companyEmail %></a>
+            </div>
+            <div class="info__contact-item">
+                <h3 class="info__contact-item__title">Nyitvatartás</h3>
+                <p class="info__contact-item__text">
+                    Hétfő-Csütörtök: 8:00-17:00<br>
+                    Péntek: 8:00 - 14:30
+                </p>
+            </div>
+            </div>
+        </div>
+    </div>
+</section>

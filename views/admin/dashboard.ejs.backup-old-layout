@@ -1,0 +1,590 @@
+<style>
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .welcome-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .welcome-card h2 {
+        color: #333;
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+    }
+
+    .welcome-card p {
+        color: #666;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .security-panel {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        margin-bottom: 2rem;
+    }
+
+    .security-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .security-title {
+        color: white;
+        margin: 0;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .threat-badge {
+        background: rgba(255,255,255,0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        color: white;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .protection-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .protection-card {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        padding: 1.25rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .protection-card-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .protection-card ul {
+        margin: 0;
+        padding-left: 1.25rem;
+        color: rgba(255,255,255,0.95);
+        font-size: 0.9rem;
+        line-height: 1.8;
+    }
+
+    .protection-card-footer {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.9);
+        font-size: 0.85rem;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .stat-item {
+        background: rgba(255,255,255,0.1);
+        padding: 0.75rem;
+        border-radius: 6px;
+        text-align: center;
+    }
+
+    .stat-label {
+        color: rgba(255,255,255,0.7);
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .stat-item.success {
+        background: rgba(46, 213, 115, 0.2);
+        border: 1px solid rgba(46, 213, 115, 0.3);
+    }
+
+    .stat-item.success .stat-value {
+        color: #2ed573;
+    }
+
+    .stat-item.info {
+        background: rgba(52, 152, 219, 0.2);
+        border: 1px solid rgba(52, 152, 219, 0.3);
+    }
+
+    .stat-item.info .stat-value {
+        color: #3498db;
+    }
+
+    .stat-item.warning {
+        background: rgba(255, 107, 107, 0.2);
+        border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+
+    .stat-item.warning .stat-value {
+        color: #ff6b6b;
+    }
+
+    .stat-item.alert {
+        background: rgba(253, 203, 110, 0.2);
+        border: 1px solid rgba(253, 203, 110, 0.3);
+    }
+
+    .stat-item.alert .stat-value {
+        color: #fdcb6e;
+    }
+
+    .security-footer {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,0.3);
+        color: rgba(255,255,255,0.95);
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .security-footer a {
+        color: white;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .security-panel {
+            padding: 1.5rem;
+        }
+
+        .security-title {
+            font-size: 1.25rem;
+        }
+
+        .protection-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Welcome Card -->
+    <div class="welcome-card">
+        <h2>👋 Üdvözöl az Admin Panel</h2>
+        <p>Minden funkció elérhető a bal oldali menüben</p>
+    </div>
+
+    <!-- Security Summary Panel -->
+    <div class="security-panel">
+        <div class="security-header">
+            <h2 class="security-title">
+                🛡️ Biztonsági Védelem Összefoglalója
+            </h2>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <div id="threatLevelBadge" class="threat-badge">
+                    <span id="threatLevelIcon">🟢</span>
+                    <span id="threatLevelText">LOW</span>
+                </div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">
+                    <span id="autoRefreshIndicator">●</span> Auto-refresh
+                </div>
+            </div>
+        </div>
+            
+        <!-- Protection Cards Grid -->
+        <div class="protection-grid">
+            <!-- Auth Protection Card -->
+            <div class="protection-card">
+                <div class="protection-card-title">
+                    🔐 Bejelentkezés & Regisztráció
+                </div>
+                <ul>
+                    <li>Rate limit: 5/15min (login)</li>
+                    <li>Rate limit: 3/1óra (reg.)</li>
+                    <li>Bot detekció (UA check)</li>
+                    <li>5 honeypot mező</li>
+                    <li>SQL injection védelem</li>
+                    <li>XSS védelem</li>
+                </ul>
+                <div class="protection-card-footer">
+                    <strong>Rétegek:</strong> 6 🛡️
+                </div>
+            </div>
+
+            <!-- Chat Protection Card -->
+            <div class="protection-card">
+                <div class="protection-card-title">
+                    💬 Chat Rendszer
+                </div>
+                <ul>
+                        <li>Session limit: 3/15min</li>
+                        <li>Message limit: 20/1min</li>
+                        <li>Offline limit: 2/1óra</li>
+                        <li>5 honeypot mező</li>
+                        <li>Spam pattern detekció</li>
+                        <li>Auto-cleanup (30min)</li>
+                    </ul>
+                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-size: 0.85rem;">
+                        <strong>Rétegek:</strong> 9 🛡️
+                    </div>
+                </div>
+
+                <!-- Password & Security Card -->
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="color: white; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🔑 Jelszó & Adatbiztonság
+                    </div>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: rgba(255,255,255,0.95); font-size: 0.9rem; line-height: 1.6;">
+                        <li>Bcrypt hash (rounds: 12)</li>
+                        <li>Reset limit: 3/1óra</li>
+                        <li>Email verification</li>
+                        <li>Dual email változtatás</li>
+                        <li>Session management</li>
+                        <li>Email értesítések</li>
+                    </ul>
+                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-size: 0.85rem;">
+                        <strong>Szint:</strong> Magas 🔒
+                    </div>
+                </div>
+
+                <!-- General Security Card -->
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="color: white; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        ⚙️ Általános Védelem
+                    </div>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: rgba(255,255,255,0.95); font-size: 0.9rem; line-height: 1.6;">
+                        <li>HTTPS titkosítás</li>
+                        <li>Express-session secure</li>
+                        <li>CSRF token védelem</li>
+                        <li>Input validáció (minden form)</li>
+                        <li>Sequelize ORM (SQL safe)</li>
+                        <li>Error handling & logging</li>
+                    </ul>
+                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); font-size: 0.85rem;">
+                        <strong>Státusz:</strong> Aktív ✅
+                    </div>
+                </div>
+
+                <!-- File Upload Security Card (NEW - 2025.10.05) -->
+                <div style="background: rgba(52, 152, 219, 0.2); backdrop-filter: blur(10px); padding: 1rem; border-radius: 8px; border: 1px solid rgba(52, 152, 219, 0.4);">
+                    <div style="color: white; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        📎 File Upload Védelem
+                    </div>
+                    <ul style="margin: 0; padding-left: 1.25rem; color: rgba(255,255,255,0.95); font-size: 0.9rem; line-height: 1.6;">
+                        <li>Magic bytes validáció</li>
+                        <li>40+ veszélyes kiterjesztés</li>
+                        <li>SecurityLog integráció</li>
+                        <li>Auto cleanup sérült fájlok</li>
+                        <li>5 route 100% védett</li>
+                        <li>Real-time monitoring</li>
+                    </ul>
+                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(52, 152, 219, 0.3); color: rgba(255,255,255,0.9); font-size: 0.85rem;">
+                        <strong>Rétegek:</strong> 3 🛡️ | <strong>Siker:</strong> <span id="fileUploadSuccessRate">100</span>%
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Live Statistics Row -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.3);">
+                <h3 style="color: white; margin: 0 0 1rem 0; font-size: 1rem; font-weight: 600;">
+                    📊 Élő Statisztikák (Utolsó 24 óra)
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;">
+                    
+                    <!-- Auth Blocked -->
+                    <div style="background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 0.25rem;">Login Blokkolt</div>
+                        <div style="color: white; font-size: 1.5rem; font-weight: 700;" id="authLoginBlocked24hour">0</div>
+                    </div>
+
+                    <!-- Register Blocked -->
+                    <div style="background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 0.25rem;">Reg. Blokkolt</div>
+                        <div style="color: white; font-size: 1.5rem; font-weight: 700;" id="authRegisterBlocked24hour">0</div>
+                    </div>
+
+                    <!-- SQL Injection -->
+                    <div style="background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 0.25rem;">SQL Injection</div>
+                        <div style="color: white; font-size: 1.5rem; font-weight: 700;" id="attacksSqlInjection24hour">0</div>
+                    </div>
+
+                    <!-- XSS Attempts -->
+                    <div style="background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 0.25rem;">XSS Kísérlet</div>
+                        <div style="color: white; font-size: 1.5rem; font-weight: 700;" id="attacksXss24hour">0</div>
+                    </div>
+
+                    <!-- Bot Detected -->
+                    <div style="background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 0.25rem;">Bot Detektált</div>
+                        <div style="color: white; font-size: 1.5rem; font-weight: 700;" id="attacksBotDetected24hour">0</div>
+                    </div>
+
+                    <!-- Honeypot Triggered -->
+                    <div style="background: rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 6px; text-align: center;">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.75rem; margin-bottom: 0.25rem;">Honeypot 🍯</div>
+                        <div style="color: white; font-size: 1.5rem; font-weight: 700;" id="chatHoneypotTriggered24hour">0</div>
+                    </div>
+
+                    <!-- Active Users -->
+                    <div style="background: rgba(46, 213, 115, 0.2); padding: 0.75rem; border-radius: 6px; text-align: center; border: 1px solid rgba(46, 213, 115, 0.3);">
+                        <div style="color: rgba(255,255,255,0.9); font-size: 0.75rem; margin-bottom: 0.25rem;">Aktív Userek</div>
+                        <div style="color: #2ed573; font-size: 1.5rem; font-weight: 700;" id="usersActive">0</div>
+                    </div>
+
+                    <!-- Recent Logins -->
+                    <div style="background: rgba(46, 213, 115, 0.2); padding: 0.75rem; border-radius: 6px; text-align: center; border: 1px solid rgba(46, 213, 115, 0.3);">
+                        <div style="color: rgba(255,255,255,0.9); font-size: 0.75rem; margin-bottom: 0.25rem;">Belépések (1h)</div>
+                        <div style="color: #2ed573; font-size: 1.5rem; font-weight: 700;" id="usersRecentLogins1hour">0</div>
+                    </div>
+
+                    <!-- File Uploads (NEW) -->
+                    <div style="background: rgba(52, 152, 219, 0.2); padding: 0.75rem; border-radius: 6px; text-align: center; border: 1px solid rgba(52, 152, 219, 0.3);">
+                        <div style="color: rgba(255,255,255,0.9); font-size: 0.75rem; margin-bottom: 0.25rem;">📎 Feltöltések</div>
+                        <div style="color: #3498db; font-size: 1.5rem; font-weight: 700;" id="fileUploadUploaded24hour">0</div>
+                    </div>
+
+                    <!-- File Validation Failed (NEW) -->
+                    <div style="background: rgba(255, 107, 107, 0.2); padding: 0.75rem; border-radius: 6px; text-align: center; border: 1px solid rgba(255, 107, 107, 0.3);">
+                        <div style="color: rgba(255,255,255,0.9); font-size: 0.75rem; margin-bottom: 0.25rem;">🚫 Érvénytelen</div>
+                        <div style="color: #ff6b6b; font-size: 1.5rem; font-weight: 700;" id="fileUploadValidationFailed24hour">0</div>
+                    </div>
+
+                    <!-- SecurityLog Critical (NEW) -->
+                    <div style="background: rgba(253, 203, 110, 0.2); padding: 0.75rem; border-radius: 6px; text-align: center; border: 1px solid rgba(253, 203, 110, 0.3);">
+                        <div style="color: rgba(255,255,255,0.9); font-size: 0.75rem; margin-bottom: 0.25rem;">⚠️ Kritikus</div>
+                        <div style="color: #fdcb6e; font-size: 1.5rem; font-weight: 700;" id="securityLogCritical24hour">0</div>
+                    </div>
+
+                    <!-- Account Locked (NEW) -->
+                    <div style="background: rgba(255, 107, 107, 0.2); padding: 0.75rem; border-radius: 6px; text-align: center; border: 1px solid rgba(255, 107, 107, 0.3);">
+                        <div style="color: rgba(255,255,255,0.9); font-size: 0.75rem; margin-bottom: 0.25rem;">🔒 Zárolt Fiókok</div>
+                        <div style="color: #ff6b6b; font-size: 1.5rem; font-weight: 700;" id="securityLogAccountLocked24hour">0</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Summary Footer -->
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.95); font-size: 0.9rem; text-align: center;">
+                <strong>Összesen:</strong> 18+ védelem réteg aktív | 
+                <strong>Dokumentáció:</strong> 
+                <a href="/docs/AUTH_PROTECTION.md" style="color: white; text-decoration: underline;">Auth Protection</a> • 
+                <a href="/docs/CHAT_PROTECTION.md" style="color: white; text-decoration: underline;">Chat Protection</a> •
+                <a href="/docs/FILE_UPLOAD_COMPLETE_INTEGRATION.md" style="color: white; text-decoration: underline;">File Upload Security</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div style="text-align: center; padding: 3rem; color: #666;">
+            <i class="fas fa-check-circle" style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;"></i>
+            <h2 style="color: #333; margin-bottom: 1rem;">Minden funkció elérhető a bal oldali menüben</h2>
+            <p style="font-size: 1.1rem;">Használd a sidebar-t a navigáláshoz, vagy tekintsd meg a fenti biztonsági összefoglalót.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * Security Stats Real-time Monitor
+ * Automatically refreshes security statistics every 30 seconds
+ */
+(function() {
+    let refreshInterval;
+    let isRefreshing = false;
+
+    // Fetch and update security stats
+    async function updateSecurityStats() {
+        if (isRefreshing) return;
+        isRefreshing = true;
+
+        // Pulse animation for indicator
+        const indicator = document.getElementById('autoRefreshIndicator');
+        if (indicator) {
+            indicator.style.animation = 'pulse 1s ease-in-out';
+        }
+
+        try {
+            const response = await fetch('<%= basePath %>api/security/stats');
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                updateThreatLevel(result.data.overall);
+                updateAuthStats(result.data.auth);
+                updateChatStats(result.data.chat);
+                updateAttackStats(result.data.attacks);
+                updateUserStats(result.data.users);
+                updateFileUploadStats(result.data.fileUpload);
+                updateSecurityLogStats(result.data.securityLog);
+            }
+        } catch (error) {
+            console.error('Failed to fetch security stats:', error);
+        } finally {
+            isRefreshing = false;
+            if (indicator) {
+                setTimeout(() => {
+                    indicator.style.animation = '';
+                }, 1000);
+            }
+        }
+    }
+
+    // Update threat level badge
+    function updateThreatLevel(overall) {
+        const badge = document.getElementById('threatLevelBadge');
+        const icon = document.getElementById('threatLevelIcon');
+        const text = document.getElementById('threatLevelText');
+
+        if (!badge || !icon || !text) return;
+
+        const level = overall.threatLevel;
+        
+        // Update colors and icons based on threat level
+        const configs = {
+            'LOW': { icon: '🟢', bg: 'rgba(46, 213, 115, 0.3)', color: '#2ed573' },
+            'MEDIUM': { icon: '🟡', bg: 'rgba(255, 193, 7, 0.3)', color: '#ffc107' },
+            'HIGH': { icon: '🟠', bg: 'rgba(255, 152, 0, 0.3)', color: '#ff9800' },
+            'CRITICAL': { icon: '🔴', bg: 'rgba(244, 67, 54, 0.3)', color: '#f44336' }
+        };
+
+        const config = configs[level] || configs['LOW'];
+        icon.textContent = config.icon;
+        text.textContent = level;
+        badge.style.background = config.bg;
+        badge.style.color = config.color;
+        badge.style.border = `2px solid ${config.color}`;
+    }
+
+    // Update individual stat counters (if they exist on the page)
+    function updateAuthStats(auth) {
+        updateStat('authLoginBlocked15min', auth.loginBlocked15min);
+        updateStat('authLoginBlocked24hour', auth.loginBlocked24hour);
+        updateStat('authRegisterBlocked24hour', auth.registerBlocked24hour);
+    }
+
+    function updateChatStats(chat) {
+        updateStat('chatSessionBlocked15min', chat.sessionBlocked15min);
+        updateStat('chatMessageBlocked1min', chat.messageBlocked1min);
+        updateStat('chatHoneypotTriggered24hour', chat.honeypotTriggered24hour);
+    }
+
+    function updateAttackStats(attacks) {
+        updateStat('attacksSqlInjection24hour', attacks.sqlInjection24hour);
+        updateStat('attacksXss24hour', attacks.xss24hour);
+        updateStat('attacksBotDetected24hour', attacks.botDetected24hour);
+    }
+
+    function updateUserStats(users) {
+        updateStat('usersTotal', users.totalUsers);
+        updateStat('usersActive', users.activeUsers);
+        updateStat('usersRecentLogins1hour', users.recentLogins1hour);
+    }
+
+    // NEW - File Upload Stats (2025.10.05)
+    function updateFileUploadStats(fileUpload) {
+        if (!fileUpload) return;
+        updateStat('fileUploadUploaded24hour', fileUpload.uploaded24hour);
+        updateStat('fileUploadValidationFailed24hour', fileUpload.validationFailed24hour);
+        updateStat('fileUploadSuccessRate', fileUpload.successRate);
+    }
+
+    // NEW - SecurityLog Stats (2025.10.05)
+    function updateSecurityLogStats(securityLog) {
+        if (!securityLog) return;
+        updateStat('securityLogCritical24hour', securityLog.critical24hour);
+        updateStat('securityLogAccountLocked24hour', securityLog.accountLocked24hour);
+    }
+
+    function updateStat(id, value) {
+        const element = document.getElementById(id);
+        if (element) {
+            // Animate number change
+            const oldValue = parseInt(element.textContent) || 0;
+            if (oldValue !== value) {
+                element.style.transition = 'all 0.3s ease';
+                element.style.transform = 'scale(1.2)';
+                element.style.color = '#ffc107';
+                
+                setTimeout(() => {
+                    element.textContent = value;
+                    element.style.transform = 'scale(1)';
+                    element.style.color = '';
+                }, 150);
+            }
+        }
+    }
+
+    // Start auto-refresh (every 30 seconds)
+    function startAutoRefresh() {
+        // Initial load
+        updateSecurityStats();
+        
+        // Refresh every 30 seconds
+        refreshInterval = setInterval(updateSecurityStats, 30000);
+    }
+
+    // Stop auto-refresh
+    function stopAutoRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+        }
+    }
+
+    // Start monitoring when page loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startAutoRefresh);
+    } else {
+        startAutoRefresh();
+    }
+
+    // Stop monitoring when user leaves the page
+    window.addEventListener('beforeunload', stopAutoRefresh);
+
+    // CSS animation for pulse effect
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    `;
+    document.head.appendChild(style);
+})();
+</script>

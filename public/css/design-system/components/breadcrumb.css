@@ -1,0 +1,218 @@
+/**
+ * Breadcrumb Navigation Component
+ * WCAG 2.1 AA compliant navigation pattern
+ */
+
+/* ==========================================
+   BREADCRUMB CONTAINER
+   ========================================== */
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  margin: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* ==========================================
+   BREADCRUMB ITEMS
+   ========================================== */
+
+.breadcrumb__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+.breadcrumb__item a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+.breadcrumb__item:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.breadcrumb__item a:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.breadcrumb__item:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Active/Current Item */
+.breadcrumb__item[aria-current="page"],
+.breadcrumb__item.active {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  pointer-events: none;
+}
+
+.breadcrumb__item[aria-current="page"] > span,
+.breadcrumb__item.active > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ==========================================
+   SEPARATORS
+   ========================================== */
+
+.breadcrumb__item:not(:last-child)::after {
+  content: '/';
+  margin-left: var(--space-2);
+  color: var(--text-tertiary);
+  font-weight: var(--font-weight-normal);
+}
+
+/* Alternative separator styles */
+.breadcrumb--arrow .breadcrumb__item:not(:last-child)::after {
+  content: '›';
+  font-size: var(--text-lg);
+}
+
+.breadcrumb--chevron .breadcrumb__item:not(:last-child)::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-top: 2px solid currentColor;
+  transform: rotate(45deg);
+  margin-top: calc(var(--space-0-5) * -1);
+}
+
+.breadcrumb--dot .breadcrumb__item:not(:last-child)::after {
+  content: '•';
+}
+
+/* ==========================================
+   SIZES
+   ========================================== */
+
+.breadcrumb--sm {
+  font-size: var(--text-xs);
+  gap: var(--space-1);
+}
+
+.breadcrumb--sm .breadcrumb__item:not(:last-child)::after {
+  margin-left: var(--space-1);
+}
+
+.breadcrumb--lg {
+  font-size: var(--text-base);
+  gap: var(--space-3);
+}
+
+.breadcrumb--lg .breadcrumb__item:not(:last-child)::after {
+  margin-left: var(--space-3);
+}
+
+/* ==========================================
+   WITH ICONS
+   ========================================== */
+
+.breadcrumb__item svg,
+.breadcrumb__item .icon {
+  display: inline-block;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Home icon as first item */
+.breadcrumb__item:first-child svg {
+  width: var(--icon-base);
+  height: var(--icon-base);
+}
+
+/* ==========================================
+   TRUNCATED BREADCRUMBS
+   ========================================== */
+
+.breadcrumb--truncate .breadcrumb__item {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .breadcrumb--truncate .breadcrumb__item {
+    max-width: 300px;
+  }
+}
+
+/* ==========================================
+   COLLAPSED/MOBILE VIEW
+   ========================================== */
+
+@media (max-width: 640px) {
+  .breadcrumb--responsive .breadcrumb__item:not(:last-child):not(:first-child) {
+    display: none;
+  }
+
+  .breadcrumb--responsive .breadcrumb__item:nth-last-child(2)::after {
+    content: '...';
+  }
+}
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+
+[data-theme="dark"] {
+  .breadcrumb__item {
+    color: var(--text-secondary);
+  }
+
+  .breadcrumb__item:hover {
+    color: var(--text-primary);
+  }
+
+  .breadcrumb__item[aria-current="page"],
+  .breadcrumb__item.active {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-primary);
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+
+/* Ensure screen readers announce as navigation */
+/* Aria-label should be set in HTML: <nav aria-label="Breadcrumb"> */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .breadcrumb__item {
+    text-decoration: underline;
+  }
+
+  .breadcrumb__item[aria-current="page"],
+  .breadcrumb__item.active {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    font-weight: var(--font-weight-bold);
+  }
+}

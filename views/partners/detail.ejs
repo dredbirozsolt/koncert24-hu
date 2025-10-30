@@ -1,0 +1,211 @@
+<style>
+  .partner-detail-container {
+    max-width: var(--container-lg);
+    margin: 0 auto;
+    padding: var(--space-12) var(--space-8);
+  }
+  
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-gray-900);
+    text-decoration: none;
+    margin-bottom: var(--space-8);
+    font-weight: var(--font-weight-medium);
+  }
+  
+  .back-link:hover {
+    opacity: var(--opacity-80);
+  }
+  
+  .partner-header {
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-12);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--space-8);
+    display: flex;
+    gap: var(--space-12);
+    align-items: center;
+  }
+  
+  .partner-logo-large {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border-radius: var(--radius-lg);
+  }
+  
+  .partner-info {
+    flex: 1;
+  }
+  
+  .partner-title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-4);
+    color: var(--color-gray-900);
+  }
+  
+  .partner-meta {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+  
+  .partner-content {
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    padding: var(--space-12);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .partner-description {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--color-gray-700);
+    margin-bottom: var(--space-8);
+  }
+  
+  .partner-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .btn-partner {
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+  }
+  
+  .btn--primary {
+    background: var(--color-primary-600);
+    color: var(--color-white);
+  }
+  
+  .btn--primary:hover {
+    background: var(--color-primary-700);
+    transform: scale(1.05);
+  }
+
+  .back-link {
+    color: var(--color-gray-900);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Mobil optimalizáció */
+  @media (max-width: 768px) {
+    .partner-detail-container {
+      padding: 0 1rem 2rem;
+    }
+
+    .partner-logo-large {
+      max-width: 200px;
+      max-height: 120px;
+    }
+
+    .partner-title {
+      font-size: 1.75rem;
+    }
+
+    .partner-category-badge {
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+    }
+
+    .partner-info {
+      padding: 1.5rem;
+    }
+
+    .partner-website {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .back-link {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .partner-logo-large {
+      max-width: 150px;
+      max-height: 100px;
+    }
+
+    .partner-title {
+      font-size: 1.5rem;
+    }
+
+    .partner-info {
+      padding: 1rem;
+    }
+  }
+</style>
+
+<div class="hero">
+  <div class="container">
+    <a href="/partners" class="back-link">
+      ← Vissza a partnerekhez
+    </a>
+  </div>
+</div>
+
+<div class="partner-detail-container">
+  <div class="partner-header">
+    <% if (partner.logo) { %>
+      <img src="<%= partner.logo %>" 
+           alt="<%= partner.name %> logó" 
+           title="<%= partner.name %>" 
+           width="300" 
+           height="150" 
+           class="partner-logo-large">
+    <% } %>
+    
+    <div class="partner-info">
+      </div>
+      
+      <div class="partner-meta">
+        <% if (partner.category) { %>
+          <span class="badge badge-primary-solid">
+            <%= partner.category.name %>
+          </span>
+        <% } %>
+        
+        <% if (partner.isVerified) { %>
+          <span class="badge badge-success-solid">
+            ✅ Ellenőrzött
+          </span>
+        <% } %>
+      </div>
+      
+      <div class="partner-actions">
+        <a href="<%= partner.websiteUrl %>" target="_blank" rel="noopener noreferrer" class="btn-partner btn--primary">
+          🔗 Weboldal megtekintése
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <% if (partner.description) { %>
+    <div class="partner-content">
+      <h2>Róluk</h2>
+      <p class="partner-description"><%= partner.description %></p>
+    </div>
+  <% } %>
+</div>

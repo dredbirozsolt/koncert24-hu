@@ -1,0 +1,98 @@
+/* ================================
+   Reading Progress Bar Component
+   Olvasási előrehaladás jelző
+   ================================ */
+
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gray-200);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.progress-bar--visible {
+  opacity: 1;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--primary-600) 0%,
+    var(--primary-500) 50%,
+    var(--primary-400) 100%
+  );
+  width: 0%;
+  transition: width var(--transition-fast) ease-out;
+}
+
+/* Variants */
+.progress-bar--solid .progress-bar__fill {
+  background: var(--primary-600);
+}
+
+.progress-bar--gradient .progress-bar__fill {
+  background: linear-gradient(
+    90deg,
+    var(--primary-600),
+    var(--secondary-500)
+  );
+}
+
+/* Dark Mode */
+/* Dark Mode Theme Selector */
+  .progress-bar {
+    background: var(--bg-subtle);
+  }
+
+  .progress-bar__fill {
+    background: linear-gradient(
+      90deg,
+      var(--primary-500) 0%,
+      var(--primary-400) 50%,
+      var(--primary-300) 100%
+    );
+  }
+
+  .progress-bar--solid .progress-bar__fill {
+    background: var(--primary-500);
+  }
+
+  .progress-bar--gradient .progress-bar__fill {
+    background: linear-gradient(
+      90deg,
+      var(--primary-500),
+      var(--secondary-400)
+    );
+  }
+}
+
+[data-theme="dark"] .progress-bar {
+  background: var(--bg-subtle);
+}
+
+[data-theme="dark"] .progress-bar__fill {
+  background: linear-gradient(
+    90deg,
+    var(--primary-500) 0%,
+    var(--primary-400) 50%,
+    var(--primary-300) 100%
+  );
+}
+
+[data-theme="dark"] .progress-bar--solid .progress-bar__fill {
+  background: var(--primary-500);
+}
+
+[data-theme="dark"] .progress-bar--gradient .progress-bar__fill {
+  background: linear-gradient(
+    90deg,
+    var(--primary-500),
+    var(--secondary-400)
+  );
+}

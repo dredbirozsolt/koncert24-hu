@@ -1,0 +1,229 @@
+<!-- Blog Címkék Kezelése -->
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header mb-6">
+    <a href="/admin/blog" class="btn btn--secondary">
+      ← Vissza
+    </a>
+  </div>
+
+  <!-- Üzenetek -->
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success">
+      <%= decodeURIComponent(success) %>
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-error">
+      <%= decodeURIComponent(error) %>
+    </div>
+  <% } %>
+
+  <!-- 2-Column Grid Layout -->
+  <div class="admin-two-col">
+    
+    <!-- Left Column: Main Content -->
+    <div>
+
+      <!-- Új címke létrehozása -->
+      <div class="card--data mb-6">
+        <h2 class="text-xl font-semibold mb-4">➕ Új címke létrehozása</h2>
+        <form id="createTagForm" class="form--inline">
+          <div class="form__group flex-1">
+            <label for="tagName" class="form__label">Címke neve</label>
+            <input 
+              type="text" 
+              id="tagName" 
+              name="name" 
+              class="form__input" 
+              placeholder="pl. Koncert, Fesztivál, Zenei esemény"
+              required
+            >
+          </div>
+          <button type="submit" class="btn btn--primary mt-6">
+            ➕ Létrehozás
+          </button>
+        </form>
+      </div>
+
+      <!-- Címkék lista -->
+      <div class="card--data">
+    <h2 class="text-xl font-semibold mb-4">🏷️ Összes címke</h2>
+    
+    <% if (tags.length === 0) { %>
+      <div class="p-12 text-center text-secondary">
+        🏷️ <p>Még nincsenek címkék</p>
+        <p class="text-sm mt-2">Hozd létre az első címkét a fenti űrlap használatával.</p>
+      </div>
+    <% } else { %>
+      <div class="table--responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="w-10">#</th>
+              <th>Név</th>
+              <th class="w-24 text-center">Bejegyzések</th>
+              <th class="w-32 text-center">Létrehozva</th>
+              <th class="w-24">Műveletek</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% tags.forEach((tag, index) => { %>
+              <tr>
+                <td data-label="#"><%= index + 1 %></td>
+                <td data-label="Név">
+                  <strong><%= tag.name %></strong>
+                </td>
+                <td data-label="Bejegyzések" class="text-center">
+                  <span class="badge <%= tag.postCount > 0 ? 'badge-info' : 'badge-secondary' %>">
+                    <%= tag.postCount %>
+                  </span>
+                </td>
+                <td data-label="Létrehozva" class="text-center">
+                  <span class="text-sm text-muted">
+                    <%= new Date(tag.createdAt).toLocaleDateString('hu-HU') %>
+                  </span>
+                </td>
+                <td data-label="Műveletek">
+                  <div class="actions">
+                    <% if (tag.postCount === 0) { %>
+                      <button onclick="deleteTag(<%= tag.id %>)" class="btn btn-icon-only btn-error" title="Törlés">
+                        🗑️
+                      </button>
+                    <% } else { %>
+                      <button disabled title="Van hozzárendelt bejegyzés" class="btn btn-icon-only opacity-30 cursor-not-allowed">
+                        🗑️
+                      </button>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+
+    </div>
+    <!-- End of Left Column -->
+
+    <!-- Right Column: Info Boxes -->
+    <div>
+
+      <!-- Info Kártya -->
+      <div class="card--data">
+        <h3>🏷️ Címkék Kezelése</h3>
+        <div class="card__info-content">
+          <p>A címkék segítenek kategorizálni és csoportosítani a blog bejegyzéseket.</p>
+          <p><strong>Fontos tudnivalók:</strong></p>
+          <ul>
+            <li>Egy bejegyzéshez <strong>több címke</strong> is hozzárendelhető</li>
+            <li>A címke <strong>csak akkor törölhető</strong>, ha nincs hozzá egyetlen bejegyzés sem rendelve</li>
+            <li>A <strong>"Használat"</strong> oszlop mutatja, hány bejegyzéshez tartozik az adott címke</li>
+            <li>A címkék <strong>automatikusan</strong> URL-barát slug-ot kapnak létrehozáskor</li>
+          </ul>
+          <p class="text-sm text-secondary mt-4">
+            💡 Tipp: Használj általános, újrafelhasználható címkéket a jobb szervezésért!
+          </p>
+        </div>
+      </div>
+
+    </div>
+    <!-- End of Right Column -->
+
+  </div>
+  <!-- End of Grid -->
+
+</div>
+
+<script>
+// Új címke létrehozása
+document.getElementById('createTagForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  const name = formData.get('name').trim();
+  
+  if (!name) {
+    Modal.alert({
+      title: 'Hiba',
+      message: 'A címke neve nem lehet üres!',
+      type: 'error'
+    });
+    return;
+  }
+  
+  try {
+    const response = await fetch('/admin/blog/tags/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': '<%= csrfToken %>'
+      },
+      body: JSON.stringify({ name })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok && data.success) {
+      Modal.alert({
+        title: 'Siker',
+        message: data.message || 'Címke sikeresen létrehozva!',
+        type: 'success'
+      });
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      throw new Error(data.message || 'Hiba történt a létrehozás során');
+    }
+  } catch (error) {
+    Modal.alert({
+      title: 'Hiba',
+      message: '❌ ' + error.message,
+      type: 'error'
+    });
+  }
+});
+
+// Címke törlése
+async function deleteTag(id) {
+  const confirmed = await Modal.confirm({
+    title: 'Címke törlése',
+    message: 'Biztosan törölni szeretnéd ezt a címkét?',
+    confirmText: 'Törlés',
+    cancelText: 'Mégse'
+  });
+  
+  if (confirmed) {
+    try {
+      const response = await fetch(`/admin/blog/tags/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= csrfToken %>'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        Modal.alert({
+          title: 'Siker',
+          message: data.message || 'Címke sikeresen törölve!',
+          type: 'success'
+        });
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        throw new Error(data.message || 'Hiba történt a törlés során');
+      }
+    } catch (error) {
+      Modal.alert({
+        title: 'Hiba',
+        message: '❌ ' + error.message,
+        type: 'error'
+      });
+    }
+  }
+}
+</script>

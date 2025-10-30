@@ -1,0 +1,438 @@
+<!-- Company Settings Page -->
+
+<div class="page-container">
+    <div class="admin-two-col">
+        
+        <!-- Bal oldal: Cégadatok Form -->
+        <div>
+            <div class="card--data">
+                <h3>
+                    🏢 Alapadatok
+                </h3>
+                
+                <form id="company-form">
+                    <!-- Company Name -->
+                    <div class="form__group">
+                        <label for="company.name">
+                            Cégnév <span class="required-field">*</span>
+                        </label>
+                        <input type="text" 
+                               name="company.name" 
+                               id="company.name"
+                               class="form__control"
+                               value="<%= flatSettings['company.name'] || '' %>"
+                               placeholder="pl. DMF Art Média Kft."
+                               required>
+                        <small class="form__hint">Hivatalos cégnév (lábléc, kapcsolat)</small>
+                    </div>
+
+                    <!-- Phone & Email in 2 columns -->
+                    <div class="filter-grid">
+                        <div class="form__group">
+                            <label for="company.phone">
+                                📞 Telefonszám
+                            </label>
+                            <input type="tel" 
+                                   name="company.phone" 
+                                   id="company.phone"
+                                   class="form__control"
+                                   value="<%= flatSettings['company.phone'] || '' %>"
+                                   placeholder="+36 70 123 4567">
+                            <small class="form__hint">Kapcsolat menüben megjelenik</small>
+                        </div>
+
+                        <div class="form__group">
+                            <label for="company.email">
+                                ✉️ Email cím
+                            </label>
+                            <input type="email" 
+                                   name="company.email" 
+                                   id="company.email"
+                                   class="form__control"
+                                   value="<%= flatSettings['company.email'] || '' %>"
+                                   placeholder="info@cegnev.hu">
+                            <small class="form__hint">Nyilvános kapcsolati email</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Cím adatok -->
+            <div class="card--data card-spacing">
+                <h3 class="section-title">
+                    📍 Cím
+                </h3>
+                
+                <div class="filter-grid">
+                    <div class="form__group">
+                        <label for="company.address_street">
+                            Utca és házszám
+                        </label>
+                        <input type="text" 
+                               name="company.address_street" 
+                               id="company.address_street"
+                               class="form__control"
+                               value="<%= flatSettings['company.address_street'] || '' %>"
+                               placeholder="Példa utca 12."
+                               form="company-form">
+                    </div>
+
+                    <div class="form__group">
+                        <label for="company.address_zip">
+                            Irányítószám
+                        </label>
+                        <input type="text" 
+                               name="company.address_zip" 
+                               id="company.address_zip"
+                               class="form__control"
+                               value="<%= flatSettings['company.address_zip'] || '' %>"
+                               placeholder="1234"
+                               form="company-form">
+                    </div>
+                </div>
+
+                <div class="form__group">
+                    <label for="company.address_city">
+                        Város
+                    </label>
+                    <input type="text" 
+                           name="company.address_city" 
+                           id="company.address_city"
+                           class="form__control"
+                           value="<%= flatSettings['company.address_city'] || '' %>"
+                           placeholder="Budapest"
+                           form="company-form">
+                </div>
+
+                <div class="form__group">
+                    <label for="company.address_country">
+                        Ország
+                    </label>
+                    <input type="text" 
+                           name="company.address_country" 
+                           id="company.address_country"
+                           class="form__control"
+                           value="<%= flatSettings['company.address_country'] || '' %>"
+                           placeholder="Magyarország"
+                           form="company-form">
+                </div>
+
+                <div class="form__group">
+                    <label for="company.address">
+                        Teljes cím
+                    </label>
+                    <input type="text" 
+                           name="company.address" 
+                           id="company.address"
+                           class="form__control"
+                           value="<%= flatSettings['company.address'] || '' %>"
+                           placeholder="1234 Budapest, Példa utca 12."
+                           form="company-form">
+                    <small class="form__hint">Formázott teljes cím (Schema.org SEO)</small>
+                </div>
+            </div>
+
+            <!-- Cégjogi adatok -->
+            <div class="card--data card-spacing">
+                <h3 class="section-title">
+                    📋 Cégjogi adatok
+                </h3>
+                
+                <div class="filter-grid">
+                    <div class="form__group">
+                        <label for="company.registration_number">
+                            Cégjegyzékszám
+                        </label>
+                        <input type="text" 
+                               name="company.registration_number" 
+                               id="company.registration_number"
+                               class="form__control"
+                               value="<%= flatSettings['company.registration_number'] || '' %>"
+                               placeholder="01-09-123456"
+                               form="company-form">
+                    </div>
+
+                    <div class="form__group">
+                        <label for="company.tax_number">
+                            Adószám
+                        </label>
+                        <input type="text" 
+                               name="company.tax_number" 
+                               id="company.tax_number"
+                               class="form__control"
+                               value="<%= flatSettings['company.tax_number'] || '' %>"
+                               placeholder="12345678-1-23"
+                               form="company-form">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logo -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🖼️ Céglogó
+                </h3>
+                
+                <% if (flatSettings['company.logo']) { %>
+                <div class="flex justify-center mb-4">
+                    <img src="<%= flatSettings['company.logo'] %>" 
+                         alt="Company Logo" 
+                         class="max-w-xs">
+                </div>
+                <% } %>
+                
+                <div>
+                    <div>
+                        <input type="file" 
+                               id="logoFile" 
+                               name="companyLogo"
+                               class="hidden"
+                               accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
+                               onchange="updateFileName(this)">
+                        <div class="btn__group btn__group--equal">
+                            <button type="button" class="btn btn--secondary" onclick="document.getElementById('logoFile').click()">
+                                📤 Fájl kiválasztása
+                            </button>
+                            <button type="button" class="btn btn--primary" onclick="uploadLogo()">
+                                ⬆️ Feltöltés
+                            </button>
+                            <% if (flatSettings['company.logo']) { %>
+                            <button type="button" class="btn btn--outline" onclick="deleteLogo()">
+                                🗑️ Törlés
+                            </button>
+                            <% } %>
+                        </div>
+                    </div>
+                    <small id="file-name-display" class="form__hint m-0 hidden"></small>
+                    <small class="form__hint m-0">Max. 2MB • JPEG, PNG, GIF, SVG, WebP</small>
+                </div>
+            </div>
+
+            <input type="hidden" 
+                   name="company.logo" 
+                   id="company.logo"
+                   value="<%= flatSettings['company.logo'] || '' %>"
+                   form="company-form">
+
+            <!-- Save Button -->
+            <div class="btn__group btn__group--equal mb-4">
+                <button type="button" class="btn btn--primary" onclick="saveCompany()">
+                    💾 Mentés
+                </button>
+            </div>
+        </div>
+
+        <!-- Jobb oldal: Info Panel -->
+        <div>
+            <!-- SEO Info -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🔍 SEO & Strukturált adat
+                </h3>
+                
+                <div class="info-box-content">
+                    <p>
+                        <strong>🎯 Schema.org:</strong><br>
+                        A cím adatok (város, irányítószám, ország) Schema.org strukturált adatként kerülnek beágyazásra az oldalba.
+                    </p>
+                    
+                    <p>
+                        <strong>🔍 Google megjelenés:</strong><br>
+                        Ezáltal a Google jobban érti a cég lokációját és könnyebben megjelenítheti a helyi keresésekben.
+                    </p>
+                    
+                    <p>
+                        <strong>📊 Rich Snippets:</strong><br>
+                        A helyes adatok segítenek abban, hogy a keresési találatokban részletesebb információk jelenjenek meg.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Használati tippek -->
+            <div class="card--data card-spacing">
+                <h3 class="section-title">
+                    💡 Tippek
+                </h3>
+                
+                <div class="info-box-content">
+                    <p>
+                        <strong>📞 Telefonszám formátum:</strong><br>
+                        Használj nemzetközi formátumot: <code>+36 70 123 4567</code>
+                    </p>
+                    
+                    <p>
+                        <strong>🖼️ Logo:</strong><br>
+                        Ajánlott méret: 300x100px vagy 4:1 arány. Átlátszó háttér (PNG) előnyös.
+                    </p>
+                    
+                    <p>
+                        <strong>📧 Email:</strong><br>
+                        Ez a cím jelenik meg a láblécben és a kapcsolat oldalon.
+                    </p>
+                    
+                    <p>
+                        <strong>✓ Ellenőrzés:</strong><br>
+                        Mentés után nézd meg a publikus oldalt, hogy minden helyesen jelenik-e meg.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Megjelenési helyek -->
+            <div class="card--data card-spacing">
+                <h3 class="section-title">
+                    🗺️ Hol jelennek meg?
+                </h3>
+                
+                <div class="schema-display">
+                    <div class="schema-item">
+                        <strong>📄 Lábléc:</strong><br>
+                        Cégnév, telefon, email, cím
+                    </div>
+                    
+                    <div class="schema-item">
+                        <strong>📞 Kapcsolat oldal:</strong><br>
+                        Minden kapcsolati adat
+                    </div>
+                    
+                    <div class="schema-item">
+                        <strong>🔍 Meta adatok:</strong><br>
+                        Schema.org strukturált formában
+                    </div>
+                    
+                    <div class="schema-item">
+                        <strong>🖼️ Logo:</strong><br>
+                        Fejléc, email sablonok
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const csrfToken = '<%= csrfToken %>';
+
+    // Update file name display
+    function updateFileName(input) {
+        const fileNameEl = document.getElementById('file-name-display');
+        if (input.files && input.files[0]) {
+            fileNameEl.textContent = `📄 ${input.files[0].name}`;
+            fileNameEl.classList.remove('hidden', 'text-secondary');
+            fileNameEl.classList.add('text-primary');
+        } else {
+            fileNameEl.classList.add('hidden');
+        }
+    }
+
+    // Upload company logo
+    async function uploadLogo() {
+        const fileInput = document.getElementById('logoFile');
+        
+        if (!fileInput.files || !fileInput.files[0]) {
+            showAlert('warning', '⚠️ Kérlek válassz ki egy képfájlt!');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('companyLogo', fileInput.files[0]);
+        
+        showAlert('info', '⏳ Feltöltés folyamatban...');
+        
+        try {
+            const response = await fetch('/admin/company/upload-logo', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                },
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('success', `✅ ${data.message || 'Céglogó sikeresen feltöltve!'}`);
+                document.getElementById('company.logo').value = data.logoPath;
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showAlert('error', `❌ ${data.message || 'Hiba történt a feltöltés során'}`);
+            }
+        } catch (error) {
+            showAlert('error', `❌ Hálózati hiba: ${error.message}`);
+        }
+    }
+
+    // Delete company logo
+    async function deleteLogo() {
+        const confirmed = await Modal.confirm({
+            title: 'Törlés megerősítése',
+            message: 'Biztosan törölni szeretnéd a céglogót? Ez a művelet nem vonható vissza.',
+            confirmText: 'Törlés',
+            cancelText: 'Mégse'
+        });
+        
+        if (!confirmed) {
+            return;
+        }
+        
+        showAlert('info', '⏳ Törlés folyamatban...');
+        
+        try {
+            const response = await fetch('/admin/company/delete-logo', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('success', `✅ ${data.message || 'Céglogó sikeresen törölve!'}`);
+                document.getElementById('company.logo').value = '';
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showAlert('error', `❌ ${data.message || 'Hiba történt a törlés során'}`);
+            }
+        } catch (error) {
+            showAlert('error', `❌ Hálózati hiba: ${error.message}`);
+        }
+    }
+
+    // Save company settings
+    async function saveCompany() {
+        const form = document.getElementById('company-form');
+        
+        // Collect ALL form fields (including hidden ones and those with form attribute)
+        const settingsObj = {};
+        const inputs = document.querySelectorAll('input[form="company-form"], #company-form input, #company-form select, #company-form textarea');
+        inputs.forEach(input => {
+            if (input.name && input.type !== 'file') {
+                settingsObj[input.name] = input.value || '';
+            }
+        });
+        
+        try {
+            const response = await fetch('/admin/company/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({ settings: settingsObj })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('success', `✅ ${data.message || 'Cégadatok sikeresen mentve!'}`);
+            } else {
+                showAlert('error', `❌ ${data.message || 'Hiba történt a mentés során'}`);
+            }
+        } catch (error) {
+            showAlert('error', `❌ Hálózati hiba: ${error.message}`);
+        }
+    }
+
+    // ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+</script>

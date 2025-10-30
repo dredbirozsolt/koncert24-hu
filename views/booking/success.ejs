@@ -1,0 +1,51 @@
+<%
+  const performer = locals.performer || {};
+  const basePath = locals.basePath || '/';
+%>
+
+<main class="quote-wizard">
+  <div class="quote-wizard__container quote-wizard__container--success">
+    
+    <!-- Success Icon -->
+    <div class="success-icon">
+      <svg width="80" height="80" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+    </div>
+
+    <h1 class="quote-wizard__title quote-wizard__title--success">
+      🎉 Köszönjük, foglalási igényed rögzítettük!
+    </h1>
+
+      <!-- What's Next -->
+      <div class="success-next-steps">
+        <h2>Mi történik ezután?</h2>
+        <ol>
+          <li>📧 Megerősítő e-mailt küldünk a megadott címre</li>
+          <li>📞 Kollégánk 24 órán belül felveszi veled a kapcsolatot</li>
+          <li>📄 Elkészítjük és elküldjük a szerződést</li>
+          <li>✅ Szerződés aláírása után a foglalás végleges</li>
+        </ol>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="success-actions">
+        <a href="<%= basePath %>eloadok" class="btn btn--primary btn--large">
+          🔹 Még egy előadó foglalása
+        </a>
+      </div>
+
+      <!-- Support Info -->
+      <div class="success-support">
+        <p>
+          <strong>Kérdésed van?</strong><br>
+          Írj nekünk: <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a><br>
+          Vagy hívj minket: <a href="tel:<%= contactPhone.replace(/\s/g, '') %>"><%= contactPhone %></a>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Custom CSS for this page -->
+  <link rel="stylesheet" href="<%= basePath %>css/pages/quote-wizard.css">

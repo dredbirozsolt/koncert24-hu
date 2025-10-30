@@ -1,0 +1,153 @@
+
+<section class="section">
+    <div class="max-w-2xl mx-auto">
+        <div class="card">
+            <div class="card__header">
+                <h2 class="card__title">✉️ Email cím módosítása</h2>
+            </div>
+
+            <div class="card__body">
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert--error mb-6">
+                        <div class="alert__icon">⚠️</div>
+                        <div class="alert__content">
+                            <p class="alert__message">
+                                <% if (error === 'invalid_password') { %>
+                                    Hibás jelszó. Kérlek, próbáld újra.
+                                <% } else if (error === 'email_taken') { %>
+                                    Ez az email cím már használatban van.
+                                <% } else if (error === 'same_email') { %>
+                                    Az új email cím nem lehet ugyanaz, mint a jelenlegi.
+                                <% } else if (error === 'validation') { %>
+                                    Kérlek, adj meg érvényes email címet.
+                                <% } else { %>
+                                    <%= error %>
+                                <% } %>
+                            </p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <% if (typeof success !== 'undefined' && success) { %>
+                    <div class="alert alert--success mb-6">
+                        <div class="alert__icon">✅</div>
+                        <div class="alert__content">
+                            <p class="alert__message">
+                                Megerősítő emaileket küldtünk mindkét címre! Kérlek, ellenőrizd a beérkező levelek mappáját és a spam mappát is.
+                            </p>
+                        </div>
+                    </div>
+                <% } %>
+
+                <div class="alert alert--info mb-6">
+                    <div class="alert__icon">🔐</div>
+                    <div class="alert__content">
+                        <p class="alert__message">
+                            <strong>Biztonsági információ:</strong> Az email cím módosítása biztonsági okokból megerősítést igényel. Megerősítő linkeket küldünk mindkét email címre (jelenlegi és új) a biztonság érdekében.
+                        </p>
+                    </div>
+                </div>
+
+                <form method="POST" action="<%= basePath %>auth/profile/change-email" x-data="emailForm()">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    
+                    <div class="form__group">
+                        <label for="currentEmail" class="form__label">
+                            ✉️ Jelenlegi email cím
+                        </label>
+                        <input 
+                            type="email" 
+                            id="currentEmail" 
+                            class="form__input"
+                            value="<%= user.email %>"
+                            disabled
+                        />
+                    </div>
+
+                    <div class="form__group">
+                        <label for="newEmail" class="form__label">
+                            ✉️ Új email cím *
+                        </label>
+                        <input 
+                            type="email" 
+                            id="newEmail" 
+                            name="newEmail" 
+                            class="form__input"
+                            required
+                            autocomplete="email"
+                            placeholder="uj.email@example.com"
+                        />
+                        <span class="form__help">Add meg az új email címed, amelyre módosítani szeretnél</span>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="password" class="form__label">
+                            🔒 Jelenlegi jelszó *
+                        </label>
+                        <div class="form__input-group form__input-group--icon-right">
+                            <input 
+                                x-bind:type="showPassword ? 'text' : 'password'"
+                                id="password" 
+                                name="password" 
+                                class="form__input"
+                                required
+                                autocomplete="current-password"
+                                placeholder="Biztonsági ellenőrzés"
+                            />
+                            <button 
+                                type="button" 
+                                class="form__input-icon-right btn-unstyled text-primary-600 text-sm"
+                                x-on:click="showPassword = !showPassword"
+                                x-text="showPassword ? 'Elrejt' : 'Mutat'"
+                                tabindex="-1"
+                            ></button>
+                        </div>
+                        <span class="form__help">Biztonsági okokból meg kell adnod a jelenlegi jelszavad</span>
+                    </div>
+
+                    <div class="flex gap-3 mt-6">
+                        <button type="submit" class="btn btn--primary flex-1">
+                            📤 Megerősítő emailek küldése
+                        </button>
+                        <a href="<%= basePath %>auth/profile/edit" class="btn btn--outline flex-1">
+                            ← Vissza
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-6">
+            <div class="card__header">
+                <h3 class="card__title">ℹ️ Módosítási folyamat</h3>
+            </div>
+            <div class="card__body">
+                <ol class="list-decimal ml-6 space-y-3">
+                    <li>
+                        <strong>Új email cím megadása</strong> és jelszó megerősítés
+                    </li>
+                    <li>
+                        Megerősítő link küldése a <strong>jelenlegi</strong> email címedre - biztonsági ellenőrzés
+                    </li>
+                    <li>
+                        Megerősítő link küldése az <strong>új</strong> email címedre - létező cím ellenőrzés
+                    </li>
+                    <li>
+                        Mindkét linkre kattintás után az email címed automatikusan módosul
+                    </li>
+                    <li>
+                        Értesítő email mindkét címre a sikeres módosításról
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function emailForm() {
+    return {
+        showPassword: false
+    };
+}
+</script>

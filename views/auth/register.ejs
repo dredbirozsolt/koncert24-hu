@@ -1,0 +1,199 @@
+<!-- Auth register with Design System -->
+
+<section class="section">
+    <div class="max-w-md mx-auto">
+        <div class="card">
+            <div class="card__header text-center">
+                <h1 class="card__title text-2xl">Regisztráció</h1>
+                <p class="text-sm text-gray-600 mt-2">Hozz létre új fiókot</p>
+            </div>
+
+            <div class="card__body">
+                <% if (error) { %>
+                    <div class="alert alert--error mb-6">
+                        <div class="alert__icon">❌</div>
+                        <div class="alert__content">
+                            <% if (error === 'validation' && validationErrors && validationErrors.length > 0) { %>
+                                <p class="alert__message">
+                                    <strong>Kérjük, javítsd a következő hibákat:</strong>
+                                </p>
+                                <ul class="list-disc ml-5 mt-2 space-y-1">
+                                    <% validationErrors.forEach(function(err) { %>
+                                        <li class="text-sm"><%= err.msg %></li>
+                                    <% }); %>
+                                </ul>
+                            <% } else { %>
+                                <p class="alert__message">
+                                    <% if (error === 'validation') { %>
+                                        Kérjük, töltsd ki helyesen az összes mezőt!
+                                    <% } else if (error === 'exists') { %>
+                                        Ez az email cím már regisztrálva van!
+                                    <% } else if (error === 'server') { %>
+                                        Szerver hiba történt. Kérjük, próbáld újra később!
+                                    <% } else { %>
+                                        Regisztrációs hiba!
+                                    <% } %>
+                                </p>
+                            <% } %>
+                        </div>
+                    </div>
+                <% } %>
+
+                <form method="POST" action="<%= basePath %>auth/register">
+                    <!-- 🛡️ CSRF Protection -->
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    
+                    <!-- Honeypot fields - hidden from users, visible to bots -->
+                    <input type="text" name="website" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    <input type="text" name="url" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    <input type="text" name="homepage" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    <input type="text" name="company_name" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    <input type="text" name="phone_number" style="position:absolute;left:-9999px;width:1px;height:1px" tabindex="-1" autocomplete="off">
+                    
+                    <div class="form__group">
+                        <label for="name" class="form__label">👤 Teljes név</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            class="form__input"
+                            required 
+                            autofocus 
+                            autocomplete="name"
+                            placeholder="Teljes név"
+                            value="<%= formData.name || '' %>"
+                        >
+                    </div>
+
+                    <div class="form__group">
+                        <label for="email" class="form__label">📧 Email cím</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form__input"
+                            required 
+                            autocomplete="email"
+                            placeholder="pelda@email.com"
+                            value="<%= formData.email || '' %>"
+                        >
+                    </div>
+
+                    <div class="form__group">
+                        <label for="phone" class="form__label">📱 Telefonszám</label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            name="phone" 
+                            class="form__input"
+                            required 
+                            autocomplete="tel"
+                            placeholder="+36 30 123 4567"
+                            value="<%= formData.phone || '' %>"
+                        >
+                    </div>
+
+                    <div class="form__group">
+                        <label for="password" class="form__label">🔑 Jelszó</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form__input"
+                            required 
+                            autocomplete="new-password"
+                            placeholder="Minimum 8 karakter, kis- és nagybetű, szám"
+                            minlength="8"
+                        >
+                        <span class="form__help">Legalább 8 karakter, tartalmazzon kis- és nagybetűt, valamint számot</span>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="passwordConfirm" class="form__label">🔒 Jelszó megerősítése</label>
+                        <input 
+                            type="password" 
+                            id="passwordConfirm" 
+                            name="passwordConfirm" 
+                            class="form__input"
+                            required 
+                            autocomplete="new-password"
+                            placeholder="Jelszó újra"
+                            minlength="8"
+                        >
+                    </div>
+
+                    <div class="form__group">
+                        <label class="form__label">👥 Ki Ön?</label>
+                        <div class="space-y-4">
+                            <label class="flex items-center gap-4 p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                <input type="radio" id="role-client" name="role" value="client" required 
+                                       <%= (formData.role === 'client' || !formData.role) ? 'checked' : '' %>>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xl">🎉</span>
+                                        <span class="font-semibold">Megrendelő, szervező</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Eseményeket szervezek</p>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-4 p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                                <input type="radio" id="role-performer" name="role" value="performer" required
+                                       <%= formData.role === 'performer' ? 'checked' : '' %>>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xl">🎤</span>
+                                        <span class="font-semibold">Előadó, manager</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Előadó/művész vagyok</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form__group">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="checkbox" id="terms" name="terms" class="mt-1" required>
+                            <span class="text-sm">
+                                Elfogadom a <a href="<%= basePath %>info/adatkezeles" target="_blank" class="text-primary hover:underline">felhasználási feltételeket és az adatkezelési tájékoztatót</a>.
+                            </span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary w-full">
+                        Regisztráció
+                    </button>
+                </form>
+            </div>
+
+            <div class="card__footer border-t text-center">
+                <p class="text-sm text-gray-600">
+                    Már van fiókod? 
+                    <a href="<%= basePath %>auth/login" class="text-primary hover:underline font-semibold">
+                        Jelentkezz be itt!
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Password confirmation validation
+document.getElementById('passwordConfirm').addEventListener('input', function() {
+    const password = document.getElementById('password').value;
+    const confirm = this.value;
+    
+    if (confirm && password !== confirm) {
+        this.setCustomValidity('A jelszavak nem egyeznek');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+
+document.getElementById('password').addEventListener('input', function() {
+    const confirm = document.getElementById('passwordConfirm');
+    if (confirm.value) {
+        confirm.dispatchEvent(new Event('input'));
+    }
+});
+</script>

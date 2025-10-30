@@ -1,0 +1,527 @@
+<!-- Partner Szerkesztése -->
+<div class="page-container">
+  <!-- Header -->
+  <div class="mb-4">
+    <div class="flex justify-end items-center">
+      <a href="/admin/partners" class="btn btn--secondary">
+        ← Vissza
+      </a>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form method="POST" action="/admin/partners<%= isEdit ? '/' + partner.id : '' %>" enctype="multipart/form-data" id="partnerForm">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="admin-two-col">
+      <!-- Bal oldal: Alapadatok -->
+      <div>
+        <!-- Alapadatok -->
+        <div class="card--data">
+          <h3 class="section-title">Alapadatok</h3>
+
+          <div class="form__group">
+            <label for="name">Partner neve *</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              class="form__control"
+              placeholder="pl. Example Szervező Kft."
+              value="<%= partner.name || '' %>"
+              required
+            >
+          </div>
+
+          <div class="form__group">
+            <label for="websiteUrl">Weboldal URL *</label>
+            <input 
+              type="url" 
+              id="websiteUrl" 
+              name="websiteUrl" 
+              class="form__control"
+              placeholder="https://example.com"
+              value="<%= partner.websiteUrl || '' %>"
+              required
+            >
+          </div>
+
+          <div class="form__group">
+            <label for="description">Leírás</label>
+            <textarea 
+              id="description" 
+              name="description" 
+              class="form__control"
+              rows="4"
+              placeholder="Rövid leírás a partnerről..."
+            ><%= partner.description || '' %></textarea>
+          </div>
+        </div>
+
+        <!-- Backlink -->
+        <div class="card--data mt-6">
+          <h3 class="section-title">Backlink Információk</h3>
+
+          <div class="form__group">
+            <label for="backlinkUrl">Backlink URL</label>
+            <div class="flex gap-2">
+              <input 
+                type="url" 
+                id="backlinkUrl" 
+                name="backlinkUrl" 
+                class="form__control flex-1"
+                placeholder="https://partner.com/visszahivatkozas"
+                value="<%= partner.backlinkUrl || '' %>"
+              >
+              <% if (isEdit) { %>
+                <button 
+                  type="button" 
+                  class="btn btn--secondary whitespace-nowrap" 
+                  onclick="verifyBacklink()" 
+                  id="verifyBtn"
+                  title="Backlink ellenőrzése"
+                >
+                  <span id="verifyBtnText"><%= partner.lastVerified ? 'Újraellenőrzés' : 'Ellenőrzés' %></span>
+                </button>
+              <% } %>
+            </div>
+            <small class="form__hint">Az oldal URL-je, ahol a backlink található</small>
+          </div>
+
+          <% if (isEdit) { %>
+            <div 
+              id="verifyStatus" 
+              class="p-3 rounded-lg mt-3 <%= partner.isVerified ? 'alert-success' : 'alert-error' %> <%= partner.isVerified || partner.lastVerified ? '' : 'hidden' %>"
+            >
+              <div class="flex justify-between items-center">
+                <span id="verifyStatusText">
+                  <%= partner.isVerified ? '✅ Backlink ellenőrizve - Megtalálva!' : '❌ Backlink nem található' %>
+                </span>
+                <% if (partner.lastVerified) { %>
+                  <small class="opacity-80" id="verifyTimestamp">
+                    <%= new Date(partner.lastVerified).toLocaleString('hu-HU') %>
+                  </small>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
+
+          <div class="form__grid-1-1 <%= isEdit && (partner.isVerified || partner.lastVerified) ? 'mt-4' : '' %>">
+            <div class="form__group">
+              <label for="domainAuthority">Domain Authority</label>
+              <input 
+                type="number" 
+                id="domainAuthority" 
+                name="domainAuthority" 
+                class="form__control"
+                placeholder="0-100"
+                value="<%= partner.domainAuthority || '' %>"
+                min="0"
+                max="100"
+              >
+            </div>
+
+            <div class="form__group">
+              <label for="pageAuthority">Page Authority</label>
+              <input 
+                type="number" 
+                id="pageAuthority" 
+                name="pageAuthority" 
+                class="form__control"
+                placeholder="0-100"
+                value="<%= partner.pageAuthority || '' %>"
+                min="0"
+                max="100"
+              >
+            </div>
+          </div>
+
+          <div class="form__group">
+            <div class="form__switch-row">
+              <span class="form__switch-row-label">Backlink ellenőrizve</span>
+              <input 
+                type="checkbox" 
+                class="form-switch-input"
+                name="isVerified" 
+                id="isVerified"
+                <%= partner.isVerified ? 'checked' : '' %>
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobb oldal: Beállítások és Logo -->
+      <div>
+        <!-- Beállítások -->
+        <div class="card--data">
+          <h3 class="section-title">Beállítások</h3>
+
+          <div class="form__group">
+            <label for="categoryId">Kategória *</label>
+            <select id="categoryId" name="categoryId" class="form__control" required>
+              <option value="">-- Válassz kategóriát --</option>
+              <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                <% categories.forEach(cat => { %>
+                  <option 
+                    value="<%= cat.id %>" 
+                    <%= partner.categoryId == cat.id ? 'selected' : '' %>
+                  >
+                    <% if (cat.icon) { %><i class="<%= cat.icon %>"></i> <% } %>
+                    <%= cat.name %>
+                  </option>
+                <% }); %>
+              <% } %>
+            </select>
+            <small class="form__hint">
+              <a href="/admin/partners/categories" target="_blank">
+                ⚙️ Kategóriák kezelése
+              </a>
+            </small>
+          </div>
+
+          <div class="form__group">
+            <label for="partnershipType">Típus *</label>
+            <select id="partnershipType" name="partnershipType" class="form__control" required>
+              <option value="organic" <%= !partner.partnershipType || partner.partnershipType === 'organic' ? 'selected' : '' %>>Organikus</option>
+              <option value="reciprocal" <%= partner.partnershipType === 'reciprocal' ? 'selected' : '' %>>Kölcsönös</option>
+              <option value="sponsored" <%= partner.partnershipType === 'sponsored' ? 'selected' : '' %>>Szponzorált</option>
+              <option value="affiliate" <%= partner.partnershipType === 'affiliate' ? 'selected' : '' %>>Affiliate</option>
+            </select>
+          </div>
+
+          <div class="form__group">
+            <label for="status">Státusz *</label>
+            <select id="status" name="status" class="form__control" required>
+              <option value="pending" <%= !partner.status || partner.status === 'pending' ? 'selected' : '' %>>Függőben</option>
+              <option value="active" <%= partner.status === 'active' ? 'selected' : '' %>>Aktív</option>
+              <option value="inactive" <%= partner.status === 'inactive' ? 'selected' : '' %>>Inaktív</option>
+              <option value="rejected" <%= partner.status === 'rejected' ? 'selected' : '' %>>Elutasítva</option>
+            </select>
+          </div>
+
+          <div class="form__group">
+            <label for="displayOrder">Sorrend</label>
+            <input 
+              type="number" 
+              id="displayOrder" 
+              name="displayOrder" 
+              class="form__control"
+              placeholder="0"
+              value="<%= partner.displayOrder || 0 %>"
+              min="0"
+            >
+            <small class="form__hint">Alacsonyabb szám = előrébb jelenik meg</small>
+          </div>
+
+          <div class="form__group mb-0">
+            <div class="form__switch-row">
+              <span class="form__switch-row-label">Főoldalon megjelenítés</span>
+              <input type="checkbox" 
+                     class="form-switch-input"
+                     name="showOnHomepage" 
+                     <%= (isEdit && partner.showOnHomepage) ? 'checked' : '' %>>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logo -->
+        <div class="card--data mt-6">
+          <h3 class="section-title">Logo</h3>
+
+          <!-- Fájl feltöltés -->
+          <div class="form__group">
+            <label for="logo">Logo feltöltése</label>
+            <div class="flex gap-3 items-center flex-wrap">
+              <input 
+                type="file" 
+                id="logo" 
+                name="logo" 
+                class="hidden"
+                accept="image/*"
+                onchange="previewLogo(event)"
+              >
+              <button type="button" class="btn btn--secondary" onclick="document.getElementById('logo').click()">
+                📤 Fájl kiválasztása
+              </button>
+            </div>
+            <div id="logo-file-name" class="text-secondary text-sm italic mt-2">
+              Nincs fájl kiválasztva
+            </div>
+            <small class="form__hint">JPG, PNG, GIF, SVG, WebP (max 2MB)</small>
+          </div>
+
+          <!-- Jelenlegi logo -->
+          <% if (partner.logo) { %>
+            <div id="currentLogo" class="mt-4 text-center">
+              <div class="text-sm text-secondary mb-2">
+                Jelenlegi logo:
+              </div>
+              <img 
+                src="<%= partner.logo %>" 
+                alt="Logo" 
+                class="max-w-150 max-h-150 border-2 border-base rounded-lg p-2 bg-white"
+              >
+              <div class="mt-3">
+                <button 
+                  type="button" 
+                  onclick="deleteCurrentLogo()" 
+                  class="btn btn-error"
+                >
+                  🗑️ Logo eltávolítása
+                </button>
+              </div>
+            </div>
+          <% } %>
+
+          <!-- Előnézet -->
+          <div id="logoPreview" class="hidden mt-4 text-center">
+            <div class="text-sm text-secondary mb-2">
+              Új logo előnézet:
+            </div>
+            <img 
+              id="logoPreviewImg" 
+              src="" 
+              alt="Preview" 
+              class="max-w-150 max-h-150 border-2 rounded-lg p-2 bg-white border-primary"
+            >
+            <div class="mt-2">
+              <button 
+                type="button" 
+                onclick="removeLogo()" 
+                class="btn btn--secondary text-sm py-2 px-4"
+              >
+                ✖️ Mégse
+              </button>
+            </div>
+          </div>
+
+          <!-- Logo URL alternatíva -->
+          <div class="form__group mt-4 mb-0">
+            <label for="logoUrl">Vagy Logo URL</label>
+            <input 
+              type="url" 
+              id="logoUrl" 
+              name="logoUrl" 
+              class="form__control"
+              placeholder="https://example.com/logo.png"
+              value="<%= partner.logo && partner.logo.startsWith('http') ? partner.logo : '' %>"
+            >
+            <small class="form__hint">Ha URL-t adsz meg, nem kell fájlt feltölteni</small>
+          </div>
+        </div>
+
+        <!-- Műveletek -->
+        <div class="card--data mt-6">
+          <button type="submit" class="btn btn--primary btn--block mb-2">
+            💾 <%= isEdit ? 'Mentés' : 'Létrehozás' %>
+          </button>
+
+          <a href="/admin/partners" class="btn btn--secondary btn--block">
+            ✖️ Mégse
+          </a>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+// Logo előnézet
+function previewLogo(event) {
+  const file = event.target.files[0];
+  const fileNameDiv = document.getElementById('logo-file-name');
+  
+  if (file) {
+    // Fájlnév megjelenítése
+    fileNameDiv.textContent = '📄 ' + file.name;
+    fileNameDiv.classList.remove('text-secondary', 'italic');
+    fileNameDiv.classList.add('text-primary');
+    
+    // Előnézet betöltése
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const previewImg = document.getElementById('logoPreviewImg');
+      const logoPreview = document.getElementById('logoPreview');
+      const currentLogo = document.getElementById('currentLogo');
+      
+      previewImg.src = e.target.result;
+      logoPreview.classList.remove('hidden');
+      
+      if (currentLogo) {
+        currentLogo.classList.add('hidden');
+      }
+    };
+    reader.readAsDataURL(file);
+  } else {
+    // Ha nincs fájl, visszaállítjuk az alapértelmezett szöveget
+    fileNameDiv.textContent = 'Nincs fájl kiválasztva';
+    fileNameDiv.classList.remove('text-primary');
+    fileNameDiv.classList.add('text-secondary', 'italic');
+  }
+}
+
+// Logo eltávolítása
+function removeLogo() {
+  const logoInput = document.getElementById('logo');
+  const logoPreview = document.getElementById('logoPreview');
+  const currentLogo = document.getElementById('currentLogo');
+  const fileNameDiv = document.getElementById('logo-file-name');
+  
+  logoInput.value = '';
+  logoPreview.classList.add('hidden');
+  
+  // Fájlnév visszaállítása alapértelmezettre
+  fileNameDiv.textContent = 'Nincs fájl kiválasztva';
+  fileNameDiv.classList.remove('text-primary');
+  fileNameDiv.classList.add('text-secondary', 'italic');
+  
+  if (currentLogo) {
+    currentLogo.classList.remove('hidden');
+  }
+}
+
+// Jelenlegi logo törlése
+function deleteCurrentLogo() {
+  if (!confirm('Biztosan törölni szeretnéd a jelenlegi logót?')) {
+    return;
+  }
+  
+  const currentLogo = document.getElementById('currentLogo');
+  const fileNameDiv = document.getElementById('logo-file-name');
+  
+  // Jelenlegi logo elrejtése
+  if (currentLogo) {
+    currentLogo.classList.add('hidden');
+  }
+  
+  // Hidden input hozzáadása a törlés jelzésére
+  const deleteInput = document.createElement('input');
+  deleteInput.type = 'hidden';
+  deleteInput.name = 'deleteLogo';
+  deleteInput.value = 'true';
+  document.querySelector('form').appendChild(deleteInput);
+  
+  // Fájlnév frissítése
+  fileNameDiv.textContent = 'Logo törölve - mentés után véglegesítve';
+  fileNameDiv.classList.remove('text-secondary', 'italic');
+  fileNameDiv.classList.add('text-error');
+}
+
+<% if (isEdit) { %>
+// Backlink ellenőrzés
+async function verifyBacklink() {
+  const verifyBtn = document.getElementById('verifyBtn');
+  const verifyBtnText = document.getElementById('verifyBtnText');
+  const verifyStatus = document.getElementById('verifyStatus');
+  const verifyStatusText = document.getElementById('verifyStatusText');
+  const verifyTimestamp = document.getElementById('verifyTimestamp');
+  const backlinkUrl = document.getElementById('backlinkUrl').value;
+  
+  if (!backlinkUrl) {
+    alert('Kérlek add meg a backlink URL-t!');
+    return;
+  }
+  
+  // Gomb letiltása ellenőrzés közben
+  verifyBtn.disabled = true;
+  verifyBtnText.innerHTML = 'Ellenőrzés...';
+  document.getElementById('verifyBtnIcon').textContent = '⏳';
+  
+  try {
+    const response = await fetch('/admin/partners/<%= partner.id %>/verify-backlink', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    const result = await response.json();
+    
+    // Státusz megjelenítése
+    verifyStatus.classList.remove('hidden');
+    
+    if (result.success && result.isVerified) {
+      verifyStatus.style.background = 'var(--color-success-100)';
+      verifyStatus.style.color = 'var(--color-success-900)';
+      verifyStatusText.innerHTML = '✓ ✅ Backlink ellenőrizve - Megtalálva!';
+      document.getElementById('verifyBtnIcon').textContent = '🔄';
+      verifyBtnText.innerHTML = 'Újraellenőrzés';
+    } else {
+      verifyStatus.style.background = 'var(--color-error-50)';
+      verifyStatus.style.color = 'var(--color-error-800)';
+      verifyStatusText.innerHTML = '✖️ ❌ ' + (result.error || 'Backlink nem található');
+      document.getElementById('verifyBtnIcon').textContent = '🔄';
+      verifyBtnText.innerHTML = 'Újraellenőrzés';
+    }
+    
+    // Timestamp frissítése
+    const now = new Date().toLocaleString('hu-HU');
+    if (verifyTimestamp) {
+      verifyTimestamp.textContent = now;
+    } else {
+      verifyStatus.querySelector('div').innerHTML += `<small class="opacity-80" id="verifyTimestamp">${now}</small>`;
+    }
+    
+  } catch (error) {
+    console.error('Hiba:', error);
+    alert('Hiba történt az ellenőrzés során');
+    verifyBtnText.innerHTML = 'Ellenőrzés';
+  } finally {
+    // Gomb visszaállítása
+    verifyBtn.disabled = false;
+  }
+}
+<% } %>
+
+// Partner form submit handler
+document.getElementById('partnerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Mentés...';
+    
+    try {
+        const formData = new FormData(form);
+        
+        // Relatív URL használata (form.action absolute URL-t ad vissza amit a browser generál)
+        const actionUrl = form.getAttribute('action');
+        
+        const response = await fetch(actionUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-Token': '<%= csrfToken %>',
+                'Accept': 'application/json'
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            Modal.alert({
+                title: 'Siker',
+                message: data.message || 'Partner sikeresen mentve!',
+                type: 'success'
+            });
+            window.location.href = '/admin/partners';
+        } else {
+            throw new Error(data.message || 'Hiba történt a mentés során');
+        }
+    } catch (error) {
+        Modal.alert({
+            title: 'Hiba',
+            message: '❌ Hiba: ' + error.message,
+            type: 'error'
+        });
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+});
+</script>
+
+

@@ -1,0 +1,224 @@
+/**
+ * Loading & Spinner Components
+ * Consistent loading states across the application
+ */
+
+/* ==========================================
+   LOADING OVERLAY
+   ========================================== */
+
+.loading__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-overlay);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.loading__overlay--active {
+  display: flex;
+}
+
+.loading__overlay--fixed {
+  position: fixed;
+}
+
+/* ==========================================
+   SPINNER
+   ========================================== */
+
+.loading__spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--bg-white-soft);
+  border-top-color: var(--color-white);
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Spinner Sizes */
+.loading__spinner--sm {
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+}
+
+.loading__spinner--lg {
+  width: 64px;
+  height: 64px;
+  border-width: 5px;
+}
+
+.loading__spinner--xl {
+  width: 80px;
+  height: 80px;
+  border-width: 6px;
+}
+
+/* ==========================================
+   INLINE LOADING INDICATOR
+   ========================================== */
+
+.loading__indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.loading__indicator .loading__spinner {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+  border-color: var(--border-base);
+  border-top-color: var(--color-primary-600);
+}
+
+/* ==========================================
+   LOADING TEXT
+   ========================================== */
+
+.loading__text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.loading__text::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-base);
+  border-top-color: var(--color-primary-600);
+  border-radius: var(--radius-full);
+  animation: spin 0.6s linear infinite;
+}
+
+/* ==========================================
+   BUTTON LOADING STATE
+   ========================================== */
+
+.btn--loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn--loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 0.6s linear infinite;
+  opacity: 0.7;
+}
+
+/* ==========================================
+   SKELETON PULSE (for skeleton.css companion)
+   ========================================== */
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading__pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==========================================
+   PROGRESS BAR
+   ========================================== */
+
+.loading-progress {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.loading-progress__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--color-primary-600);
+  border-radius: var(--radius-full);
+  transition: width var(--duration-300) var(--ease-out);
+}
+
+/* Indeterminate Progress */
+.loading-progress--indeterminate .loading-progress__bar {
+  width: 30%;
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+
+/* Dark Mode Theme Selector */
+  .loading__indicator .loading__spinner {
+    border-color: var(--border-strong);
+    border-top-color: var(--color-primary-400);
+  }
+
+  .loading__text::before {
+    border-color: var(--border-strong);
+    border-top-color: var(--color-primary-400);
+  }
+}
+
+[data-theme="dark"] {
+  .loading__indicator .loading__spinner {
+    border-color: var(--border-strong);
+    border-top-color: var(--color-primary-400);
+  }
+
+  .loading__text::before {
+    border-color: var(--border-strong);
+    border-top-color: var(--color-primary-400);
+  }
+}

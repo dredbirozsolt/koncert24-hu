@@ -1,0 +1,1679 @@
+<!-- Quote Request Form -->
+<div class="container">
+    <!-- Back Button -->
+    <div class="quote-form__back-btn-wrapper">
+        <a href="javascript:history.back()" class="btn btn--secondary">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="btn__icon">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Vissza
+        </a>
+    </div>
+
+    <div class="quote-header">
+        <% if (performer) { %>
+            <!-- Expanded Performer Card -->
+            <div class="performer__card-expanded">
+                <% if (performer.imageUrl) { %>
+                    <div class="performer__image-large">
+                        <img src="<%= performer.imageUrl %>" alt="<%= performer.name %>" class="performer-detail__photo-large">
+                    </div>
+                    <% } %>
+
+                        <div class="performer-info-booking">
+                            <h1 class="performer__name-large">
+                                <%= performer.name %>
+                            </h1>
+
+                            <!-- Performer Data Block -->
+                            <div class="performer-detail__data-block">
+                                <h2 class="performer-detail__block-title">Előadó adatok</h2>
+
+                                <div class="performer-detail__data-item">
+                                    <span class="performer-detail__data-label">Kategória:</span>
+                                    <span class="performer-detail__data-value category-value">
+                                        <%= performer.getCategoryDisplayName() %>
+                                    </span>
+                                </div>
+
+                                <% if (performer.performanceType) { %>
+                                    <div class="performer-detail__data-item">
+                                        <span class="performer-detail__data-label">Előadás típusa:</span>
+                                        <span class="performer-detail__data-value">
+                                            <%= performer.performanceType %>
+                                        </span>
+                                    </div>
+                                    <% } %>
+
+                                        <% if (performer.duration !==null && performer.duration !==undefined) { %>
+                                            <div class="performer-detail__data-item">
+                                                <span class="performer-detail__data-label">Előadás hossza:</span>
+                                                <span class="performer-detail__data-value">
+                                                    <%= performer.duration %> perc
+                                                </span>
+                                            </div>
+                                            <% } %>
+
+                                                <% if (performer.price) { %>
+                                                    <div class="performer-detail__data-item">
+                                                        <span class="performer-detail__data-label">Nettó ár:</span>
+                                                        <span class="performer-detail__data-value price-value">
+                                                            <%= new Intl.NumberFormat('hu-HU').format(performer.price)
+                                                                %> Ft
+                                                        </span>
+                                                    </div>
+                                                    <% } %>
+
+                                                        <% if (performer.travelCost !==null && performer.travelCost
+                                                            !==undefined && performer.travelCost> 0) { %>
+                                                            <div class="performer-detail__data-item">
+                                                                <span class="performer-detail__data-label">Utazási költség:</span>
+                                                                <span class="performer-detail__data-value">
+                                                                    <%= new
+                                                                        Intl.NumberFormat('hu-HU').format(performer.travelCost)
+                                                                        %> Ft/km
+                                                                </span>
+                                                            </div>
+                                                            <% } %>
+                            </div>
+                        </div>
+            </div>
+
+            <!-- Description Section (if exists) -->
+            <% if (performer.description) { %>
+                <div class="description-card">
+                    <h2 class="description-title">Előladó leírása</h2>
+                    <div class="description-content">
+                        <%- performer.description %>
+                    </div>
+                </div>
+                <% } %>
+                    <% } %>
+    </div>
+
+    <div class="quote-form-container">
+        <form method="POST" class="quote-form" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="performerId" value="<%= performer ? performer.id : '' %>">
+            <input type="hidden" name="source" value="<%= formData.source || 'direct' %>">
+
+            <!-- Pre-filled Event Details -->
+            <% if (isFromHomepage) { %>
+                <div class="form-section">
+                    <h3 class="form-section-title">A kiválasztott rendezvény adatai</h3>
+
+                    <div class="prefilled-data">
+                        <% if (formData.eventDate) { %>
+                            <div class="prefilled-item">
+                                <span class="prefilled-label">📅 Esemény dátuma:</span>
+                                <span class="prefilled-value">
+                                    <%= new Date(formData.eventDate).toLocaleDateString('hu-HU', { year: 'numeric' ,
+                                        month: 'long' , day: 'numeric' }) %>
+                                </span>
+                            </div>
+                            <% } %>
+
+                                <% if (formData.eventTime) { %>
+                                    <div class="prefilled-item">
+                                        <span class="prefilled-label">🕐 Kezdési időpont:</span>
+                                        <span class="prefilled-value">
+                                            <%= formData.eventTime %>
+                                        </span>
+                                    </div>
+                                    <% } %>
+
+                                        <% if (formData.eventLocation) { %>
+                                            <div class="prefilled-item">
+                                                <span class="prefilled-label">📍 Helyszín:</span>
+                                                <span class="prefilled-value">
+                                                    <%= formData.eventLocation %>
+                                                </span>
+                                            </div>
+                                            <% } %>
+
+                                                <% if (formData.eventType) { %>
+                                                    <div class="prefilled-item">
+                                                        <span class="prefilled-label">🎪 Műsor típus:</span>
+                                                        <span class="prefilled-value">
+                                                            <% if (formData.eventType==='outdoor_free' ) { %>
+                                                                Nyilvános ingyenes rendezvény szabadtéren<% } %>
+                                                                    <% if (formData.eventType==='outdoor_paid' ) { %>
+                                                                        Nyilvános belépőjegyes rendezvény
+                                                                        szabadtéren<% } %>
+                                                                            <% if (formData.eventType==='indoor_free' )
+                                                                                { %>Nyilvános ingyenes rendezvény
+                                                                                zárt helyiségben<% } %>
+                                                                                    <% if
+                                                                                        (formData.eventType==='indoor_paid'
+                                                                                        ) { %>Nyilvános belépőjegyes
+                                                                                        rendezvény zárt helyiségben
+                                                                                        <% } %>
+                                                                                            <% if
+                                                                                                (formData.eventType==='private_personal'
+                                                                                                ) { %>Zártkörű
+                                                                                                magánrendezvény<% } %>
+                                                                                                    <% if
+                                                                                                        (formData.eventType==='private_corporate'
+                                                                                                        ) { %>
+                                                                                                        Zártkörű
+                                                                                                        céges
+                                                                                                        rendezvény<% }
+                                                                                                            %>
+                                                        </span>
+                                                    </div>
+                                                    <% } %>
+                    </div>
+
+                    <!-- Hidden inputs to preserve data -->
+                    <input type="hidden" name="eventDate" value="<%= formData.eventDate || '' %>">
+                    <input type="hidden" name="eventTime" value="<%= formData.eventTime || '' %>">
+                    <input type="hidden" name="eventLocation" value="<%= formData.eventLocation || '' %>">
+                    <input type="hidden" name="eventType" value="<%= formData.eventType || '' %>">
+                </div>
+                <% } %>
+
+                    <!-- Additional Event Details -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Kiegészítő rendezvény adatok</h3>
+
+                        <!-- Event Start Time -->
+                        <% if (!isFromHomepage || !formData.eventTime) { %>
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="eventStartTime" class="form__label required">Hány órakor kezdődjön az esemény?</label>
+                                <input type="time" name="eventStartTime" id="eventStartTime" class="form__input"
+                                    value="<%= formData.eventStartTime || '' %>" required>
+                                <% if (errors.find(err=> err.param === 'eventStartTime')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'eventStartTime').msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label class="form__checkbox-wrapper">
+                                    <input type="checkbox" name="timeNotFixed" id="timeNotFixed" class="form__checkbox" 
+                                        value="true" <%= formData.timeNotFixed ? 'checked' : '' %>>
+                                    <span class="form__checkbox-label">Még nem fix az időpont</span>
+                                </label>
+                            </div>
+                        </div>
+                        <% } %>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="eventAddress" class="form__label required">Helyszín pontos címe (utca,
+                                    házszám)</label>
+                                <input type="text" name="eventAddress" id="eventAddress" class="form__input"
+                                    value="<%= formData.eventAddress || '' %>" required maxlength="500"
+                                    placeholder="Pontos cím megadása">
+                                <% if (errors.find(err=> err.param === 'eventAddress')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'eventAddress').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="expectedGuests" class="form__label required">Várható vendégszám</label>
+                                <input type="number" name="expectedGuests" id="expectedGuests" class="form__input"
+                                    value="<%= formData.expectedGuests || '' %>" required min="1" max="10000"
+                                    placeholder="Várható létszám">
+                                <% if (errors.find(err=> err.param === 'expectedGuests')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'expectedGuests').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="eventName" class="form__label required">Rendezvény elnevezése</label>
+                                <input type="text" name="eventName" id="eventName" class="form__input"
+                                    value="<%= formData.eventName || '' %>" required maxlength="255"
+                                    placeholder="pl. Jubileumi ünnepség, Családi nap">
+                                <% if (errors.find(err=> err.param === 'eventName')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'eventName').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="eventCategory" class="form__label required">Esemény típusa</label>
+                                <select name="eventCategory" id="eventCategory" class="form__select" required>
+                                    <option value="">Válassz esemény típust</option>
+                                    <option value="wedding" <%=formData.eventCategory==='wedding' ? 'selected' : '' %>
+                                        >Esküvő</option>
+                                    <option value="corporate" <%=formData.eventCategory==='corporate' ? 'selected' : ''
+                                        %>>Céges rendezvény</option>
+                                    <option value="birthday" <%=formData.eventCategory==='birthday' ? 'selected' : '' %>
+                                        >Születésnap</option>
+                                    <option value="festival" <%=formData.eventCategory==='festival' ? 'selected' : '' %>
+                                        >Fesztivál</option>
+                                    <option value="private" <%=formData.eventCategory==='private' ? 'selected' : '' %>
+                                        >Magánrendezvény</option>
+                                    <option value="community" <%=formData.eventCategory==='community' ? 'selected' : ''
+                                        %>>Falunap, városnap, családi nap</option>
+                                    <option value="other" <%=formData.eventCategory==='other' ? 'selected' : '' %>
+                                        >Egyéb</option>
+                                </select>
+                                <% if (errors.find(err=> err.param === 'eventCategory')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'eventCategory').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Kapcsolattartó adatok</h3>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="contactName" class="form__label required">Teljes név</label>
+                                <input type="text" name="contactName" id="contactName" class="form__input"
+                                    value="<%= formData.contactName || '' %>" required maxlength="255"
+                                    placeholder="Vezetéknév Keresztnév">
+                                <% if (errors.find(err=> err.param === 'contactName')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'contactName').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group col-md-6">
+                                <label for="contactEmail" class="form__label required">E-mail cím</label>
+                                <input type="email" name="contactEmail" id="contactEmail" class="form__input"
+                                    value="<%= formData.contactEmail || '' %>" required maxlength="255"
+                                    placeholder="pelda@email.hu">
+                                <% if (errors.find(err=> err.param === 'contactEmail')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'contactEmail').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <div class="form__group col-md-6">
+                                <label for="contactPhone" class="form__label required">Telefonszám</label>
+                                <input type="tel" name="contactPhone" id="contactPhone" class="form__input"
+                                    value="<%= formData.contactPhone || '' %>" required maxlength="20"
+                                    placeholder="+36 30 123 4567">
+                                <% if (errors.find(err=> err.param === 'contactPhone')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'contactPhone').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contract Details -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Szerződéskötéshez szükséges adatok</h3>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="companyName" class="form__label required">Cégnév / Megrendelő
+                                    neve</label>
+                                <input type="text" name="companyName" id="companyName" class="form__input"
+                                    value="<%= formData.companyName || '' %>" required maxlength="255"
+                                    placeholder="Cégnév vagy magánszemély neve">
+                                <% if (errors.find(err=> err.param === 'companyName')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'companyName').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="companyAddress" class="form__label required">Székhely / Állandó
+                                    lakcím</label>
+                                <textarea name="companyAddress" id="companyAddress" class="form__textarea" required
+                                    maxlength="500"
+                                    placeholder="Teljes cím (irányítószám, város, utca, házszám)"><%= formData.companyAddress || '' %></textarea>
+                                <% if (errors.find(err=> err.param === 'companyAddress')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'companyAddress').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group col-md-6">
+                                <label for="taxNumber" class="form__label required">Adószám / Adóazonosító
+                                    jel</label>
+                                <input type="text" name="taxNumber" id="taxNumber" class="form__input"
+                                    value="<%= formData.taxNumber || '' %>" required maxlength="50"
+                                    placeholder="12345678-1-23">
+                                <% if (errors.find(err=> err.param === 'taxNumber')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'taxNumber').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <div class="form__group col-md-6">
+                                <label for="registrationNumber"
+                                    class="form__label required">Nyilvántartási/cégjegyzékszám</label>
+                                <input type="text" name="registrationNumber" id="registrationNumber" class="form__input"
+                                    value="<%= formData.registrationNumber || '' %>" required maxlength="50"
+                                    placeholder="01-09-123456">
+                                <% if (errors.find(err=> err.param === 'registrationNumber')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'registrationNumber').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="representative" class="form__label required">Képviselő neve / Anyja
+                                    neve</label>
+                                <input type="text" name="representative" id="representative" class="form__input"
+                                    value="<%= formData.representative || '' %>" required maxlength="255"
+                                    placeholder="Céges megrendelő esetén képviselő neve, magánszemély esetén anyja neve">
+                                <% if (errors.find(err=> err.param === 'representative')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'representative').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group col-md-6">
+                                <label for="onSiteContactName" class="form__label required">Kapcsolattartó neve
+                                    (rendezvény napján)</label>
+                                <input type="text" name="onSiteContactName" id="onSiteContactName" class="form__input"
+                                    value="<%= formData.onSiteContactName || '' %>" required maxlength="255"
+                                    placeholder="Teljes név">
+                                <% if (errors.find(err=> err.param === 'onSiteContactName')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'onSiteContactName').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <div class="form__group col-md-6">
+                                <label for="onSiteContactPhone" class="form__label required">Telefonszám (rendezvény
+                                    napján)</label>
+                                <input type="tel" name="onSiteContactPhone" id="onSiteContactPhone" class="form__input"
+                                    value="<%= formData.onSiteContactPhone || '' %>" required maxlength="20"
+                                    placeholder="+36 30 123 4567">
+                                <% if (errors.find(err=> err.param === 'onSiteContactPhone')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'onSiteContactPhone').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group col-md-6">
+                                <label for="technicalContactName" class="form__label required">Technikai
+                                    kapcsolattartó neve</label>
+                                <input type="text" name="technicalContactName" id="technicalContactName"
+                                    class="form__input" value="<%= formData.technicalContactName || '' %>" required
+                                    maxlength="255" placeholder="Technikus neve">
+                                <% if (errors.find(err=> err.param === 'technicalContactName')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'technicalContactName').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                            <div class="form__group col-md-6">
+                                <label for="technicalContactPhone" class="form__label required">Technikai
+                                    kapcsolattartó telefonszáma</label>
+                                <input type="tel" name="technicalContactPhone" id="technicalContactPhone"
+                                    class="form__input" value="<%= formData.technicalContactPhone || '' %>" required
+                                    maxlength="20" placeholder="+36 30 123 4567">
+                                <% if (errors.find(err=> err.param === 'technicalContactPhone')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'technicalContactPhone').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="technicalContactEmail" class="form__label required">Technikai
+                                    kapcsolattartó e-mail címe</label>
+                                <input type="email" name="technicalContactEmail" id="technicalContactEmail"
+                                    class="form__input" value="<%= formData.technicalContactEmail || '' %>" required
+                                    maxlength="255" placeholder="technikus@email.hu">
+                                <% if (errors.find(err=> err.param === 'technicalContactEmail')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'technicalContactEmail').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="invoiceEmail" class="form__label required">E-mail cím a számla
+                                    küldéséhez</label>
+                                <input type="email" name="invoiceEmail" id="invoiceEmail" class="form__input"
+                                    value="<%= formData.invoiceEmail || '' %>" required maxlength="255"
+                                    placeholder="szamla@ceg.hu">
+                                <% if (errors.find(err=> err.param === 'invoiceEmail')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'invoiceEmail').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Megjegyzés</h3>
+
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label for="message" class="form__label required">Egyéb megjegyzések, kérések</label>
+                                <textarea name="message" id="message" class="form__textarea" required maxlength="2000"
+                                    rows="4"
+                                    placeholder="Itt írhatja le egyéb kéréseit, megjegyzéseit..."><%= formData.message || '' %></textarea>
+                                <% if (errors.find(err=> err.param === 'message')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'message').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Agreement -->
+                    <div class="form-section">
+                        <div class="form-row">
+                            <div class="form__group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="privacy" value="accepted" required
+                                        <%=formData.privacy==='accepted' ? 'checked' : '' %>>
+                                    <span class="checkbox-text">
+                                        Elfogadom az <a href="<%= basePath %>info/adatkezeles"
+                                            target="_blank">adatkezelési tájékoztatót</a>
+                                        és hozzájárulok személyes adataim kezeléséhez az ajánlat elkészítése
+                                        céljából.
+                                    </span>
+                                </label>
+                                <% if (errors.find(err=> err.param === 'privacy')) { %>
+                                    <div class="form__error">
+                                        <%= errors.find(err=> err.param === 'privacy').msg %>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="javascript:history.back()" class="btn btn--secondary btn-large">
+                            <svg viewBox="0 0 20 20" fill="currentColor" class="btn__icon">
+                                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Vissza
+                        </a>
+                        <button type="submit" class="btn btn--primary btn-large">
+                            <span class="btn-icon">📋</span>
+                            Ajánlatkérés elküldése
+                        </button>
+                    </div>
+        </form>
+    </div>
+</div>
+<div class="mb-8"></div>
+</div>
+
+<style>
+    /* Quote Form Styles */
+    .quote-header {
+        text-align: center;
+        margin-bottom: var(--space-4);
+    }
+
+    /* Performer Card Expanded - Same as detail page */
+    .performer-card-expanded {
+        background: var(--bg-surface);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-6);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-base);
+        text-align: center;
+        margin-top: var(--space-6);
+    }
+
+    .performer-image-large {
+        margin: 0 auto var(--space-6);
+        text-align: center;
+        display: flex;
+        justify-content: center;
+    }
+
+    .performer-photo-large {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-xl);
+        border: 3px solid var(--color-primary-600);
+    }
+
+    .performer-name-large {
+        font-size: var(--text-2xl);
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: var(--space-6);
+        line-height: 1.2;
+    }
+
+    /* Performer Data Block */
+    .performer-data-block {
+        background: var(--bg-secondary);
+        border-radius: var(--radius-xl);
+        padding: var(--space-6);
+        margin-bottom: var(--space-6);
+        text-align: left;
+    }
+
+    .data-block-title {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+        text-align: center;
+    }
+
+    .data-item {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        margin-bottom: var(--space-3);
+        padding-bottom: var(--space-3);
+        border-bottom: 1px solid var(--border-base);
+    }
+
+    .data-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .data-label {
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    .data-value {
+        font-size: var(--text-lg);
+        color: var(--text-primary);
+        font-weight: 700;
+    }
+
+    .category-value {
+        color: var(--color-primary-600);
+    }
+
+    .price-value {
+        color: var(--color-primary-600);
+        font-size: var(--text-xl);
+    }
+
+    /* Description Section */
+    .description-card {
+        background: var(--bg-surface);
+        border-radius: var(--radius-xl);
+        padding: var(--space-6);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-base);
+        margin-top: var(--space-6);
+    }
+
+    .description-title {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--space-4);
+        text-align: left;
+    }
+
+    .description-content {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        text-align: left;
+    }
+
+    @media (min-width: 769px) {
+        .performer-card-expanded {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-4);
+            text-align: left;
+            padding: var(--space-8);
+        }
+
+        .performer-image-large {
+            grid-column: 1;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .performer-photo-large {
+            width: 100%;
+            aspect-ratio: 1;
+            flex-shrink: 0;
+        }
+
+        .performer-info-booking {
+            grid-column: 2 / 4;
+            flex: 1;
+        }
+
+        .performer-name-large {
+            font-size: var(--text-4xl);
+            text-align: left;
+        }
+
+        .data-item {
+            flex-direction: row;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .data-label {
+            min-width: 150px;
+            flex-shrink: 0;
+        }
+    }
+
+    .quote-form-container {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .quote-form {
+        background: var(--bg-surface);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-4);
+        margin: 0;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-base);
+    }
+
+    .form-section {
+        margin-bottom: var(--space-10);
+        padding-bottom: var(--space-8);
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .form-section:last-of-type {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .form-section-title {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--space-6);
+        padding-bottom: var(--space-3);
+        border-bottom: 2px solid var(--color-primary-400);
+        display: inline-block;
+    }
+
+    .prefilled-data {
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        padding: var(--space-6);
+        margin-bottom: var(--space-6);
+    }
+
+    .prefilled-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-1);
+        margin-bottom: var(--space-3);
+    }
+
+    .prefilled-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .prefilled-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+        min-width: auto;
+    }
+
+    .prefilled-value {
+        font-weight: 600;
+        color: var(--color-primary-600);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+        margin-bottom: var(--space-6);
+    }
+
+    .form-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .col-md-6 {
+        grid-column: span 1;
+    }
+
+    @media (min-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .form-row .form__group:not(.col-md-6) {
+            grid-column: span 2;
+        }
+    }
+
+    .form__group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    .form__label {
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .form__label.required::after {
+        content: " *";
+        color: var(--color-error-600);
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100%;
+        padding: var(--space-4);
+        border: 2px solid var(--border-base);
+        border-radius: var(--radius-lg);
+        font-size: var(--text-base);
+        font-family: inherit;
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        transition: var(--transition-base);
+        box-sizing: border-box;
+        line-height: 1.5;
+    }
+
+    .form-textarea {
+        height: auto;
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: var(--color-primary-600);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+        color: var(--text-tertiary);
+        font-style: italic;
+    }
+
+    .form-select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 20 20' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right var(--space-4) center;
+        background-size: 20px 20px;
+        padding-right: calc(var(--space-4) + 20px + var(--space-2));
+    }
+
+    .form-select option {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+    }
+
+    .form-select option[value=""] {
+        color: var(--text-tertiary);
+        font-style: italic;
+    }
+
+    .form-select:invalid {
+        color: var(--text-tertiary);
+        font-style: italic;
+    }
+
+    .form-select:valid {
+        color: var(--text-primary);
+        font-style: normal;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-3);
+        cursor: pointer;
+        font-size: var(--text-sm);
+        line-height: 1.5;
+        color: var(--text-primary);
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+    .checkbox-text {
+        color: var(--text-primary);
+    }
+
+    .checkbox-text a {
+        color: var(--color-primary-600);
+        text-decoration: underline;
+    }
+
+    [data-theme="dark"] .checkbox-text a {
+        color: var(--color-primary-400);
+    }
+
+    .form-error {
+        color: var(--color-error-600);
+        font-size: var(--text-sm);
+        font-weight: 500;
+        margin-top: var(--space-1);
+    }
+
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        align-items: stretch;
+        margin-top: var(--space-8);
+    }
+
+    .btn-icon {
+        margin-right: var(--space-2);
+        font-size: var(--text-lg);
+    }
+
+    .quote-form__back-btn-wrapper {
+        margin-bottom: var(--space-6);
+    }
+
+    /* Desktop Enhancement */
+    @media (min-width: 769px) {
+        .quote-form {
+            padding: var(--space-6);
+            margin: 0;
+        }
+
+        .prefilled-item {
+            flex-direction: row;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .prefilled-label {
+            min-width: 150px;
+        }
+
+        .form-actions {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+</style>
+</style>
+
+<script>
+    // Frontend validation for booking form
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('.quote-form');
+        if (!form) return;
+
+        // Handle "Time Not Fixed" checkbox
+        const timeNotFixedCheckbox = document.getElementById('timeNotFixed');
+        const eventStartTimeInput = document.getElementById('eventStartTime');
+        
+        if (timeNotFixedCheckbox && eventStartTimeInput) {
+            function updateTimeInputState() {
+                if (timeNotFixedCheckbox.checked) {
+                    eventStartTimeInput.disabled = true;
+                    eventStartTimeInput.required = false;
+                    eventStartTimeInput.value = '';
+                    eventStartTimeInput.style.opacity = '0.5';
+                    eventStartTimeInput.style.cursor = 'not-allowed';
+                } else {
+                    eventStartTimeInput.disabled = false;
+                    eventStartTimeInput.required = true;
+                    eventStartTimeInput.style.opacity = '1';
+                    eventStartTimeInput.style.cursor = 'text';
+                }
+            }
+
+            // Initialize state
+            updateTimeInputState();
+
+            // Listen for checkbox changes
+            timeNotFixedCheckbox.addEventListener('change', updateTimeInputState);
+        }
+
+        // Validation rules - MINDEN MEZŐ KÖTELEZŐ
+        const validationRules = {
+            // Esemény adatok
+            eventAddress: {
+                required: true,
+                minLength: 5,
+                message: 'Az esemény pontos címe kötelező (min. 5 karakter)'
+            },
+            expectedGuests: {
+                required: true,
+                number: true,
+                min: 1,
+                message: 'A várható vendégszám kötelező (min. 1 fő)'
+            },
+            eventName: {
+                required: true,
+                minLength: 3,
+                message: 'Az esemény neve kötelező (min. 3 karakter)'
+            },
+            eventCategory: {
+                required: true,
+                message: 'Kérjük válasszon esemény típust'
+            },
+
+            // Kapcsolattartó adatok
+            contactName: {
+                required: true,
+                minLength: 2,
+                message: 'A kapcsolattartó neve kötelező (min. 2 karakter)'
+            },
+            contactEmail: {
+                required: true,
+                email: true,
+                message: 'Érvényes email cím kötelező'
+            },
+            contactPhone: {
+                required: true,
+                phone: true,
+                message: 'Érvényes telefonszám kötelező (pl. +36301234567)'
+            },
+
+            // Céges adatok
+            companyName: {
+                required: true,
+                minLength: 2,
+                maxLength: 255,
+                message: 'A cég neve kötelező (min. 2 karakter)'
+            },
+            companyAddress: {
+                required: true,
+                minLength: 10,
+                maxLength: 500,
+                message: 'A cég címe kötelező (min. 10 karakter)'
+            },
+            taxNumber: {
+                required: true,
+                taxNumber: true,
+                minLength: 5,
+                maxLength: 50,
+                message: 'Az adószám kötelező (5-50 karakter, nemzetközi formátumok elfogadva)'
+            },
+            registrationNumber: {
+                required: true,
+                registrationNumber: true,
+                minLength: 3,
+                maxLength: 100,
+                message: 'A cégjegyzékszám kötelező (3-100 karakter, nemzetközi formátumok elfogadva)'
+            },
+            representative: {
+                required: true,
+                minLength: 2,
+                message: 'A képviselő neve kötelező (min. 2 karakter)'
+            },
+
+            // Helyszíni kapcsolattartók
+            onSiteContactName: {
+                required: true,
+                minLength: 2,
+                message: 'A helyszíni kapcsolattartó neve kötelező (min. 2 karakter)'
+            },
+            onSiteContactPhone: {
+                required: true,
+                phone: true,
+                message: 'A helyszíni kapcsolattartó telefonszáma kötelező'
+            },
+            technicalContactName: {
+                required: true,
+                minLength: 2,
+                message: 'A technikai kapcsolattartó neve kötelező (min. 2 karakter)'
+            },
+            technicalContactPhone: {
+                required: true,
+                phone: true,
+                message: 'A technikai kapcsolattartó telefonszáma kötelező'
+            },
+            technicalContactEmail: {
+                required: true,
+                email: true,
+                message: 'A technikai kapcsolattartó email címe kötelező'
+            },
+
+            // Számlázási adatok
+            invoiceEmail: {
+                required: true,
+                email: true,
+                message: 'A számlázási email cím kötelező'
+            },
+
+            // Üzenet és adatkezelés
+            message: {
+                required: true,
+                minLength: 10,
+                message: 'Kérjük írjon egy rövid leírást az eseményről (min. 10 karakter)'
+            },
+            privacy: {
+                required: true,
+                checkbox: true,
+                message: 'El kell fogadnia az adatkezelési tájékoztatót'
+            }
+        };
+
+        // Add error display elements
+        function createErrorElement(field) {
+            const existing = field.parentElement.querySelector('.field-error');
+            if (existing) return existing;
+
+            const errorEl = document.createElement('div');
+            errorEl.className = 'field-error';
+            errorEl.style.color = 'var(--color-error-600)';
+            errorEl.style.fontSize = '14px';
+            errorEl.style.marginTop = '4px';
+            field.parentElement.appendChild(errorEl);
+            return errorEl;
+        }
+
+        // Validation functions
+        function validateField(field, rule) {
+            const value = field.value.trim();
+            const errorEl = createErrorElement(field);
+
+            // Required check - először ellenőrizzük hogy kötelező-e
+            if (rule.required && !value) {
+                showError(field, errorEl, rule.message);
+                return false;
+            }
+
+            // Ha üres de nem kötelező, akkor rendben
+            if (!value && !rule.required) {
+                hideError(field, errorEl);
+                return true;
+            }
+
+            // FORMÁTUM ELLENŐRZÉSEK - ha van érték, akkor formátumot ellenőrizzük
+            if (value) {
+                // Length check
+                if (rule.minLength && value.length < rule.minLength) {
+                    showError(field, errorEl, `Minimum ${rule.minLength} karakter szükséges`);
+                    return false;
+                }
+
+                if (rule.maxLength && value.length > rule.maxLength) {
+                    showError(field, errorEl, `Maximum ${rule.maxLength} karakter megengedett`);
+                    return false;
+                }
+
+                // Email check
+                if (rule.email && !isValidEmail(value)) {
+                    showError(field, errorEl, 'Érvényes email formátum szükséges (pl: nev@email.com)');
+                    return false;
+                }
+
+                // Phone check
+                if (rule.phone && !isValidPhone(value)) {
+                    showError(field, errorEl, 'Érvényes telefonszám formátum szükséges (pl: +36301234567)');
+                    return false;
+                }
+
+                // Number check
+                if (rule.number) {
+                    const numValue = parseInt(value);
+                    if (isNaN(numValue)) {
+                        showError(field, errorEl, 'Számot kell megadni');
+                        return false;
+                    }
+                    if (rule.min && numValue < rule.min) {
+                        showError(field, errorEl, `Minimum ${rule.min} értéket kell megadni`);
+                        return false;
+                    }
+                    if (rule.max && numValue > rule.max) {
+                        showError(field, errorEl, `Maximum ${rule.max} értéket lehet megadni`);
+                        return false;
+                    }
+                }
+
+                // Tax number check (magyar adószám formátum)
+                if (rule.taxNumber && !isValidTaxNumber(value)) {
+                    showError(field, errorEl, 'Érvényes magyar adószám formátum szükséges (8 számjegy-1-2 számjegy)');
+                    return false;
+                }
+
+                // Registration number check
+                if (rule.registrationNumber && !isValidRegistrationNumber(value)) {
+                    showError(field, errorEl, 'Érvényes cégjegyzékszám formátum szükséges');
+                    return false;
+                }
+            }
+
+            hideError(field, errorEl);
+            return true;
+        }
+
+        function validateCheckbox(field, rule) {
+            const errorEl = createErrorElement(field);
+
+            if (rule.required && !field.checked) {
+                showError(field, errorEl, rule.message);
+                return false;
+            }
+
+            hideError(field, errorEl);
+            return true;
+        }
+
+        function showError(field, errorEl, message) {
+            field.style.borderColor = 'var(--color-error-600)';
+            field.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function hideError(field, errorEl) {
+            field.style.borderColor = '';
+            field.style.backgroundColor = '';
+            errorEl.textContent = '';
+            errorEl.style.display = 'none';
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function isValidPhone(phone) {
+            const phoneRegex = /^[+]?[0-9\s\-().]{7,25}$/;
+            return phoneRegex.test(phone);
+        }
+
+        function isValidTaxNumber(taxNumber) {
+            // Nemzetközi adószám formátumok: betűk, számok, kötőjel, szóköz, pont, per jel (min 5 kar)
+            const taxRegex = /^[A-Za-z0-9\-\s./]{5,50}$/;
+            return taxRegex.test(taxNumber);
+        }
+
+        function isValidRegistrationNumber(regNumber) {
+            // Nemzetközi cégjegyzékszám formátumok: betűk, számok, kötőjel, szóköz, pont, per jel (min 3 kar)
+            const regRegex = /^[A-Za-z0-9\-\s./]{3,100}$/;
+            return regRegex.test(regNumber);
+        }
+
+        // Add real-time validation
+        Object.keys(validationRules).forEach(fieldName => {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (!field) return;
+
+            const rule = validationRules[fieldName];
+
+            // Validate on blur
+            field.addEventListener('blur', function () {
+                if (rule.checkbox) {
+                    validateCheckbox(field, rule);
+                } else {
+                    validateField(field, rule);
+                }
+            });
+
+            // Clear error on focus/change
+            if (field.type === 'checkbox') {
+                field.addEventListener('change', function () {
+                    if (rule.checkbox) {
+                        validateCheckbox(field, rule);
+                    }
+                });
+            } else {
+                field.addEventListener('focus', function () {
+                    field.style.borderColor = '';
+                    field.style.backgroundColor = '';
+                    const errorEl = field.parentElement.querySelector('.field-error');
+                    if (errorEl) {
+                        errorEl.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Validate on form submit - Step by step validation like homepage
+        let isValidationInProgress = false;
+        let isValidated = false;
+
+        form.addEventListener('submit', function (e) {
+            // If already validated and valid, allow normal submission
+            if (isValidated) {
+                return true;
+            }
+
+            // Prevent default submission for validation
+            e.preventDefault();
+
+            // Prevent multiple validation processes
+            if (isValidationInProgress) {
+                return false;
+            }
+
+            isValidationInProgress = true;
+
+            // Get submit button and update its state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="btn-icon">⏳</span>Ellenőrzés...';
+
+            // Store original button state for restoration
+            form._originalButtonState = {
+                disabled: false,
+                innerHTML: originalText
+            };
+
+            // Step-by-step validation
+            const steps = [
+                {
+                    title: 'Kiegészítő rendezvény adatok',
+                    fields: ['eventAddress', 'expectedGuests', 'eventName', 'eventCategory']
+                },
+                {
+                    title: 'Kapcsolattartó adatok',
+                    fields: ['contactName', 'contactEmail', 'contactPhone']
+                },
+                {
+                    title: 'Szerződéskötéshez szükséges adatok',
+                    fields: ['companyName', 'companyAddress', 'taxNumber', 'registrationNumber', 'representative', 'onSiteContactName', 'onSiteContactPhone', 'technicalContactName', 'technicalContactPhone', 'technicalContactEmail', 'invoiceEmail']
+                },
+                {
+                    title: 'Megjegyzés',
+                    fields: ['message']
+                },
+                {
+                    title: 'Adatkezelési tájékoztató',
+                    fields: ['privacy']
+                }
+            ];
+
+            let currentStepIndex = 0;
+
+            function validateCurrentStep() {
+                const currentStep = steps[currentStepIndex];
+                const invalidFields = [];
+
+                currentStep.fields.forEach(fieldName => {
+                    const field = form.querySelector(`[name="${fieldName}"]`);
+                    if (!field) return;
+
+                    const rule = validationRules[fieldName];
+                    if (!rule) return;
+
+                    let isFieldValid;
+                    if (rule.checkbox) {
+                        isFieldValid = validateCheckbox(field, rule);
+                    } else {
+                        isFieldValid = validateField(field, rule);
+                    }
+
+                    if (!isFieldValid) {
+                        invalidFields.push({
+                            field: field,
+                            name: fieldName,
+                            label: field.closest('.form__group')?.querySelector('label')?.textContent?.replace(' *', '') || fieldName
+                        });
+                    }
+                });
+
+                if (invalidFields.length > 0) {
+                    // Create custom modal for step validation
+                    showStepValidationModal(currentStep.title, invalidFields, currentStepIndex + 1, steps.length);
+                    return false;
+                }
+
+                return true;
+            }
+
+            function validateAllSteps() {
+                for (let i = 0; i < steps.length; i++) {
+                    currentStepIndex = i;
+                    if (!validateCurrentStep()) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            // If all steps are valid, submit the form
+            if (validateAllSteps()) {
+                isValidated = true;
+                isValidationInProgress = false;
+
+                // Create a temporary form with the same data to submit naturally
+                const tempForm = document.createElement('form');
+                tempForm.method = form.method;
+                tempForm.action = form.action;
+                tempForm.style.display = 'none';
+
+                // Clone all form data
+                const formData = new FormData(form);
+                for (let [key, value] of formData.entries()) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    tempForm.appendChild(input);
+                }
+
+                // Handle checkboxes separately (they might not be in FormData if unchecked)
+                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked && !formData.has(checkbox.name)) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = checkbox.name;
+                        input.value = checkbox.value;
+                        tempForm.appendChild(input);
+                    }
+                });
+
+                document.body.appendChild(tempForm);
+                tempForm.submit();
+            } else {
+                isValidationInProgress = false;
+
+                // Restore button state if validation failed
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (form._originalButtonState) {
+                    submitBtn.disabled = form._originalButtonState.disabled;
+                    submitBtn.innerHTML = form._originalButtonState.innerHTML;
+                }
+            }
+        });
+
+        // Step validation modal function
+        function showStepValidationModal(stepTitle, invalidFields, currentStep, totalSteps) {
+            // Remove existing modal if any
+            const existingModal = document.querySelector('.step-validation-modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'step-validation-modal';
+            modal.innerHTML = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal__header">
+                        <h3>🚨 Hiányzó adatok</h3>
+                        <div class="step-indicator">
+                            ${currentStep}. lépés / ${totalSteps}
+                        </div>
+                    </div>
+                    <div class="modal__body">
+                        <p class="modal__title">${stepTitle}</p>
+                        <p class="modal-description">A következő mezők kitöltése kötelező:</p>
+                        <ul class="error-list">
+                            ${invalidFields.map(item => `<li>${item.label}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn--primary modal-ok-btn">
+                            Rendben, javítom
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            // Add modal styles
+            const modalStyles = `
+            <style>
+                .step-validation-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                .modal-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.75);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                }
+                
+                .modal-content {
+                    background: var(--color-white);
+                    border-radius: 16px;
+                    padding: 0;
+                    margin: 20px;
+                    max-width: none;
+                    width: calc(100% - 40px);
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                    animation: modalSlideIn 0.3s ease-out;
+                }
+                
+                @keyframes modalSlideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-20px) scale(0.95);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                    }
+                }
+                
+                .modal-header {
+                    padding: 24px 24px 0;
+                    text-align: center;
+                }
+                
+                .modal-header h3 {
+                    margin: 0 0 8px 0;
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: var(--color-error-600);
+                }
+                
+                .step-indicator {
+                    background: var(--color-error-50);
+                    color: var(--color-error-600);
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    display: inline-block;
+                }
+                
+                .modal-body {
+                    padding: 20px 24px;
+                }
+                
+                .modal-title {
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: var(--color-gray-700);
+                    margin: 0 0 12px 0;
+                }
+                
+                .modal-description {
+                    color: var(--color-gray-500);
+                    margin: 0 0 16px 0;
+                    line-height: 1.5;
+                }
+                
+                .error-list {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    background: var(--color-error-50);
+                    border-radius: 8px;
+                    padding: 16px;
+                }
+                
+                .error-list li {
+                    padding: 4px 0;
+                    color: var(--color-error-600);
+                    font-weight: 500;
+                    position: relative;
+                    padding-left: 20px;
+                }
+                
+                .error-list li:before {
+                    content: "•";
+                    position: absolute;
+                    left: 0;
+                    color: var(--color-error-600);
+                    font-weight: bold;
+                }
+                
+                .modal-actions {
+                    padding: 0 24px 24px;
+                    text-align: center;
+                }
+                
+                .modal-ok-btn {
+                    background: var(--color-error-600);
+                    color: var(--color-white);
+                    border: none;
+                    padding: 12px 32px;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    font-size: 16px;
+                }
+                
+                .modal-ok-btn:hover {
+                    background: var(--color-error-700);
+                    transform: translateY(-1px);
+                }
+                
+                @media (min-width: 641px) {
+                    .modal-content {
+                        margin: 50px auto;
+                        max-width: 500px;
+                    }
+                    
+                    .modal-header h3 {
+                        font-size: 24px;
+                    }
+                    
+                    .modal-title {
+                        font-size: 18px;
+                    }
+                }
+            </style>
+        `;
+
+            // Add styles to head
+            document.head.insertAdjacentHTML('beforeend', modalStyles);
+
+            // Add modal to body
+            document.body.appendChild(modal);
+
+            // Handle modal close
+            const okBtn = modal.querySelector('.modal-ok-btn');
+            const overlay = modal.querySelector('.modal-overlay');
+
+            function closeModal() {
+                modal.remove();
+                // Reset validation flags
+                isValidationInProgress = false;
+                isValidated = false;
+
+                // Restore button state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (form._originalButtonState) {
+                    submitBtn.disabled = form._originalButtonState.disabled;
+                    submitBtn.innerHTML = form._originalButtonState.innerHTML;
+                }
+
+                // Scroll to first invalid field
+                if (invalidFields.length > 0) {
+                    invalidFields[0].field.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    invalidFields[0].field.focus();
+                }
+            }
+
+            okBtn.addEventListener('click', closeModal);
+            overlay.addEventListener('click', function (e) {
+                if (e.target === overlay) {
+                    closeModal();
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            }, { once: true });
+        }
+    });
+</script>

@@ -1,0 +1,364 @@
+/**
+ * Info Pages Components
+ * Design System - Public
+ * Version: 1.0.0
+ * 
+ * Statikus információs oldalak (Rólunk, Előadóknak, Megrendelőknek, Adatkezelés)
+ * Ipari standard, utility-first megközelítés
+ */
+
+/* ============================================================================
+   CONTAINER WRAPPER
+   ============================================================================ */
+
+/**
+ * Az info oldalak fő container-e
+ * Horizontális padding + max-width + centrálás
+ * Igazodik a header/footer szélességéhez
+ */
+.info-container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+}
+
+/* ============================================================================
+   TYPOGRAPHY COMPONENTS
+   ============================================================================ */
+
+/**
+ * Section címek
+ * Mapping: h2 elemek ami section-öket vezetnek be
+ * Border-bottom vizuális elválasztással
+ */
+.info__section-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--color-primary-600);
+    line-height: var(--leading-tight);
+}
+
+/* Első section nincs margin-top */
+.info__first-section .info__section-title {
+    margin-top: 0;
+}
+
+/**
+ * Subsection címek (h3)
+ * Mapping: h3 elemek a fő section-ökön belül
+ */
+.info__subsection-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-3);
+    line-height: var(--leading-tight);
+}
+
+/**
+ * Standard szöveg bekezdések
+ * Mapping: p elemek info section-ökben
+ */
+.info__text {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+/**
+ * Standard lista elemek
+ * Mapping: ul/ol elemek info section-ökben
+ */
+.info__list {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-6);
+    padding-left: var(--space-8);
+}
+
+.info__list li {
+    margin-bottom: var(--space-2);
+}
+
+/* ============================================================================
+   CARD GRIDS - Services, Features
+   ============================================================================ */
+
+/**
+ * Szolgáltatás/előny kártyák grid-je
+ * Auto-responsive: 250px minimum → 3 column max
+ * Utility mapping: .card-grid--3-col alternatíva domain-specifikus névvel
+ */
+.info__service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-8);
+}
+
+/**
+ * Szolgáltatás kártya
+ * Mapping: .card alap stílusok + info-specifikus padding
+ * Industry best practice: box-shadow + hover transform + focus states
+ */
+.info__service-card {
+    background: var(--bg-secondary);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+}
+
+.info__service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.info__service-card:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), var(--shadow-md);
+}
+
+.info__service-card__title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+    line-height: var(--leading-tight);
+}
+
+.info__service-card__description {
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+}
+
+/**
+ * Loading state for service cards
+ * Progressive loading UX - Next.js, React pattern
+ */
+.info__service-card--loading {
+    background: linear-gradient(
+        90deg,
+        var(--bg-secondary) 0%,
+        var(--bg-tertiary) 50%,
+        var(--bg-secondary) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.info__service-card--loading .info__service-card__title,
+.info__service-card--loading .info__service-card__description {
+    opacity: 0.3;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ============================================================================
+   LIST COMPONENTS - Why Us, Features
+   ============================================================================ */
+
+/**
+ * Előnyök/tulajdonságok listája
+ * Checkmark ikonnal, border elválasztással
+ */
+.info__feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info__feature-list__item {
+    padding: var(--space-3) 0;
+    padding-left: var(--space-8);
+    position: relative;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.info__feature-list__item::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--color-success-600);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-lg);
+}
+
+.info__feature-list__item:last-child {
+    border-bottom: none;
+}
+
+/* ============================================================================
+   CONTACT GRID
+   ============================================================================ */
+
+/**
+ * Kapcsolati információk grid-je
+ * Auto-responsive: 200px minimum → 3 column max
+ */
+.info__contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-8);
+}
+
+.info__contact-item {
+    text-align: center;
+}
+
+.info__contact-item__title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+}
+
+.info__contact-item__link {
+    color: var(--color-primary-600);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-base);
+}
+
+.info__contact-item__link:hover {
+    color: var(--color-primary-700);
+    text-decoration: underline;
+}
+
+.info__contact-item__text {
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+}
+
+/* ============================================================================
+   RESPONSIVE BEHAVIOR
+   ============================================================================ */
+
+/**
+ * Tablet breakpoint (768px)
+ * Service és contact grid → 1 column
+ */
+@media (max-width: 768px) {
+    .info__service-grid,
+    .info__contact-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+    
+    .info__service-card {
+        padding: var(--space-5);
+    }
+    
+    .info__feature-list__item {
+        padding-left: var(--space-6);
+        font-size: var(--text-sm);
+    }
+}
+
+/**
+ * Mobile breakpoint (480px)
+ * Kompaktabb spacing
+ */
+@media (max-width: 480px) {
+    .info__section-title {
+        font-size: var(--text-xl);
+    }
+    
+    .info__service-card {
+        padding: var(--space-4);
+    }
+}
+
+/* ============================================================================
+   CALL TO ACTION SECTION
+   ============================================================================ */
+
+/**
+ * CTA section with gradient background
+ * Használat: FAQ "Nem találta a választ?" section
+ */
+.info__cta {
+    background: linear-gradient(135deg, var(--bg-subtle) 0%, #e8f0f7 100%);
+    border-radius: var(--radius-xl);
+    padding: var(--space-12) var(--space-8);
+    text-align: center;
+}
+
+.info__cta-title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary-600);
+    margin-bottom: var(--space-4);
+}
+
+.info__cta-text {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    line-height: var(--leading-relaxed);
+    margin-bottom: var(--space-8);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.info__cta-buttons {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Responsive CTA */
+@media (max-width: 768px) {
+    .info__cta {
+        padding: var(--space-8) var(--space-6);
+    }
+    
+    .info__cta-title {
+        font-size: var(--text-2xl);
+    }
+    
+    .info__cta-text {
+        font-size: var(--text-base);
+    }
+    
+    .info__cta-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* ============================================================================
+   DARK MODE OPTIMIZATIONS
+   ============================================================================ */
+
+/**
+ * Dark mode shadow enhancement
+ * Industry standard: Material Design 3, Tailwind CSS dark mode
+ */
+[data-theme="dark"] .info__service-card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .info__service-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}

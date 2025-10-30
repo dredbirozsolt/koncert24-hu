@@ -1,0 +1,90 @@
+<!-- FAQ Schema.org JSON-LD -->
+<script type="application/ld+json">
+<%- JSON.stringify(faqSchema) %>
+</script>
+
+<!-- Hero Section -->
+<div class="page__hero">
+    <div class="container">
+        <h1 class="page__hero__title">❓ Gyakran Ismételt Kérdések</h1>
+        <p class="page__hero__subtitle">
+            Összegyűjtöttük a leggyakrabban felmerülő kérdéseket és válaszokat, 
+            hogy könnyebben eligazodjon szolgáltatásaink között.
+        </p>
+        
+        <!-- Search Box -->
+        <div class="page__hero__cta">
+            <div class="hero-search">
+                <div class="hero-search__form">
+                    <input 
+                        type="text" 
+                        class="hero-search__input" 
+                        id="faqSearch" 
+                        placeholder="Keresés a kérdések között..."
+                        autocomplete="off"
+                    >
+                    <button type="button" class="hero-search__clear hidden" id="faqSearchClear" aria-label="Keresés törlése">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div class="hero-search__button" aria-label="Keresés">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Page Content -->
+<section class="section">
+    <div class="container">
+        <!-- FAQ Categories -->
+        <div class="accordion faq-accordion">
+            <% faqs.forEach((category, categoryIndex) => { %>
+                <div class="accordion__category" data-category="<%= categoryIndex %>">
+                    <!-- Category Header -->
+                    <div class="accordion__category-header">
+                        <span class="accordion__category-icon"><%= category.icon %></span>
+                        <h2 class="accordion__category-title"><%= category.title %></h2>
+                    </div>
+                    
+                    <!-- Category Items -->
+                    <div class="accordion__category-items">
+                        <% category.questions.forEach((item, itemIndex) => { %>
+                            <div class="accordion__item" data-keywords="<%= item.keywords %>" data-faq-id="cat-<%= categoryIndex %>-item-<%= itemIndex %>">
+                                <button class="accordion__header" type="button" aria-expanded="false">
+                                    <span class="accordion__title"><%= item.question %></span>
+                                    <span class="accordion__icon">▼</span>
+                                </button>
+                                <div class="accordion__content">
+                                    <div class="accordion__body"><%- item.answer %></div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="info__cta mt-16">
+            <h2 class="info__cta-title">Nem találta a választ?</h2>
+            <p class="info__cta-text">
+                Vegye fel velünk a kapcsolatot közvetlenül! Szakértő csapatunk készséggel válaszol 
+                minden további kérdésére.
+            </p>
+            <div class="info__cta-buttons">
+                <a href="tel:<%= companyPhone.replace(/\s/g, '') %>" class="btn btn--primary btn--pill">
+                    📞 <%= companyPhone %>
+                </a>
+                <a href="mailto:<%= companyEmail %>" class="btn btn--secondary btn--pill">
+                    ✉️ <%= companyEmail %>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

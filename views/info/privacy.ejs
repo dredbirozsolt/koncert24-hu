@@ -1,0 +1,192 @@
+<!-- Hero Section -->
+<div class="page__hero">
+    <div class="container">
+        <h1 class="page__hero__title">Adatkezelési Tájékoztató</h1>
+        <p class="page__hero__subtitle">A koncert24.hu weboldal adatkezelési szabályzata</p>
+    </div>
+</div>
+
+<!-- Privacy Policy Page -->
+<section class="section">
+    <div class="container">
+        <div class="mb-16 info__first-section">
+            <h2 class="info__section-title">1. Általános információk</h2>
+            <p class="info__text">
+                A <%= companyName %> (székhely: <%= flatSettings['company.address'] || '1051 Budapest, Nádor utca 19. 3. em. 11A. ajtó' %>, cégjegyzékszám:
+                <%= flatSettings['company.registration_number'] || '01-09-418212' %>, adószám: <%= flatSettings['company.tax_number'] || '32324806-2-41' %>, e-mail: <%= flatSettings['company.email'] || 'info@koncert24.hu' %>, a továbbiakban: „Adatkezelő")
+                mint a koncert24.hu weboldal üzemeltetője, ezúton tájékoztatja a weboldal látogatóit és
+                ügyfeleit a személyes adatok kezelésének szabályairól.
+            </p>
+            <p class="info__text">
+                Az Adatkezelő elkötelezett az Ön személyes adatainak védelme mellett, és az adatokat az Európai
+                Parlament és Tanács (EU) 2016/679 számú rendelete (GDPR), valamint a vonatkozó magyar
+                jogszabályok szerint kezeli.
+            </p>
+        </div>
+
+        <div class="mb-16">
+            <h2 class="info__section-title">2. Az Adatkezelő adatai</h2>
+            <p class="info__text">
+                <strong>Cégnév:</strong> <%= companyName %><br>
+                <strong>Székhely:</strong> <%= flatSettings['company.address'] || '1051 Budapest, Nádor utca 19. 3. em. 11A. ajtó' %><br>
+                <strong>Cégjegyzékszám:</strong> <%= flatSettings['company.registration_number'] || '01-09-418212' %><br>
+                <strong>Adószám:</strong> <%= flatSettings['company.tax_number'] || '32324806-2-41' %><br>
+                <strong>E-mail:</strong> <%= flatSettings['company.email'] || 'info@koncert24.hu' %><br>
+                <strong>Weboldal:</strong> <%= flatSettings['general.domain'] || 'https://koncert24.hu' %>
+            </p>
+        </div>
+
+        <div class="mb-16">
+            <h2 class="info__section-title">3. A tárhelyszolgáltató adatai</h2>
+            <p class="info__text">
+                <strong>Cégnév:</strong> ININET Internet Kft.<br>
+                <strong>Székhely:</strong> 1063 Budapest, Szinyei Merse utca 10.<br>
+                <strong>Cégjegyzékszám:</strong> 01-09-970252<br>
+                <strong>Adószám:</strong> 23537646-2-42<br>
+                <strong>EU adószám:</strong> HU23537646
+            </p>
+            <p class="info__text">A weboldal és a CRM rendszer az ININET Internet Kft. által biztosított szerveren üzemel.</p>
+        </div>
+
+        <div class="mb-16">
+            <h2 class="info__section-title">4. Az adatkezelés céljai</h2>
+            <p class="info__text">Az Adatkezelő az alábbi célokra kezeli a személyes adatokat:</p>
+            <ul class="info__list">
+                <li>kapcsolatfelvétel és kapcsolattartás az érdeklődőkkel, ügyfelekkel,</li>
+                <li>ajánlatadás, szerződések teljesítése, számlázás,</li>
+                <li>hírlevélküldés (csak hozzájárulás esetén),</li>
+                <li>ügyfélkapcsolatok kezelése saját CRM rendszerben,</li>
+                <li>a weboldal működésének biztosítása és fejlesztése,</li>
+                <li>jogi kötelezettségek teljesítése,</li>
+                <li>marketing- és statisztikai célok (Google Analytics, Facebook Pixel).</li>
+            </ul>
+        </div>
+
+        <div class="mb-16">
+                <h2 class="info__section-title">5. Kezelt adatok köre</h2>
+                <p class="info__text">Az Adatkezelő a következő személyes adatokat kezeli:</p>
+                <ul class="info__list">
+                    <li><strong>Kapcsolatfelvételi űrlap:</strong> név, e-mail cím, telefonszám, üzenet tartalma</li>
+                    <li><strong>Megrendelés, ajánlatkérés:</strong> név, cím, számlázási adatok, e-mail cím, telefonszám</li>
+                    <li><strong>Hírlevél-feliratkozás:</strong> név, e-mail cím</li>
+                    <li><strong>Technikai adatok:</strong> IP-cím, böngésző típusa, cookie-azonosító</li>
+                </ul>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="info__section-title">6. Az adatkezelés jogalapja</h2>
+                <ul class="info__list">
+                    <li>szerződés teljesítése (GDPR 6. cikk (1) b))</li>
+                    <li>jogi kötelezettség teljesítése (GDPR 6. cikk (1) c))</li>
+                    <li>hozzájárulás (GDPR 6. cikk (1) a)) – hírlevélküldés, marketing, cookie-k</li>
+                    <li>jogos érdek (GDPR 6. cikk (1) f)) – rendszerbiztonság, szolgáltatás fejlesztése</li>
+                </ul>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="info__section-title">7. Adattovábbítás és adatfeldolgozás</h2>
+                <h3 class="info__subsection-title">7.1. Saját rendszerekben végzett adatkezelés</h3>
+                <p class="info__text">Az Adatkezelő saját vTiger CRM rendszerében (ugyanazon a szerveren, mint a weboldal) tárolja és
+                    kezeli az ügyféladatokat. A CRM célja az ajánlatok, szerződések és ügyfélkapcsolatok kezelése.
+                </p>
+
+                <h3 class="info__subsection-title">7.2. Külső szolgáltatók (adatfeldolgozók)</h3>
+                <ul class="info__list">
+                    <li><strong>Tárhelyszolgáltató:</strong> ININET Internet Kft.</li>
+                    <li><strong>Könyvelő / számlázási szolgáltató:</strong> a jogszabályi kötelezettségek
+                        teljesítése érdekében</li>
+                    <li><strong>Hírlevélküldő rendszer:</strong> Elastic Email (elasticemail.com, Kanada / USA) –
+                        hozzájárulás alapján</li>
+                    <li><strong>Statisztikai és marketing szolgáltatók:</strong>
+                        <ul>
+                            <li>Google Analytics (USA – standard szerződéses feltételekkel, IP anonimizálással)</li>
+                            <li>Facebook Pixel (Meta Platforms Ireland Ltd. – EU/USA adattovábbítás standard
+                                szerződéses feltételekkel)</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p class="info__text">Az Adatkezelő harmadik félnek az adatokat nem adja át, kivéve jogszabályi kötelezettség esetén.
+                </p>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="info__section-title">8. Adatmegőrzési idők</h2>
+                <ul class="info__list">
+                    <li><strong>Kapcsolatfelvételi adatok:</strong> a kapcsolat lezárását követő 1 év</li>
+                    <li><strong>Szerződéses és számlázási adatok:</strong> 8 év (Számviteli törvény szerint)</li>
+                    <li><strong>Hírlevél-feliratkozási adatok:</strong> hozzájárulás visszavonásáig</li>
+                    <li><strong>CRM rendszerben tárolt ügyféladatok:</strong> az üzleti kapcsolat fennállásáig, majd
+                        törlésig</li>
+                    <li><strong>Technikai adatok (cookie):</strong> böngésző beállításai szerint / max. 2 év</li>
+                </ul>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="info__section-title">9. Érintetti jogok</h2>
+                <p class="info__text">Ön jogosult:</p>
+                <ul class="info__list">
+                    <li>hozzáférést kérni a személyes adataihoz,</li>
+                    <li>helyesbítést kérni,</li>
+                    <li>törlést kérni („elfeledtetéshez való jog"),</li>
+                    <li>az adatkezelés korlátozását kérni,</li>
+                    <li>tiltakozni a jogos érdek alapján történő adatkezelés ellen,</li>
+                    <li>hozzájárulását bármikor visszavonni (pl. hírlevélről leiratkozás),</li>
+                    <li>adathordozhatóságot kérni.</li>
+                </ul>
+                <p class="info__text">Jogait a <strong><%= flatSettings['company.email'] || 'info@koncert24.hu' %></strong> címen érvényesítheti.</p>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="info__section-title">10. Jogorvoslat</h2>
+                <p class="info__text">Ha úgy érzi, hogy az Adatkezelő megsértette a személyes adatok védelméhez való jogát, panasszal
+                    élhet:</p>
+                <p class="info__text">
+                    <strong>Nemzeti Adatvédelmi és Információszabadság Hatóság (NAIH)</strong><br>
+                    <strong>Cím:</strong> 1055 Budapest, Falk Miksa utca 9-11.<br>
+                    <strong>Web:</strong> https://www.naih.hu<br>
+                    <strong>Telefon:</strong> +36 (1) 391-1400
+                </p>
+                <p class="info__text">Továbbá Ön bírósághoz is fordulhat jogai érvényesítése érdekében.</p>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="info__section-title">11. Cookie-k kezelése</h2>
+                <p class="info__text">A weboldal sütiket használ a működés biztosítására és a felhasználói élmény javítására.</p>
+
+                <p class="info__text"><strong>A sütik típusai:</strong></p>
+                <ul class="info__list">
+                    <li><strong>Elengedhetetlen sütik</strong> – munkamenet-azonosító, biztonsági beállítások, 
+                        cookie consent preferenciák tárolása. Ezek nélkül az oldal nem működne megfelelően. 
+                        <em>Megőrzési idő: munkamenet / 1 év</em></li>
+                    <li><strong>Statisztikai sütik</strong> – Google Analytics, látogatottság mérése, 
+                        felhasználói élmény javítása. IP anonimizálással történik. 
+                        <em>Hozzájárulás szükséges. Megőrzési idő: maximum 2 év</em></li>
+                    <li><strong>Marketing sütik</strong> – Facebook Pixel, személyre szabott hirdetések, 
+                        remarketing kampányok mérése. 
+                        <em>Hozzájárulás szükséges. Megőrzési idő: maximum 1 év</em></li>
+                </ul>
+
+                <p class="info__text">A felhasználó a sütik használatát elfogadhatja vagy elutasíthatja a böngésző beállításaiban,
+                    illetve a weboldalon elérhető cookie banner segítségével. A cookie beállításokat bármikor módosíthatja 
+                    a lábléc "Cookie beállítások" linkjére kattintva.</p>
+                    
+                <p class="info__text"><strong>Cookie consent logging:</strong> A sütikkel kapcsolatos hozzájárulásokat biztonságosan 
+                    rögzítjük a GDPR megfelelőség érdekében. A naplózott adatok: időbélyeg, IP cím hash-e (anonimizálva), 
+                    user agent, és a megadott preferenciák. A hozzájárulások 12 hónapig érvényesek.</p>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="info__section-title">12. Záró rendelkezések</h2>
+                <p class="info__text">
+                    Az Adatkezelő fenntartja a jogot a jelen Tájékoztató módosítására. Az aktuális verzió mindig
+                    elérhető a weboldalon:
+                </p>
+                <p class="info__text">
+                    👉 <a href="<%= flatSettings['general.domain'] || 'https://koncert24.hu' %>/info/adatkezeles">
+                        <%= flatSettings['general.domain'] || 'https://koncert24.hu' %>/info/adatkezeles
+                    </a>
+                </p>
+                <p class="info__text"><strong>Hatályos: 2025. szeptember 15-től visszavonásig.</strong></p>
+            </div>
+    </div>
+</section>

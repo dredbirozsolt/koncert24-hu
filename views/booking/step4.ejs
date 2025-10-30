@@ -1,0 +1,267 @@
+<%
+  const performer = locals.performer || {};
+  const bookingData = locals.bookingData || {};
+  const basePath = locals.basePath || '/';
+%>
+
+<main class="quote-wizard">
+  <div class="quote-wizard__container">
+    
+    <!-- Progress Bar -->
+    <div class="quote-wizard__progress">
+      <div class="quote-wizard__progress-bar">
+        <div class="quote-wizard__progress-fill progress-67"></div>
+      </div>
+      <div class="quote-wizard__progress-text">4. lépés / 6</div>
+    </div>
+
+      <!-- Back Button -->
+      <a href="<%= basePath %>foglalas/<%= performer.slug %>?step=3" class="btn btn--secondary mb-6">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+        </svg>
+        Vissza az előző lépéshez
+      </a>
+
+      <!-- Performer Card (Mini) -->
+      <div class="quote-wizard__performer-card">
+        <% if (performer.imageUrl) { %>
+          <img src="<%= performer.imageUrl %>" alt="<%= performer.name %>" class="quote-wizard__performer-image">
+        <% } %>
+        <div class="quote-wizard__performer-info">
+          <h3 class="quote-wizard__performer-name"><%= performer.name %></h3>
+          <% if (performer.performanceType) { %>
+            <span class="quote-wizard__performer-type"><%= performer.performanceType %></span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Step Title -->
+      <h1 class="quote-wizard__title">Kapcsolattartók</h1>
+      <p class="quote-wizard__subtitle">Kik lesznek a kapcsolattartók a rendezvény napján és a szervezésben?</p>
+
+      <!-- Form -->
+      <form id="bookingStep4Form" method="POST" action="<%= basePath %>foglalas/<%= performer.slug %>?step=5" class="quote-wizard__form" x-data="contactsForm()" x-init="init()">
+        
+        <!-- Section: Event Day Contact -->
+        <div class="form-section">
+          <h2 class="form-section__title">📇 Kapcsolattartó a rendezvény napján</h2>
+          
+          <!-- Checkbox: Same as contact person from step 2 -->
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                id="sameAsContactPerson" 
+                x-model="sameAsContactPerson"
+                @change="toggleContactPerson()">
+              <span>Megegyezik a szerződéses kapcsolattartóval</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="eventDayContactName" class="form-label">
+              👤 Név <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="eventDayContactName" 
+              name="eventDayContactName" 
+              class="form-input" 
+              placeholder="Teljes név"
+              x-model="eventDayContact.name"
+              :readonly="sameAsContactPerson"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="eventDayContactPhone" class="form-label">
+              📞 Telefonszám <span class="required">*</span>
+            </label>
+            <input 
+              type="tel" 
+              id="eventDayContactPhone" 
+              name="eventDayContactPhone" 
+              class="form-input" 
+              placeholder="+36 30 123 4567"
+              x-model="eventDayContact.phone"
+              :readonly="sameAsContactPerson"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="eventDayContactEmail" class="form-label">
+              📧 E-mail <span class="required">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="eventDayContactEmail" 
+              name="eventDayContactEmail" 
+              class="form-input" 
+              placeholder="pelda@email.hu"
+              x-model="eventDayContact.email"
+              :readonly="sameAsContactPerson"
+              required>
+          </div>
+        </div>
+
+        <!-- Section: Technical Contact -->
+        <div class="form-section">
+          <h2 class="form-section__title">👤 Technikai kapcsolattartó</h2>
+          
+          <!-- Checkbox: Same as above -->
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                id="sameAsPrimary" 
+                x-model="sameAsPrimary"
+                @change="toggleSameContact()">
+              <span>Megegyezik a fenti kapcsolattartóval</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="techContactName" class="form-label">
+              👤 Név <span class="required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="techContactName" 
+              name="techContactName" 
+              class="form-input" 
+              placeholder="Teljes név"
+              x-model="techContact.name"
+              :readonly="sameAsPrimary"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="techContactPhone" class="form-label">
+              📞 Telefonszám <span class="required">*</span>
+            </label>
+            <input 
+              type="tel" 
+              id="techContactPhone" 
+              name="techContactPhone" 
+              class="form-input" 
+              placeholder="+36 30 123 4567"
+              x-model="techContact.phone"
+              :readonly="sameAsPrimary"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="techContactEmail" class="form-label">
+              📧 E-mail cím <span class="required">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="techContactEmail" 
+              name="techContactEmail" 
+              class="form-input" 
+              placeholder="pelda@email.hu"
+              x-model="techContact.email"
+              :readonly="sameAsPrimary"
+              required>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions form-actions--split">
+          <a href="<%= basePath %>foglalas/<%= performer.slug %>?step=3" class="btn btn--secondary btn--large">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+            </svg>
+            Vissza az előző lépéshez
+          </a>
+          <button type="submit" class="btn btn--primary btn--large">
+            Tovább a számlázási adatokhoz
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Custom CSS for this page -->
+  <link rel="stylesheet" href="<%= basePath %>css/pages/quote-wizard.css">
+  
+  <!-- Custom JS for this page -->
+  <script src="<%= basePath %>js/pages/quote-wizard.js"></script>
+  <script>
+    // Contacts form logic
+    function contactsForm() {
+      return {
+        sameAsContactPerson: false,
+        sameAsPrimary: false,
+        contactPerson: {
+          name: '<%= bookingData.contactName || "" %>',
+          phone: '<%= bookingData.contactPhone || "" %>',
+          email: '<%= bookingData.contactEmail || "" %>'
+        },
+        eventDayContact: {
+          name: '<%= bookingData.eventDayContactName || "" %>',
+          phone: '<%= bookingData.eventDayContactPhone || "" %>',
+          email: '<%= bookingData.eventDayContactEmail || "" %>'
+        },
+        techContact: {
+          name: '<%= bookingData.techContactName || "" %>',
+          phone: '<%= bookingData.techContactPhone || "" %>',
+          email: '<%= bookingData.techContactEmail || "" %>'
+        },
+        init() {
+          // Check if event day contact matches contact person
+          if (this.eventDayContact.name && 
+              this.eventDayContact.name === this.contactPerson.name &&
+              this.eventDayContact.email === this.contactPerson.email) {
+            this.sameAsContactPerson = true;
+          }
+          // Check if tech contact matches event day contact
+          if (this.techContact.name && 
+              this.techContact.name === this.eventDayContact.name &&
+              this.techContact.email === this.eventDayContact.email) {
+            this.sameAsPrimary = true;
+          }
+        },
+        toggleContactPerson() {
+          console.log('toggleContactPerson called, sameAsContactPerson:', this.sameAsContactPerson);
+          console.log('contactPerson data:', this.contactPerson);
+          if (this.sameAsContactPerson) {
+            // Copy contact person (from step 2) to event day contact
+            this.eventDayContact.name = this.contactPerson.name;
+            this.eventDayContact.phone = this.contactPerson.phone;
+            this.eventDayContact.email = this.contactPerson.email;
+            console.log('Copied to eventDayContact:', this.eventDayContact);
+          } else {
+            // Clear event day contact if unchecked
+            this.eventDayContact.name = '';
+            this.eventDayContact.phone = '';
+            this.eventDayContact.email = '';
+            console.log('Cleared eventDayContact');
+          }
+        },
+        toggleSameContact() {
+          console.log('toggleSameContact called, sameAsPrimary:', this.sameAsPrimary);
+          console.log('eventDayContact data:', this.eventDayContact);
+          if (this.sameAsPrimary) {
+            // Copy event day contact to technical contact
+            this.techContact.name = this.eventDayContact.name;
+            this.techContact.phone = this.eventDayContact.phone;
+            this.techContact.email = this.eventDayContact.email;
+            console.log('Copied to techContact:', this.techContact);
+          } else {
+            // Clear technical contact if unchecked
+            this.techContact.name = '';
+            this.techContact.phone = '';
+            this.techContact.email = '';
+            console.log('Cleared techContact');
+          }
+        }
+      }
+    }
+  </script>

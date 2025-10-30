@@ -1,0 +1,370 @@
+<!-- Chat Settings Page -->
+<div class="page-container">
+    <div class="admin-two-col">
+        
+        <!-- Bal oldal: Settings Form -->
+        <div>
+            <form id="chat-settings-form">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                
+                <!-- General Settings -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        ⚙️ Általános Beállítások
+                    </h3>
+                    
+                    <!-- Chat Enabled -->
+                    <div class="form__group">
+                        <div class="form__label-with-toggle">
+                            <span class="form__label">Chat Rendszer</span>
+                            <input type="checkbox" 
+                                   class="form-switch-input"
+                                   name="chat.enabled" 
+                                   id="chat.enabled"
+                                   value="true"
+                                   <%= chatEnabled ? 'checked' : '' %>>
+                        </div>
+                        <small class="form__hint">A chat widget megjelenítése a weboldalon</small>
+                    </div>
+
+                    <!-- AI Enabled -->
+                    <div class="form__group">
+                        <div class="form__label-with-toggle">
+                            <span class="form__label">AI Asszisztens</span>
+                            <input type="checkbox" 
+                                   class="form-switch-input"
+                                   name="chat.ai_enabled" 
+                                   id="chat.ai_enabled"
+                                   value="true"
+                                   <%= aiEnabled ? 'checked' : '' %>>
+                        </div>
+                        <small class="form__hint">
+                            OpenAI GPT-4 alapú válaszok • 
+                            <a href="/admin/integrations">API kulcs beállítása</a>
+                        </small>
+                    </div>
+
+                    <!-- Értékesítői Chat Enabled -->
+                    <div class="form__group">
+                        <div class="form__label-with-toggle">
+                            <span class="form__label">Értékesítői Chat</span>
+                            <input type="checkbox" 
+                                   class="form-switch-input"
+                                   name="chat.admin_chat_enabled" 
+                                   id="chat.admin_chat_enabled"
+                                   value="true"
+                                   <%= adminChatEnabled ? 'checked' : '' %>>
+                        </div>
+                        <small class="form__hint">Értékesítők csatlakozhatnak a chat-hez</small>
+                    </div>
+
+                    <!-- Auto Offline Minutes -->
+                    <div class="form__group mt-6 pt-6 border-t">
+                        <label class="form__label" for="chat.auto_offline_minutes">
+                            ⏱️ Auto-Offline Idő
+                        </label>
+                        <div class="form__input-group">
+                            <input 
+                                type="number" 
+                                class="form__control" 
+                                id="chat.auto_offline_minutes" 
+                                name="chat.auto_offline_minutes"
+                                value="<%= autoOfflineMinutes %>"
+                                min="5"
+                                max="60"
+                                required
+                            />
+                            <span class="form__input-group-text">perc</span>
+                        </div>
+                        <small class="form__hint">
+                            Inaktivitás után automatikus offline (5-60 perc)
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Offline Messages Management -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        📨 Offline Üzenetek Kezelése
+                    </h3>
+                    
+                    <!-- Offline Messages Retention Days -->
+                    <div class="form__group">
+                        <label class="form__label" for="offline_messages.retention_days">
+                            📅 Lezárt Üzenetek Megőrzése
+                        </label>
+                        <div class="form__input-group">
+                            <input 
+                                type="number" 
+                                class="form__control" 
+                                id="offline_messages.retention_days" 
+                                name="offline_messages.retention_days"
+                                value="<%= offlineMessagesRetentionDays %>"
+                                min="1"
+                                max="365"
+                                required
+                            />
+                            <span class="form__input-group-text">nap</span>
+                        </div>
+                        <small class="form__hint">
+                            Hány napig jelenjenek meg a lezárt (✅) és elvett (❌) offline üzenetek az admin felületen (1-365 nap)
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Proactive Engagement -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        🚀 Proaktív Engagement
+                    </h3>
+                    
+                    <!-- Proactive Enabled -->
+                    <div class="form__group">
+                        <div class="form__label-with-toggle">
+                            <span class="form__label">Proaktív Aktiválás</span>
+                            <input type="checkbox" 
+                                   class="form-switch-input"
+                                   name="chat.proactive_enabled" 
+                                   id="chat.proactive_enabled"
+                                   value="true"
+                                   <%= proactiveEnabled ? 'checked' : '' %>>
+                        </div>
+                        <small class="form__hint">
+                            A chat gomb pulzál, majd automatikusan megnyílik kontextuális üdvözléssel
+                        </small>
+                    </div>
+
+                    <!-- Proactive Delay -->
+                    <div class="form__group">
+                        <label class="form__label" for="chat.proactive_delay">
+                            ⏱️ Aktiválási Késleltetés
+                        </label>
+                        <div class="form__input-group">
+                            <input 
+                                type="number" 
+                                class="form__control" 
+                                id="chat.proactive_delay" 
+                                name="chat.proactive_delay"
+                                value="<%= proactiveDelay %>"
+                                min="10"
+                                max="120"
+                                required
+                            />
+                            <span class="form__input-group-text">másodperc</span>
+                        </div>
+                        <small class="form__hint">
+                            Mennyi idő után aktiválódjon (10-120 mp)
+                        </small>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Jobb oldal: Info Panels -->
+        <div>
+            <!-- Proaktív chat -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🚀 Proaktív Működés
+                </h3>
+                
+                <div class="text-sm leading-relaxed">
+                    <p class="m-0 mb-4">
+                        <strong>🎯 Mi történik?</strong>
+                    </p>
+                    
+                    <ol class="m-0 pl-5">
+                        <li class="mb-2">Látogató a megadott időt tölt az oldalon</li>
+                        <li class="mb-2">Chat gomb pulzálni kezd (figyelem felkeltés)</li>
+                        <li class="mb-2">2 mp múlva automatikusan megnyílik</li>
+                        <li>Kontextuális üdvözlés jelenik meg az oldal alapján</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Tippek -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    💡 Ajánlások
+                </h3>
+                
+                <div class="text-sm leading-relaxed">
+                    <p class="m-0 mb-4">
+                        <strong>⏰ Auto-offline:</strong><br>
+                        Javasolt: 15-20 perc. Túl rövid → gyakori logout, túl hosszú → nem reagáló admin.
+                    </p>
+                    
+                    <p class="m-0 mb-4">
+                        <strong>🚀 Proaktív delay:</strong><br>
+                        Javasolt: 30-45 mp. Ne legyen túl gyors (zavaró), de ne is túl lassú.
+                    </p>
+                    
+                    <p class="m-0">
+                        <strong>📅 Üzenet megőrzés:</strong><br>
+                        Javasolt: 14 nap. Lehetővé teszi a lezárt üzenetek utólagos ellenőrzését, de nem torlódik fel a lista.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Offline Messages Info -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📨 Offline Üzenetek
+                </h3>
+                
+                <div class="text-sm leading-relaxed">
+                    <p class="m-0 mb-4">
+                        <strong>🔄 Mi történik lezárás után?</strong>
+                    </p>
+                    
+                    <ol class="m-0 pl-5">
+                        <li class="mb-2">Üzenet lezárása (✅) vagy elvetése (❌)</li>
+                        <li class="mb-2">Átlátszó megjelenés, műveleti gombok eltűnnek</li>
+                        <li class="mb-2">Beállított napig látható marad (vizuális visszajelzés)</li>
+                        <li>Automatikusan eltűnik a listából a megadott idő után</li>
+                    </ol>
+                    
+                    <p class="m-0 mt-4 pt-4 border-t">
+                        <strong>📊 Használati esetek:</strong><br>
+                        • 7 nap: Nagy forgalmú webshop<br>
+                        • 14 nap: Közepes forgalom (alapértelmezett)<br>
+                        • 30 nap: Alacsony forgalom, hosszabb ellenőrzés
+                    </p>
+                </div>
+            </div>
+
+            <!-- Státusz -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⏳ Jelenlegi Állapot
+                </h3>
+                
+                <div class="text-sm">
+                    <div class="flex justify-between py-2 border-b">
+                        <span>Chat rendszer:</span>
+                        <strong class="<%= chatEnabled ? 'text-success' : 'text-muted' %>">
+                            <%= chatEnabled ? '✓ Aktív' : '✗ Kikapcsolva' %>
+                        </strong>
+                    </div>
+                    <div class="flex justify-between py-2 border-b">
+                        <span>AI asszisztens:</span>
+                        <strong class="<%= aiEnabled ? 'text-success' : 'text-muted' %>">
+                            <%= aiEnabled ? '✓ Aktív' : '✗ Kikapcsolva' %>
+                        </strong>
+                    </div>
+                    <div class="flex justify-between py-2 border-b">
+                        <span>Értékesítői chat:</span>
+                        <strong class="<%= adminChatEnabled ? 'text-success' : 'text-muted' %>">
+                            <%= adminChatEnabled ? '✓ Aktív' : '✗ Kikapcsolva' %>
+                        </strong>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span>Proaktív:</span>
+                        <strong class="<%= proactiveEnabled ? 'text-success' : 'text-muted' %>">
+                            <%= proactiveEnabled ? '✓ Aktív' : '✗ Kikapcsolva' %>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const csrfToken = '<%= csrfToken %>';
+
+    // Handle individual switch changes
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', async (e) => {
+            const name = e.target.name;
+            const value = e.target.checked ? 'true' : 'false';
+            await saveSetting(name, value);
+        });
+    });
+
+    // Handle number input changes (save on blur)
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('blur', async (e) => {
+            const name = e.target.name;
+            const value = e.target.value;
+            
+            // Validate min/max
+            const min = parseInt(e.target.min);
+            const max = parseInt(e.target.max);
+            const numValue = parseInt(value);
+            
+            if (numValue < min || numValue > max) {
+                showAlert('error', `Érték ${min} és ${max} között kell legyen`);
+                e.target.value = e.target.defaultValue;
+                return;
+            }
+            
+            await saveSetting(name, value);
+        });
+    });
+
+    // Save a single setting
+    async function saveSetting(name, value) {
+        const data = { [name]: value };
+        
+        try {
+            const response = await fetch('/admin/chat/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('success', result.message || 'Beállítás sikeresen mentve!');
+                
+                // No page reload needed - the toggle switch already reflects the new state
+                // The database save completed successfully in the background
+                // If you need to see other updated data, increase timeout to 1500ms like other admin pages
+            } else {
+                showAlert('error', result.message || 'Hiba történt a mentés során');
+                
+                // On error, revert the toggle switch to its previous state
+                const toggle = document.querySelector(`input[onchange*="${name}"]`);
+                if (toggle) {
+                    toggle.checked = !toggle.checked;
+                }
+            }
+        } catch (error) {
+            console.error('Save error:', error);
+            showAlert('error', 'Hiba történt a mentés során: ' + error.message);
+        }
+    }
+
+    // Show alert function
+    function showAlert(type, message) {
+        // Remove existing alerts
+        document.querySelectorAll('.alert').forEach(alert => {
+            if (alert.classList.contains('alert-success') || alert.classList.contains('alert-error')) {
+                alert.remove();
+            }
+        });
+        
+        // Create new alert
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.style.cssText = 'margin-bottom: 1.5rem; animation: slideDown 0.3s ease-out; position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px;';
+        alert.innerHTML = type === 'success' 
+            ? `✅ ${message}`
+            : `❌ ${message}`;
+        
+        document.body.appendChild(alert);
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            alert.style.animation = 'slideUp 0.3s ease-out';
+            setTimeout(() => alert.remove(), 300);
+        }, 3000);
+    }
+</script>
+
+

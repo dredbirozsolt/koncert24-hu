@@ -1,0 +1,75 @@
+<!-- Error Page -->
+<section class="section">
+    <div class="container">
+        <div class="error-container">
+            <div class="error-code">
+                <%= typeof statusCode !== 'undefined' ? statusCode : 500 %>
+            </div>
+            <h1 class="error-title">
+                <% const code = typeof statusCode !== 'undefined' ? statusCode : 500; %>
+                <% if (code === 404) { %>
+                    Oldal nem található
+                    <% } else if (code === 500) { %>
+                        Szerver hiba
+                        <% } else { %>
+                            Hiba történt
+                            <% } %>
+            </h1>
+            <p class="error-message">
+                <%= typeof message !== 'undefined' ? message : 'Váratlan hiba történt' %>
+            </p>
+            <div class="error-actions">
+                <a href="<%= basePath %>" class="btn btn--primary btn-large">
+                    Vissza a főoldalra
+                </a>
+                <a href="javascript:history.back()" class="btn btn--outline btn-large">
+                    Vissza
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .error-actions {
+        display: flex;
+        gap: var(--space-4);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Mobil optimalizáció */
+    @media (max-width: 768px) {
+        .error-code {
+            font-size: 6rem;
+        }
+
+        .error-title {
+            font-size: 1.75rem;
+        }
+
+        .error-message {
+            font-size: 1rem;
+        }
+
+        .error-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .error-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .error-code {
+            font-size: 4rem;
+        }
+
+        .error-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>

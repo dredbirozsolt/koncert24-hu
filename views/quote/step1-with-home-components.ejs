@@ -1,0 +1,273 @@
+<main class="quote-wizard">
+  <div class="container">
+    <!-- Back Button -->
+    <a href="<%= basePath %>eloadok/<%= performer.slug %>" class="quote-wizard__back">
+      <svg viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      Vissza az előadóhoz
+    </a>
+
+    <!-- Progress Bar -->
+    <div class="quote-wizard__progress">
+      <div class="quote-wizard__progress-bar" style="width: 33%;"></div>
+    </div>
+
+    <!-- Performer Mini Card -->
+    <div class="quote-wizard__performer-card">
+      <% if (performer.imageUrl) { %>
+        <img src="<%= performer.imageUrl %>" alt="<%= performer.name %>" class="quote-wizard__performer-image">
+      <% } %>
+      <div class="quote-wizard__performer-info">
+        <h3 class="quote-wizard__performer-name"><%= performer.name %></h3>
+        <p class="quote-wizard__performer-type"><%= performer.performer_type || 'Előadó' %></p>
+      </div>
+    </div>
+
+    <!-- Step Content -->
+    <div class="quote-wizard__content">
+      <h1 class="quote-wizard__title">Rendezvény részletei</h1>
+      <p class="quote-wizard__subtitle">Kérjük, add meg a rendezvényed alapvető adatait</p>
+
+      <form id="step1-form" class="quote-wizard__form">
+        
+        <!-- 1. DATE PICKER (CUSTOM FROM HOME) -->
+        <div class="form__group">
+          <label class="form__label">
+            <span class="label-icon">📅</span>
+            Melyik napon rendeznéd az eseményt?
+          </label>
+          <div class="date-picker" x-data="datePicker()" x-init="init()">
+            <div class="selected-date-display" @click="showCalendar = !showCalendar" tabindex="0">
+              <div class="date-display">
+                <span x-show="!selectedDate" class="placeholder">Válassz dátumot</span>
+                <span x-show="selectedDate" class="selected-date-text" x-text="formatSelectedDate()"></span>
+              </div>
+              <svg class="dropdown-icon" :class="{ 'rotate-180': showCalendar }" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div x-show="showCalendar" x-transition @click.outside="showCalendar = false" class="calendar-popup">
+              <div class="calendar-header">
+                <button type="button" @click="previousMonth()" class="nav-button">
+                  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                </button>
+                <h3 class="month-year" x-text="formatMonthYear()"></h3>
+                <button type="button" @click="nextMonth()" class="nav-button">
+                  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                </button>
+              </div>
+              <div class="weekdays">
+                <div class="weekday">H</div>
+                <div class="weekday">K</div>
+                <div class="weekday">Sze</div>
+                <div class="weekday">Cs</div>
+                <div class="weekday">P</div>
+                <div class="weekday">Szo</div>
+                <div class="weekday">V</div>
+              </div>
+              <div class="calendar-grid">
+                <template x-for="date in calendarDates" :key="date.key">
+                  <button type="button" @click="selectDate(date)" :disabled="date.disabled" :class="{'calendar-day': true, 'other-month': date.otherMonth, 'selected': date.selected, 'today': date.today, 'disabled': date.disabled}" x-text="date.day"></button>
+                </template>
+              </div>
+            </div>
+          </div>
+          <label class="quote-wizard__checkbox-label">
+            <input type="checkbox" name="eventDateFlexible" id="eventDateFlexible">
+            <span>Nem fix még az esemény dátuma</span>
+          </label>
+          <input type="hidden" name="eventDate" id="eventDate">
+        </div>
+
+        <!-- 2. TIME PICKER (CUSTOM FROM HOME) -->
+        <div class="form__group">
+          <label class="form__label">
+            <span class="label-icon">🕐</span>
+            Hány órakor kezdődjön az esemény?
+          </label>
+          <div class="time-picker" x-data="timePicker()" x-init="init()">
+            <div class="selected-time-display" @click="showTimePicker = !showTimePicker" tabindex="0">
+              <div class="time-display">
+                <span x-show="!selectedHour && !selectedMinute" class="placeholder">Válassz időpontot</span>
+                <span x-show="selectedHour !== null && selectedMinute !== null" class="selected-time-text" x-text="selectedHour + ':' + selectedMinute"></span>
+              </div>
+              <svg class="dropdown-icon" :class="{ 'rotate-180': showTimePicker }" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div x-show="showTimePicker" x-transition @click.outside="handleTimePickerClose()" class="time-picker-popup">
+              <h4 class="time-title">Időpont kiválasztása</h4>
+              <div class="time-picker-container">
+                <div class="wheel-picker hour-wheel">
+                  <div class="wheel-label">Óra</div>
+                  <div class="wheel-container" @wheel.prevent="handleHourWheel($event)" @touchstart="handleHourTouchStart($event)" @touchmove.prevent="handleHourTouchMove($event)" @touchend="handleHourTouchEnd($event)">
+                    <div class="wheel-mask">
+                      <div class="wheel-selection-overlay"></div>
+                      <div class="wheel-items" :style="`transform: translateY(${hourOffset}px)`">
+                        <template x-for="(hour, index) in availableHours" :key="index">
+                          <div class="wheel-item" :class="{ 'selected': index === selectedHourIndex }" @click="selectHour(index)" x-text="hour"></div>
+                        </template>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="time-separator-wheel">:</div>
+                <div class="wheel-picker minute-wheel">
+                  <div class="wheel-label">Perc</div>
+                  <div class="wheel-container" @wheel.prevent="handleMinuteWheel($event)" @touchstart="handleMinuteTouchStart($event)" @touchmove.prevent="handleMinuteTouchMove($event)" @touchend="handleMinuteTouchEnd($event)">
+                    <div class="wheel-mask">
+                      <div class="wheel-selection-overlay"></div>
+                      <div class="wheel-items" :style="`transform: translateY(${minuteOffset}px)`">
+                        <template x-for="(minute, index) in availableMinutes" :key="index">
+                          <div class="wheel-item" :class="{ 'selected': index === selectedMinuteIndex }" @click="selectMinute(index)" x-text="minute"></div>
+                        </template>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="time-picker-actions">
+                <button type="button" @click="confirmTime()" class="confirm-btn">Időpont megerősítése</button>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" name="eventTime" id="eventTime">
+        </div>
+
+        <!-- 3. LOCATION (CUSTOM FROM HOME) -->
+        <div class="form__group">
+          <label class="form__label">
+            <span class="label-icon">📍</span>
+            Hol rendeznéd az eseményt?
+          </label>
+          <div class="location-search" x-data="locationSearch()">
+            <input type="text" class="form__input" placeholder="Írd be a helységnevet" x-model="query" @input="handleInput()" @focus="showSuggestions = true" @blur="hideSuggestions()" @keydown.arrow-down.prevent="highlightNext()" @keydown.arrow-up.prevent="highlightPrevious()" @keydown.enter.prevent="selectHighlighted()" @keydown.escape="hideSuggestions()" autocomplete="off">
+            <div class="location-suggestions" x-show="showSuggestions && suggestions.length > 0" x-transition>
+              <template x-for="(suggestion, index) in suggestions" :key="index">
+                <div class="suggestion-item" :class="{ 'highlighted': index === highlightedIndex }" @mousedown.prevent="selectLocation(suggestion)" @mouseenter="highlightedIndex = index">
+                  <div class="suggestion-name" x-text="suggestion.name"></div>
+                  <div class="suggestion-country" x-text="suggestion.country"></div>
+                </div>
+              </template>
+            </div>
+          </div>
+          <input type="hidden" name="eventLocation" id="eventLocation">
+        </div>
+
+        <!-- 4. EVENT TYPE (CUSTOM FROM HOME) -->
+        <div class="form__group">
+          <label class="form__label">
+            <span class="label-icon">🎪</span>
+            Milyen műsor típusú eseményt szeretnél rendezni?
+          </label>
+          <select name="eventType" id="eventType" class="form__select" required>
+            <option value="">Válassz műsor típust</option>
+            <option value="outdoor_free">Nyilvános ingyenes rendezvény szabadtéren</option>
+            <option value="outdoor_paid">Nyilvános belépőjegyes rendezvény szabadtéren</option>
+            <option value="indoor_free">Nyilvános ingyenes rendezvény zárt helyiségben</option>
+            <option value="indoor_paid">Nyilvános belépőjegyes rendezvény zárt helyiségben</option>
+            <option value="private_personal">Zártkörű magánrendezvény</option>
+            <option value="private_corporate">Zártkörű céges rendezvény</option>
+          </select>
+        </div>
+
+        <!-- 5. EVENT TYPES (ICON BASED - ORIGINAL) -->
+        <div class="form__group">
+          <label class="form__label">
+            🎪 Milyen típusú rendezvényt szeretnél?
+          </label>
+          <p class="form__hint">Több válasz is megjelölhető</p>
+          <div class="event-type-grid">
+            <label class="event-type-card">
+              <input type="checkbox" name="eventTypes" value="szabadteri">
+              <div class="event-type-icon">🌳</div>
+              <div class="event-type-name">Szabadtéri</div>
+            </label>
+            <label class="event-type-card">
+              <input type="checkbox" name="eventTypes" value="belteri">
+              <div class="event-type-icon">🏢</div>
+              <div class="event-type-name">Beltéri</div>
+            </label>
+            <label class="event-type-card">
+              <input type="checkbox" name="eventTypes" value="ceges">
+              <div class="event-type-icon">💼</div>
+              <div class="event-type-name">Céges</div>
+            </label>
+            <label class="event-type-card">
+              <input type="checkbox" name="eventTypes" value="privat">
+              <div class="event-type-icon">🎉</div>
+              <div class="event-type-name">Privát</div>
+            </label>
+            <label class="event-type-card">
+              <input type="checkbox" name="eventTypes" value="belepos">
+              <div class="event-type-icon">🎫</div>
+              <div class="event-type-name">Belépős</div>
+            </label>
+          </div>
+        </div>
+
+        <!-- 6. GUEST COUNT (ORIGINAL) -->
+        <div class="form__group">
+          <label class="form__label">
+            👥 Várható vendégszám
+          </label>
+          <div class="radio-group">
+            <label class="radio-card">
+              <input type="radio" name="guestCount" value="<100" required>
+              <span>Kevesebb mint 100 fő</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="guestCount" value="100-300">
+              <span>100 - 300 fő</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="guestCount" value="300-1000">
+              <span>300 - 1000 fő</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="guestCount" value="1000+">
+              <span>1000+ fő</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 7. EVENT NAME (ORIGINAL) -->
+        <div class="form__group">
+          <label for="eventName" class="form__label">
+            🏷 Rendezvény elnevezése
+          </label>
+          <input type="text" id="eventName" name="eventName" class="form__input" placeholder="Pl. Eperfesztivál, Ballagás, Karácsonyi buli" required>
+        </div>
+
+        <!-- 8. EVENT CATEGORY (ORIGINAL) -->
+        <div class="form__group">
+          <label for="eventCategory" class="form__label">
+            🎭 Esemény jellege
+          </label>
+          <select id="eventCategory" name="eventCategory" class="form__select" required>
+            <option value="">Válassz kategóriát</option>
+            <option value="magánrendezvény">Magánrendezvény</option>
+            <option value="céges rendezvény">Céges rendezvény</option>
+            <option value="falunap">Falunap</option>
+            <option value="fesztivál">Fesztivál</option>
+            <option value="városi ünnep">Városi ünnep</option>
+            <option value="iskolai rendezvény">Iskolai rendezvény</option>
+            <option value="egyéb">Egyéb</option>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="quote-wizard__actions">
+          <button type="submit" class="btn btn--primary btn--large">
+            Tovább a következő lépésre
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<link rel="stylesheet" href="<%= basePath %>css/pages/quote-wizard.css">
+<link rel="stylesheet" href="<%= basePath %>css/modules/booking-system.css">
+<script src="<%= basePath %>js/pages/quote-wizard.js"></script>

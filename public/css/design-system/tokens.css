@@ -1,0 +1,720 @@
+/**
+ * Design System Variables
+ * koncert24.hu - Modern, Mobile-First, PWA-Ready
+ * 
+ * Based on:
+ * - Tailwind CSS color system
+ * - 4px spacing scale
+ * - WCAG 2.1 AA accessibility standards
+ */
+
+:root {
+  /* ==========================================
+     COLOR SYSTEM
+     ========================================== */
+  
+  /* RGB Values for rgba() usage */
+  --color-white-rgb: 255, 255, 255;
+  --color-black-rgb: 0, 0, 0;
+  
+  /* Semantic color RGB values (mapped from hex) */
+  --color-primary-500-rgb: 59, 130, 246;   /* #3b82f6 */
+  --color-primary-600-rgb: 37, 99, 235;    /* #2563eb */
+  --color-error-400-rgb: 248, 113, 113;    /* #f87171 */
+  --color-error-500-rgb: 239, 68, 68;      /* #ef4444 */
+  --color-error-600-rgb: 220, 38, 38;      /* #dc2626 */
+  --color-success-500-rgb: 16, 185, 129;   /* #10b981 */
+  --color-warning-600-rgb: 245, 158, 11;   /* #f59e0b */
+  --color-gray-500-rgb: 107, 114, 128;     /* #6b7280 */
+  
+  /* Primary Colors - Blue */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;  /* Base primary */
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+
+  /* Neutral Colors - Slate */
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+  --color-gray-950: #020617;
+
+  /* Success - Green */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+  --color-success-800: #065f46;
+  --color-success-900: #064e3b;
+
+  /* Warning - Amber */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+
+  /* Error/Danger - Red */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+
+  /* Info - Blue (same as primary) */
+  --color-info-50: var(--color-primary-50);
+  --color-info-500: var(--color-primary-500);
+  --color-info-600: var(--color-primary-600);
+
+  /* Pure Colors */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* ==========================================
+     SEMANTIC COLOR TOKENS (Light Mode)
+     ========================================== */
+  
+  /* Backgrounds */
+  --bg-base: var(--color-gray-50);
+  --bg-surface: var(--color-white);
+  --bg-surface-hover: var(--color-gray-100);
+  --bg-overlay: rgba(var(--color-black-rgb), 0.5);
+  --bg-overlay-light: rgba(var(--color-black-rgb), 0.3);
+  --bg-overlay-lighter: rgba(var(--color-black-rgb), 0.2);
+  --bg-overlay-dark: rgba(var(--color-black-rgb), 0.8);
+  --bg-subtle: var(--color-gray-100);
+  --bg-muted: rgba(var(--color-black-rgb), 0.05);
+  --bg-white-translucent: rgba(var(--color-white-rgb), 0.95);
+  --bg-white-soft: rgba(var(--color-white-rgb), 0.2);
+  --bg-white-medium: rgba(var(--color-white-rgb), 0.3);
+  --bg-dark-translucent: var(--color-gray-800);
+  --bg-error-soft: rgba(var(--color-error-600-rgb), 0.1);
+  
+  /* Text Colors */
+  --text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-600);
+  --text-tertiary: var(--color-gray-500);
+  --text-inverse: var(--color-white);
+  --text-disabled: var(--color-gray-400);
+  
+  /* Border Colors */
+  --border-base: var(--color-gray-200);
+  --border-strong: var(--color-gray-300);
+  --border-subtle: var(--color-gray-100);
+  --border-focus: var(--color-primary-600);
+  
+  /* Border Widths */
+  --border-width: 1px;
+  --border-width-thick: 2px;
+  --border-width-heavy: 4px;
+  
+  /* Interactive States */
+  --color-hover: var(--color-gray-100);
+  --color-active: var(--color-gray-200);
+  --color-focus: var(--color-primary-600);
+  --color-disabled: var(--color-gray-300);
+  
+  /* Shadow Colors */
+  --shadow-color: 0 0 0;
+  --shadow-color-strong: 0 0 0;
+
+  /* ==========================================
+     TYPOGRAPHY
+     ========================================== */
+  
+  /* Font Families */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+  
+  /* Font Sizes - Mobile First */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-4xl: 2.25rem;     /* 36px */
+  --text-5xl: 3rem;        /* 48px */
+  --text-6xl: 3.75rem;     /* 60px */
+  --text-7xl: 4.5rem;      /* 72px */
+  --text-8xl: 6rem;        /* 96px */
+  --text-9xl: 8rem;        /* 128px */
+  
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  
+  /* Letter Spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ==========================================
+     SPACING SCALE (4px base)
+     ========================================== */
+  
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0-5: 0.125rem;   /* 2px */
+  --space-1: 0.25rem;      /* 4px */
+  --space-1-5: 0.375rem;   /* 6px */
+  --space-2: 0.5rem;       /* 8px */
+  --space-2-5: 0.625rem;   /* 10px */
+  --space-3: 0.75rem;      /* 12px */
+  --space-3-5: 0.875rem;   /* 14px */
+  --space-4: 1rem;         /* 16px */
+  --space-5: 1.25rem;      /* 20px */
+  --space-6: 1.5rem;       /* 24px */
+  --space-7: 1.75rem;      /* 28px */
+  --space-8: 2rem;         /* 32px */
+  --space-9: 2.25rem;      /* 36px */
+  --space-10: 2.5rem;      /* 40px */
+  --space-11: 2.75rem;     /* 44px */
+  --space-12: 3rem;        /* 48px */
+  --space-14: 3.5rem;      /* 56px */
+  --space-16: 4rem;        /* 64px */
+  --space-20: 5rem;        /* 80px */
+  --space-24: 6rem;        /* 96px */
+  --space-28: 7rem;        /* 112px */
+  --space-32: 8rem;        /* 128px */
+  --space-36: 9rem;        /* 144px */
+  --space-40: 10rem;       /* 160px */
+  --space-44: 11rem;       /* 176px */
+  --space-48: 12rem;       /* 192px */
+  --space-52: 13rem;       /* 208px */
+  --space-56: 14rem;       /* 224px */
+  --space-60: 15rem;       /* 240px */
+  --space-64: 16rem;       /* 256px */
+  --space-72: 18rem;       /* 288px */
+  --space-80: 20rem;       /* 320px */
+  --space-96: 24rem;       /* 384px */
+
+  /* ==========================================
+     ICON SIZES
+     ========================================== */
+  
+  --icon-xs: 1rem;         /* 16px */
+  --icon-sm: 1.25rem;      /* 20px */
+  --icon-base: 1.5rem;     /* 24px */
+  --icon-lg: 2rem;         /* 32px */
+  --icon-xl: 2.5rem;       /* 40px */
+  --icon-2xl: 3rem;        /* 48px */
+  --icon-3xl: 4rem;        /* 64px */
+
+  /* ==========================================
+     BORDER RADIUS
+     ========================================== */
+  
+  --radius-none: 0;
+  --radius-sm: 0.125rem;   /* 2px */
+  --radius-base: 0.25rem;  /* 4px */
+  --radius-md: 0.375rem;   /* 6px */
+  --radius-lg: 0.5rem;     /* 8px */
+  --radius-xl: 0.75rem;    /* 12px */
+  --radius-2xl: 1rem;      /* 16px */
+  --radius-3xl: 1.5rem;    /* 24px */
+  --radius-button: 1.25rem; /* 20px - Soft rounded buttons */
+  --radius-full: 9999px;
+
+  /* Semantic tokens - can be overridden per component */
+  --radius-input: var(--radius-full); /* Fully rounded input fields */
+  --radius-button-default: var(--radius-button); /* Default button radius */
+
+  /* ==========================================
+     SHADOWS
+     ========================================== */
+  
+  --shadow-xs: 0 1px 2px 0 rgb(var(--shadow-color) / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(var(--shadow-color) / 0.1), 0 1px 2px -1px rgb(var(--shadow-color) / 0.1);
+  --shadow-base: 0 4px 6px -1px rgb(var(--shadow-color) / 0.1), 0 2px 4px -2px rgb(var(--shadow-color) / 0.1);
+  --shadow-md: 0 6px 10px -3px rgb(var(--shadow-color) / 0.1), 0 4px 6px -4px rgb(var(--shadow-color) / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(var(--shadow-color) / 0.1), 0 4px 6px -4px rgb(var(--shadow-color) / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(var(--shadow-color) / 0.1), 0 8px 10px -6px rgb(var(--shadow-color) / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(var(--shadow-color) / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(var(--shadow-color) / 0.05);
+  --shadow-none: 0 0 #0000;
+
+  /* ==========================================
+     OVERLAY & TRANSPARENCY
+     ========================================== */
+  
+  /* White overlays - for light backgrounds */
+  --overlay-white-10: rgba(255, 255, 255, 0.1);
+  --overlay-white-20: rgba(255, 255, 255, 0.2);
+  --overlay-white-30: rgba(255, 255, 255, 0.3);
+  --overlay-white-40: rgba(255, 255, 255, 0.4);
+  --overlay-white-50: rgba(255, 255, 255, 0.5);
+  --overlay-white-60: rgba(255, 255, 255, 0.6);
+  --overlay-white-70: rgba(255, 255, 255, 0.7);
+  --overlay-white-80: rgba(255, 255, 255, 0.8);
+  --overlay-white-90: rgba(255, 255, 255, 0.9);
+  
+  /* Black overlays - for dark backgrounds */
+  --overlay-black-10: rgba(0, 0, 0, 0.1);
+  --overlay-black-15: rgba(0, 0, 0, 0.15);
+  --overlay-black-20: rgba(0, 0, 0, 0.2);
+  --overlay-black-25: rgba(0, 0, 0, 0.25);
+  --overlay-black-30: rgba(0, 0, 0, 0.3);
+  --overlay-black-40: rgba(0, 0, 0, 0.4);
+  --overlay-black-50: rgba(0, 0, 0, 0.5);
+  --overlay-black-60: rgba(0, 0, 0, 0.6);
+  --overlay-black-70: rgba(0, 0, 0, 0.7);
+  --overlay-black-80: rgba(0, 0, 0, 0.8);
+  --overlay-black-90: rgba(0, 0, 0, 0.9);
+  
+  /* Backdrop blur effects */
+  --backdrop-blur-sm: blur(4px);
+  --backdrop-blur-md: blur(8px);
+  --backdrop-blur-lg: blur(16px);
+  --backdrop-blur-xl: blur(24px);
+  
+  /* Box shadows - elevation system */
+  --shadow-xs: 0 1px 2px var(--overlay-black-10);
+  --shadow-sm: 0 2px 4px var(--overlay-black-10);
+  --shadow-md: 0 4px 6px var(--overlay-black-30);
+  --shadow-lg: 0 10px 20px var(--overlay-black-40);
+  --shadow-xl: 0 20px 40px var(--overlay-black-40);
+  --shadow-2xl: 0 25px 60px var(--overlay-black-25);
+  
+  /* Text shadows */
+  --text-shadow-sm: 0 1px 2px var(--overlay-black-20);
+  --text-shadow-md: 0 2px 4px var(--overlay-black-30);
+  --text-shadow-lg: 0 2px 20px var(--overlay-black-40);
+  
+  /* Hover shadows */
+  --shadow-hover-sm: 0 4px 8px var(--overlay-black-15);
+  --shadow-hover-md: 0 4px 12px var(--overlay-black-40);
+  --shadow-hover-lg: 0 12px 40px var(--overlay-black-50);
+  --shadow-hover-xl: 0 12px 40px var(--overlay-black-60);
+  
+  /* Bottom shadows (for sticky elements) */
+  --shadow-bottom-sm: 0 -4px 24px var(--overlay-black-10);
+  --shadow-bottom-md: 0 -4px 24px var(--overlay-black-40);
+
+  /* ==========================================
+     ANIMATION & TRANSITIONS
+     ========================================== */
+  
+  /* Duration */
+  --duration-0: 0ms;
+  --duration-75: 75ms;
+  --duration-100: 100ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --duration-700: 700ms;
+  --duration-1000: 1000ms;
+  
+  /* Easing Functions */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Combined Transitions */
+  --transition-none: none;
+  --transition-fast: all var(--duration-150) var(--ease-out);
+  --transition-base: all var(--duration-200) var(--ease-out);
+  --transition-slow: all var(--duration-300) var(--ease-out);
+  --transition-slower: all var(--duration-500) var(--ease-out);
+  --transition-colors: color var(--duration-150) var(--ease-out),
+                       background-color var(--duration-150) var(--ease-out),
+                       border-color var(--duration-150) var(--ease-out);
+
+  /* ==========================================
+     BREAKPOINTS (for media queries)
+     ========================================== */
+  
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ==========================================
+     CONTAINER / MAX WIDTHS
+     ========================================== */
+  
+  --container-xs: 400px;
+  --container-sm: 600px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+
+  /* ==========================================
+     Z-INDEX SCALE
+     ========================================== */
+  
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-auto: auto;
+  
+  /* Component Z-Index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-notification: 1080;
+  --z-max: 9999;
+
+  /* ==========================================
+     LAYOUT
+     ========================================== */
+  
+  /* Container */
+  --container-max-width: 1280px;
+  --container-padding: var(--space-4);
+  
+  /* Header */
+  --header-height: 64px;
+  
+  /* Sidebar */
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 64px;
+  
+  /* Content */
+  --content-max-width: 65ch;
+  
+  /* Grid */
+  --grid-gap: var(--space-6);
+
+  /* ==========================================
+     BREAKPOINTS (for reference in JS)
+     ========================================== */
+  
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ==========================================
+     COMPONENT-SPECIFIC VARIABLES
+     ========================================== */
+  
+  /* Buttons */
+  --button-height-sm: 32px;
+  --button-height-md: 40px;
+  --button-height-lg: 48px;
+  --button-padding-x-sm: var(--space-3);
+  --button-padding-x-md: var(--space-4);
+  --button-padding-x-lg: var(--space-6);
+  
+  /* Forms */
+  --input-height: 45.5px;
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-2);
+  --input-border-width: 1px;
+  --input-border-radius: var(--radius-md);
+  
+  /* Cards */
+  --card-bg: var(--bg-surface);
+  --card-padding: var(--space-6);
+  --card-radius: var(--radius-xl);
+  --card-shadow: var(--shadow-sm);
+  
+  /* Badges */
+  --badge-height: 24px;
+  --badge-padding-x: var(--space-2);
+  --badge-radius: var(--radius-full);
+}
+
+/* ==========================================
+   RESPONSIVE SCALING
+   ========================================== */
+
+@media (min-width: 640px) {
+  :root {
+    --container-padding: var(--space-6);
+    --text-5xl: 3.5rem;
+    --text-6xl: 4.5rem;
+    --text-7xl: 6rem;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --container-padding: var(--space-8);
+    --header-height: 72px;
+    --grid-gap: var(--space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --container-padding: var(--space-12);
+    --header-height: 80px;
+    --text-8xl: 7rem;
+    --text-9xl: 9rem;
+  }
+}
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+
+/* Dark Mode Theme Selector */
+  :root {
+    /* Backgrounds */
+    --bg-base: var(--color-gray-950);
+    --bg-surface: var(--color-gray-900);
+    --bg-surface-hover: var(--color-gray-800);
+    --bg-overlay: rgba(var(--color-black-rgb), 0.8);
+    --bg-subtle: var(--color-gray-800);
+    
+    /* Text Colors */
+    --text-primary: var(--color-gray-100);
+    --text-secondary: var(--color-gray-400);
+    --text-tertiary: var(--color-gray-500);
+    --text-inverse: var(--color-gray-900);
+    --text-disabled: var(--color-gray-600);
+    
+    /* Border Colors */
+    --border-base: var(--color-gray-700);
+    --border-strong: var(--color-gray-600);
+    --border-subtle: var(--color-gray-800);
+    
+    /* Interactive States */
+    --color-hover: var(--color-gray-800);
+    --color-active: var(--color-gray-700);
+    
+    /* Shadow Colors - lighter for dark mode */
+    --shadow-color: 255 255 255;
+  }
+
+/* Manual Dark Mode Toggle */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-base: var(--color-gray-950);
+  --bg-surface: var(--color-gray-900);
+  --bg-surface-hover: var(--color-gray-800);
+  --bg-overlay: rgba(var(--color-black-rgb), 0.8);
+  --bg-subtle: var(--color-gray-800);
+  
+  /* Text Colors */
+  --text-primary: var(--color-gray-100);
+  --text-secondary: var(--color-gray-400);
+  --text-tertiary: var(--color-gray-500);
+  --text-inverse: var(--color-gray-900);
+  --text-disabled: var(--color-gray-600);
+  
+  /* Border Colors */
+  --border-base: var(--color-gray-700);
+  --border-strong: var(--color-gray-600);
+  --border-subtle: var(--color-gray-800);
+  
+  /* Interactive States */
+  --color-hover: var(--color-gray-800);
+  --color-active: var(--color-gray-700);
+  
+  /* Shadow Colors */
+  --shadow-color: 255 255 255;
+}
+
+/* Light Mode (explicit) */
+[data-theme="light"] {
+  /* Same as :root defaults */
+  --bg-base: var(--color-gray-50);
+  --bg-surface: var(--color-white);
+  --bg-surface-hover: var(--color-gray-100);
+  --bg-overlay: rgba(var(--color-black-rgb), 0.5);
+  --bg-subtle: var(--color-gray-100);
+  
+  --text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-600);
+  --text-tertiary: var(--color-gray-500);
+  --text-inverse: var(--color-white);
+  --text-disabled: var(--color-gray-400);
+  
+  --border-base: var(--color-gray-200);
+  --border-strong: var(--color-gray-300);
+  --border-subtle: var(--color-gray-100);
+  
+  --color-hover: var(--color-gray-100);
+  --color-active: var(--color-gray-200);
+  
+  --shadow-color: 0 0 0;
+}
+
+/* ==========================================
+   GENRE COLORS (Music Style Cards)
+   ========================================== */
+
+:root {
+  /* Pop */
+  --genre-pop-start: #ec4899;
+  --genre-pop-mid: #d946ef;
+  --genre-pop-end: #f472b6;
+  
+  /* Rock */
+  --genre-rock-start: #1a1a1a;
+  --genre-rock-mid: #dc2626;
+  --genre-rock-end: #7f1d1d;
+  
+  /* Retro */
+  --genre-retro-start: #f59e0b;
+  --genre-retro-mid: #fbbf24;
+  --genre-retro-end: #fb923c;
+  
+  /* Mulatos */
+  --genre-mulatos-start: #a16207;
+  --genre-mulatos-mid: #ca8a04;
+  --genre-mulatos-end: #d97706;
+  
+  /* Party Zenekar */
+  --genre-party-start: #8b5cf6;
+  --genre-party-mid: #6366f1;
+  --genre-party-end: #a855f7;
+  
+  /* Influencer */
+  --genre-influencer-start: #06b6d4;
+  --genre-influencer-mid: #0ea5e9;
+  --genre-influencer-end: #22d3ee;
+  
+  /* Szinhaz */
+  --genre-szinhaz-start: #991b1b;
+  --genre-szinhaz-mid: #dc2626;
+  --genre-szinhaz-end: #1f2937;
+  
+  /* DJ */
+  --genre-dj-start: #4f46e5;
+  --genre-dj-mid: #6366f1;
+  --genre-dj-end: #818cf8;
+  
+  /* Musorvezeto */
+  --genre-musorvezeto-start: #475569;
+  --genre-musorvezeto-mid: #1e3a8a;
+  --genre-musorvezeto-end: #64748b;
+  
+  /* Egyeb - Rainbow effect */
+  --genre-egyeb-start: #ec4899;
+  --genre-egyeb-mid: #f59e0b;
+  --genre-egyeb-end: #10b981;
+  --genre-egyeb-blue: #3b82f6;
+  --genre-egyeb-purple: #8b5cf6;
+  
+  /* Acapella */
+  --genre-acapella-start: #3b82f6;
+  --genre-acapella-mid: #60a5fa;
+  --genre-acapella-end: #93c5fd;
+  
+  /* Tancprodukcio */
+  --genre-tancprodukcio-start: #ec4899;
+  --genre-tancprodukcio-mid: #f472b6;
+  --genre-tancprodukcio-end: #fda4af;
+  
+  /* Gyermekmusor */
+  --genre-gyermekmusor-start: #f97316;
+  --genre-gyermekmusor-mid: #fb923c;
+  --genre-gyermekmusor-end: #fdba74;
+  
+  /* Tribute */
+  --genre-tribute-start: #eab308;
+  --genre-tribute-mid: #facc15;
+  --genre-tribute-end: #fde047;
+  
+  /* Musical - Operett */
+  --genre-musical-start: #d946ef;
+  --genre-musical-mid: #e879f9;
+  --genre-musical-end: #f0abfc;
+  
+  /* Folk - World - Country */
+  --genre-folk-start: #84cc16;
+  --genre-folk-mid: #a3e635;
+  --genre-folk-end: #bef264;
+  
+  /* Rap - Hip-Hop - Trap */
+  --genre-rap-start: #0f172a;
+  --genre-rap-mid: #1e293b;
+  --genre-rap-end: #334155;
+  
+  /* Jazz - Blues - Swing */
+  --genre-jazz-start: #0369a1;
+  --genre-jazz-mid: #0284c7;
+  --genre-jazz-end: #38bdf8;
+  
+  /* Stand-up - Humor */
+  --genre-standup-start: #facc15;
+  --genre-standup-mid: #fef08a;
+  --genre-standup-end: #fde047;
+  
+  /* Social Media Brand Colors */
+  --social-facebook: #1877f2;
+  --social-linkedin: #0a66c2;
+  --social-whatsapp: #25d366;
+  --social-tiktok: #000000;
+  --social-youtube: #ff0000;
+  --social-pinterest: #e60023;
+}
+
+/* ==========================================
+   GLOBAL FONT APPLICATION
+   ========================================== */
+
+body {
+  font-family: var(--font-sans);
+}
+
+/* Inherit font family for common elements instead of universal selector */
+button,
+input,
+select,
+textarea,
+optgroup {
+  font-family: inherit;
+}

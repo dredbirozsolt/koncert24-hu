@@ -1,0 +1,202 @@
+<!-- Admin FAQ Category Edit -->
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header mb-4">
+    <a href="/admin/faq" class="btn btn--secondary">
+      ← Vissza a kategóriákhoz
+    </a>
+  </div>
+
+  <!-- Form -->
+  <form method="POST" action="<%= category ? '/admin/faq/categories/' + category.id : '/admin/faq/categories' %>" id="faqCategoryForm">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="admin-two-col">
+      <!-- Bal oldal: Alapadatok -->
+      <div>
+        <div class="card--data">
+          <h3 class="section-title">
+            📁 <%= category ? 'Kategória Szerkesztése' : 'Új Kategória' %>
+          </h3>
+
+          <div class="form__group">
+            <label for="name">Kategória neve *</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              class="form__control"
+              placeholder="pl. Általános, Előadók, Technikai kérdések"
+              value="<%= category ? category.name : '' %>"
+              required
+              maxlength="100"
+            >
+            <small class="form__hint">Maximum 100 karakter</small>
+          </div>
+
+          <div class="form__group">
+            <label for="icon">Emoji ikon</label>
+            <input 
+              type="text" 
+              id="icon" 
+              name="icon" 
+              class="form__control"
+              value="<%= category && category.icon ? category.icon : '' %>"
+              maxlength="10"
+              placeholder="📋"
+            >
+            <small class="form__hint">
+              Emoji ikon a kategória mellett
+            </small>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form__group">
+              <label for="displayOrder">Megjelenítési sorrend</label>
+              <input 
+                type="number" 
+                id="displayOrder" 
+                name="displayOrder" 
+                class="form__control"
+                value="<%= category ? category.displayOrder : 0 %>"
+                min="0"
+                max="999"
+              >
+              <small class="form__hint">Alacsonyabb szám = előrébb</small>
+            </div>
+
+            <div class="form__group">
+              <label>&nbsp;</label>
+              <div class="form__switch-row">
+                <span class="form__switch-row-label">Aktív kategória</span>
+                <input 
+                  type="checkbox" 
+                  class="form-switch-input"
+                  name="isActive" 
+                  id="isActive"
+                  value="true"
+                  <%= !category || category.isActive ? 'checked' : '' %>
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="btn__group btn__group--equal mb-4">
+            <button type="submit" class="btn btn--primary">
+              💾 <%= category ? 'Mentés' : 'Létrehozás' %>
+            </button>
+            <a href="/admin/faq" class="btn btn--secondary">
+              ✖️ Mégse
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobb oldal: Info Panel -->
+      <div>
+        <!-- Gyorssegéd -->
+        <div class="card--data">
+          <h3 class="section-title">
+            ℹ️ Tippek
+          </h3>
+          
+          <div class="text-sm leading-relaxed">
+            <p class="m-0 mb-4">
+              <strong>📋 Kategória név:</strong><br>
+              Rövid, egyértelmű név (pl. "Általános", "Jegyvásárlás")
+            </p>
+            
+            <p class="m-0 mb-4">
+              <strong>😊 Emoji ikon:</strong><br>
+              Bármilyen emoji használható. Segít a vizuális azonosításban.
+            </p>
+            
+            <p class="m-0 mb-4">
+              <strong>🔢 Sorrend:</strong><br>
+              A kisebb számok előrébb jelennek meg a listában.
+            </p>
+            
+            <p class="m-0">
+              <strong>✓ Aktív állapot:</strong><br>
+              Csak az aktív kategóriák láthatók a látogatók számára.
+            </p>
+          </div>
+        </div>
+
+        <% if (category && category.id) { %>
+        <!-- Kapcsolódó kérdések -->
+        <div class="card--data mt-3">
+          <h3 class="section-title">
+            ❓ Kapcsolódó kérdések
+          </h3>
+          
+          <div class="stat-item">
+            <div class="stat-value text-4xl text-primary">0</div>
+            <div class="stat-label">Kérdés ebben a kategóriában</div>
+          </div>
+          
+          <a href="/admin/faq" class="btn btn--outline btn--block mt-2">
+            📋 Kérdések kezelése
+          </a>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+
+<script>
+    // FAQ category form submit handler
+    document.getElementById('faqCategoryForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Mentés...';
+        
+        try {
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<%= csrfToken %>',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                Modal.alert({
+                    title: 'Siker',
+                    message: result.message || 'Kategória sikeresen mentve!',
+                    type: 'success'
+                });
+                window.location.href = '/admin/faq';
+            } else {
+                throw new Error(result.message || 'Hiba történt a mentés során');
+            }
+        } catch (error) {
+            Modal.alert({
+                title: 'Hiba',
+                message: '❌ Hiba: ' + error.message,
+                type: 'error'
+            });
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+</script>

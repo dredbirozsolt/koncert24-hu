@@ -1,0 +1,730 @@
+
+
+<div class="page-container">
+  <!-- Statistics -->
+  <div class="card--data">
+    <h3>Statisztikák</h3>
+    <div class="stats-grid">
+      <div class="card--stat card--stat--primary">
+        <h3>Aktív Sessions</h3>
+        <div class="stat-value"><%= adminSessions.length %></div>
+      </div>
+
+      <div class="card--stat <%= systemStatus.adminChat.adminCount > 0 ? 'card--stat--success' : 'card--stat--warning' %>">
+        <h3>👔 Online Értékesítők</h3>
+        <div class="stat-value"><%= systemStatus.adminChat.adminCount %></div>
+      </div>
+
+      <div class="card--stat <%= systemStatus.ai.available ? 'card--stat--success' : 'card--stat--error' %>">
+        <h3>🤖 AI Szolgáltatás</h3>
+        <div class="stat-value"><%= systemStatus.ai.available ? 'Elérhető' : 'Offline' %></div>
+      </div>
+
+      <div class="card--stat <%= systemStatus.adminChat.available ? 'card--stat--success' : 'card--stat--warning' %>">
+        <h3>🎧 Értékesítői Chat</h3>
+        <div class="stat-value"><%= systemStatus.adminChat.available ? 'Elérhető' : 'Offline' %></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="btn__group btn__group--equal mb-4">
+    <button class="btn btn--primary" onclick="location.reload()">
+      Frissítés
+    </button>
+  </div>
+
+  <!-- Chat Sessions Table -->
+  <div class="card--data">
+    <div class="p-0">
+      <% if (adminSessions && adminSessions.length > 0) { %>
+        <div class="table--responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th class="w-24 whitespace-nowrap">Időpont</th>
+                <th class="w-40">Felhasználó</th>
+                <th class="w-48">Elérhetőség</th>
+                <th class="w-24 text-center">Státusz</th>
+                <th class="min-w-200">Utolsó Üzenet</th>
+                <th class="w-32 text-center">Műveletek</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% adminSessions.forEach(session => { %>
+                <tr>
+                  <td>
+                    <div class="text-sm text-secondary">
+                      <% 
+                      const timestamp = session.updatedAt || session.createdAt;
+                      const date = new Date(timestamp);
+                      %>
+                      <div class="whitespace-nowrap">
+                        <%= date.toLocaleDateString('hu-HU', { 
+                          year: 'numeric', 
+                          month: 'short', 
+                          day: 'numeric'
+                        }) %>
+                      </div>
+                      <div class="whitespace-nowrap text-xs opacity-75">
+                        <%= date.toLocaleTimeString('hu-HU', { 
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) %>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="user-info">
+                      <div class="user-details">
+                        <div class="name">
+                          <%= session.userName || 'Vendég Felhasználó' %>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="contact-info">
+                      <% if (session.userEmail) { %>
+                        <div class="contact-item">
+                          <span><%= session.userEmail %></span>
+                        </div>
+                      <% } %>
+                      <% if (session.userPhone) { %>
+                        <div class="contact-item">
+                          <span><%= session.userPhone %></span>
+                        </div>
+                      <% } %>
+                      <% if (!session.userEmail && !session.userPhone) { %>
+                        <span class="text-muted italic text-sm">
+                          ➖ Nincs megadva
+                        </span>
+                      <% } %>
+                    </div>
+                  </td>
+                  <td>
+                    <% 
+                      let badgeClass = 'badge-secondary';
+                      let statusText = session.status;
+                      let statusIcon = '🔵';
+                      if (session.status === 'active') {
+                        badgeClass = 'badge-success';
+                        statusText = 'Aktív';
+                        statusIcon = '';
+                      } else if (session.status === 'escalated') {
+                        badgeClass = 'badge-warning';
+                        statusText = 'Eszkalálva';
+                        statusIcon = '';
+                      } else if (session.status === 'closed') {
+                        badgeClass = 'badge-secondary';
+                        statusText = 'Lezárva';
+                        statusIcon = '';
+                      }
+                    %>
+                    <span class="badge <%= badgeClass %>">
+                      <%= statusIcon %>
+                      <%= statusText %>
+                    </span>
+                  </td>
+                  <td>
+                    <% if (session.messages && session.messages.length > 0) { %>
+                      <div class="message-preview">
+                        <div class="message-content">
+                          <div class="message-text">
+                            <%= session.messages[0].content %>
+                          </div>
+                          <div class="message-meta">
+                            <%= session.messages.length %> üzenet összesen
+                          </div>
+                        </div>
+                      </div>
+                    <% } else { %>
+                      <div class="text-muted italic">
+                        📥 Még nincs üzenet
+                      </div>
+                    <% } %>
+                  </td>
+                  <td class="text-center">
+                    <button 
+                      class="btn btn--primary"
+                      onclick="openChatSession(<%= session.id %>)"
+                      title="Chat megnyitása"
+                    >
+                      💬 Megnyitás
+                    </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          📥 <p>Még nincs aktív chat session</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Chat Kezelés Információk -->
+  <div class="card--data mt-4">
+    <h3>💡 Fontos Tudnivalók - Chat Kezelés</h3>
+    
+    <div class="card__info-grid">
+      <div>
+        <p><strong>⏱️ Session Lejárat</strong></p>
+        <ul>
+          <li><strong>48 óra inaktivitás után</strong> automatikusan törlődik a localStorage-ből</li>
+          <li><strong>30 nap után</strong> véglegesen törlődik az adatbázisból</li>
+          <li>Az idő minden üzenettel újraindul (lastActivity frissül)</li>
+        </ul>
+      </div>
+
+      <div>
+        <p><strong>🤖 Chat Módok</strong></p>
+        <ul>
+          <li><strong>Full Service:</strong> AI + Értékesítő (mindkettő elérhető)</li>
+          <li><strong>Értékesítő Only:</strong> Csak értékesítő válaszol (AI offline)</li>
+          <li><strong>AI Only:</strong> Csak AI válaszol (nincs online értékesítő)</li>
+          <li><strong>Offline Mode:</strong> Üzenet hagyás (email form)</li>
+        </ul>
+      </div>
+
+      <div>
+        <p><strong>⚡ Real-time Működés</strong></p>
+        <ul>
+          <li><strong>WebSocket kapcsolat:</strong> Automatikus frissítés</li>
+          <li><strong>Új üzenet:</strong> Azonnal megjelenik mindkét félnél</li>
+          <li><strong>Typing indicator:</strong> "Értékesítő gépel..." jelzés</li>
+          <li><strong>Unread count:</strong> Piros badge az olvasatlan üzeneteken</li>
+        </ul>
+      </div>
+
+      <div>
+        <p><strong>✅ Értékesítő Elérhetőség</strong></p>
+        <ul>
+          <li><strong>Online státusz:</strong> Automatikusan beállítódik bejelentkezéskor</li>
+          <li><strong>Offline státusz:</strong> 5 perc inaktivitás vagy kilépés után</li>
+          <li><strong>Több értékesítő:</strong> Bármelyik válaszolhat ugyanabban a session-ben</li>
+        </ul>
+      </div>
+
+      <div>
+        <p><strong>⚠️ Figyelendő</strong></p>
+        <ul>
+          <li><strong>Escalated session-ök:</strong> Felhasználó értékesítői segítséget kért</li>
+          <li><strong>Olvasatlan üzenetek:</strong> Piros badge jelzi</li>
+          <li><strong>Régi session-ök:</strong> 24 óránál régebbiek ellenőrzendők</li>
+          <li><strong>Offline üzenetek:</strong> Email-ben érkeznek, külön kezelendők</li>
+        </ul>
+      </div>
+
+      <div>
+        <p><strong>📱 Mobilbarát Chat</strong></p>
+        <ul>
+          <li><strong>Desktop:</strong> 360×500px ablak</li>
+          <li><strong>Tablet:</strong> Központosított layout</li>
+          <li><strong>Mobile (≤480px):</strong> Full-screen (100vh)</li>
+          <li><strong>Touch targets:</strong> 44-56px (iOS/Android standard)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bot Védelem Információk -->
+  <div class="card--data mt-4">
+    <h3>🛡️ Bot Védelem Aktív</h3>
+    
+    <div class="card__info-grid">
+      <div>
+        <p><strong>⏲️ Rate Limiting</strong></p>
+        <ul>
+          <li><strong>Session:</strong> 3 / 15 perc</li>
+          <li><strong>Üzenet:</strong> 20 / 1 perc</li>
+          <li><strong>Offline:</strong> 2 / 1 óra</li>
+        </ul>
+      </div>
+
+      <div>
+        <p><strong>🤖 Bot Szűrés</strong></p>
+        <ul>
+          <li>User Agent blokkolás (curl, wget)</li>
+          <li>Honeypot mezők (láthatatlan)</li>
+          <li>IP blacklist (auto-lejárat)</li>
+        </ul>
+      </div>
+
+      <div>
+        <p><strong>🚫 Spam Védelem</strong></p>
+        <ul>
+          <li>Ismételt üzenetek (3+) blokkolva</li>
+          <li>URL spam (4+) szűrés</li>
+          <li>Gyanús kulcsszavak (viagra, casino)</li>
+        </ul>
+      </div>
+
+      <div>
+        <p><strong>📜 Auto-Cleanup</strong></p>
+        <ul>
+          <li>30 perc inaktivitás → close</li>
+          <li>5 percenként automatikus check</li>
+          <li>9 rétegű védelem összesen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- End of Info Panels -->
+
+</div>
+
+<script src="/js/design-system/modal.js"></script>
+
+<script>
+  let currentSessionId = null;
+  let chatModal = null;
+  let messageCount = 0;
+
+  // Show alert using Modal.js
+  function showAlertModal(message, type = 'info') {
+    Modal.alert({
+      title: type === 'error' ? 'Hiba' : 
+             type === 'success' ? 'Siker' : 
+             type === 'warning' ? 'Figyelmeztetés' : 'Információ',
+      message: message,
+      type: type
+    });
+  }
+
+  function closeModal() {
+    if (chatModal) {
+      chatModal.close();
+      chatModal = null;
+    }
+    currentSessionId = null;
+    messageCount = 0;
+  }
+
+  function openChatSession(sessionId) {
+    currentSessionId = sessionId;
+    
+    // Create modal with loading state
+    const footer = `
+      <button class="btn btn-error" onclick="closeSession()">
+        ❌ Beszélgetés lezárása
+      </button>
+      <div class="flex gap-2 flex-1 max-w-600">
+        <input 
+          type="text" 
+          id="salesMessageInput" 
+          class="form__control flex-1" 
+          placeholder="Írja be az üzenetét..."
+        >
+        <button class="btn btn--primary" onclick="sendSalesMessage()">
+          📤 Küldés
+        </button>
+      </div>
+    `;
+    
+    chatModal = Modal.create({
+      title: `💬 Chat Session #${sessionId}`,
+      content: '<div id="chatMessages" class="chat-widget__messages"><div class="text-center p-4 text-muted">⏳ Betöltés...</div></div>',
+      footer: footer,
+      size: 'lg',
+      callbacks: {
+        onClose: () => {
+          currentSessionId = null;
+          messageCount = 0;
+        }
+      }
+    });
+    
+    chatModal.open();
+    
+    // Load messages
+    fetch(`/admin/chat/session/${sessionId}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('Session data:', data);
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load session');
+        }
+        
+        const session = data.session;
+        const messages = session.messages || [];
+        const isClosed = session.status === 'closed';
+        
+        // Build messages HTML
+        let messagesHTML = '';
+        if (messages.length === 0) {
+          messagesHTML = '<div class="text-center p-4 text-muted">📥 Még nincs üzenet ebben a beszélgetésben</div>';
+        } else {
+          messagesHTML = messages.map(msg => {
+            const msgClass = msg.role;
+            const content = msg.content || '';
+            const createdAt = msg.createdAt || msg.created_at;
+            const time = new Date(createdAt).toLocaleTimeString('hu-HU', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+            
+            return `
+              <div class="message-bubble ${msgClass}">
+                ${content}
+                <span class="message-time">${time}</span>
+              </div>
+            `;
+          }).join('');
+        }
+        
+        // Update content
+        chatModal.setContent(`<div id="chatMessages" class="chat-widget__messages">${messagesHTML}</div>`);
+        
+        // Update UI based on session status
+        if (isClosed) {
+          const messageInput = chatModal.modalElement.querySelector('#salesMessageInput');
+          const closeBtn = chatModal.modalElement.querySelector('.btn-error');
+          
+          if (messageInput) {
+            messageInput.disabled = true;
+            messageInput.placeholder = 'A beszélgetés lezárva';
+          }
+          if (closeBtn) {
+            closeBtn.innerHTML = '🔒 Lezárva';
+            closeBtn.disabled = true;
+            closeBtn.classList.remove('btn-error');
+            closeBtn.classList.add('btn--secondary');
+          }
+        } else {
+          // Add Enter key listener to send message (only if session is active)
+          const messageInput = chatModal.modalElement.querySelector('#salesMessageInput');
+          if (messageInput) {
+            messageInput.addEventListener('keypress', function(e) {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendSalesMessage();
+              }
+            });
+          }
+        }
+        
+        // Scroll to bottom
+        setTimeout(() => {
+          const messagesContainer = chatModal.modalElement.querySelector('#chatMessages');
+          if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          }
+        }, 100);
+      })
+      .catch(err => {
+        console.error('Error loading messages:', err);
+        chatModal.setContent(`
+          <div class="text-center p-4 text-error">
+            ⚠️ <p><strong>Hiba történt az üzenetek betöltésekor</strong></p>
+            <p class="text-sm">${err.message}</p>
+          </div>
+        `);
+      });
+  }
+
+  function sendSalesMessage() {
+    if (!chatModal) {
+      showAlertModal('Nincs aktív chat modal!', 'error');
+      return;
+    }
+    
+    const input = chatModal.modalElement.querySelector('#salesMessageInput');
+    const message = input.value.trim();
+    
+    if (!message) {
+      showAlertModal('Kérjük, írjon be egy üzenetet!', 'warning');
+      return;
+    }
+    
+    if (!currentSessionId) {
+      showAlertModal('Nincs aktív chat session!', 'error');
+      return;
+    }
+    
+    // Disable input while sending
+    input.disabled = true;
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    fetch('/admin/chat/message/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      },
+      body: JSON.stringify({ 
+        sessionId: currentSessionId,
+        message: message
+      })
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      console.log('Send message response:', data);
+      
+      if (data.success) {
+        input.value = '';
+        input.disabled = false;
+        input.focus();
+        
+        // Add message to chat immediately for better UX
+        const messagesDiv = chatModal.modalElement.querySelector('#chatMessages');
+        const time = new Date().toLocaleTimeString('hu-HU', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+        
+        const messageHtml = `
+          <div class="message-bubble admin">
+            ${message}
+            <span class="message-time">${time}</span>
+          </div>
+        `;
+        
+        messagesDiv.insertAdjacentHTML('beforeend', messageHtml);
+        
+        // Scroll to bottom
+        setTimeout(() => {
+          if (messagesDiv) {
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          }
+        }, 50);
+      } else {
+        throw new Error(data.error || 'Failed to send message');
+      }
+    })
+    .catch(err => {
+      console.error('Error sending message:', err);
+      showAlertModal(`Hiba történt az üzenet küldésekor: ${err.message}`, 'error');
+      input.disabled = false;
+    });
+  }
+
+  // Open confirmation modal
+  async function closeSession() {
+    if (!currentSessionId) {
+      showAlertModal('Nincs aktív chat session!', 'error');
+      return;
+    }
+
+    // Show confirmation modal using Modal.js
+    const confirmed = await Modal.confirm({
+      message: `
+        <div class="text-center">
+          <div class="mb-3">❌</div>
+          <p class="text-lg font-semibold mb-2">Biztosan le szeretné zárni ezt a beszélgetést?</p>
+          <p class="text-muted text-sm">A felhasználó nem tud majd több üzenetet küldeni.</p>
+        </div>
+      `,
+      confirmText: '✓ Igen, lezárom',
+      cancelText: '✖️ Mégse'
+    });
+    
+    if (!confirmed) {
+      return;
+    }
+    
+    // Close session
+    const closeBtn = chatModal.modalElement.querySelector('.btn-error');
+    if (closeBtn) {
+      const originalText = closeBtn.innerHTML;
+      closeBtn.disabled = true;
+      closeBtn.innerHTML = '⏳ Lezárás...';
+    }
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    
+    fetch(`/admin/chat/session/${currentSessionId}/close`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
+      }
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      if (data.success) {
+        // Show success message in chat
+        const messagesDiv = chatModal.modalElement.querySelector('#chatMessages');
+        const time = new Date().toLocaleTimeString('hu-HU', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+        
+        const messageHtml = `
+          <div class="message-bubble system bg-light text-secondary text-center italic">
+            ✅ Beszélgetés lezárva
+            <span class="message-time">${time}</span>
+          </div>
+        `;
+        
+        messagesDiv.insertAdjacentHTML('beforeend', messageHtml);
+        
+        // Disable message input
+        const messageInput = chatModal.modalElement.querySelector('#salesMessageInput');
+        if (messageInput) {
+          messageInput.disabled = true;
+          messageInput.placeholder = 'A beszélgetés lezárva';
+        }
+        
+        // Update button
+        if (closeBtn) {
+          closeBtn.innerHTML = '🔒 Lezárva';
+          closeBtn.classList.remove('btn-error');
+          closeBtn.classList.add('btn--secondary');
+        }
+        
+        // Scroll to bottom
+        setTimeout(() => {
+          if (messagesDiv) {
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          }
+        }, 100);
+        
+        // Show success alert
+        showAlertModal('Beszélgetés sikeresen lezárva!', 'success');
+        
+        // Reload table after 2 seconds
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+      } else {
+        throw new Error(data.error || 'Failed to close session');
+      }
+    })
+    .catch(err => {
+      console.error('Error closing session:', err);
+      showAlertModal(`Hiba történt: ${err.message}`, 'error');
+      
+      if (closeBtn) {
+        closeBtn.disabled = false;
+        closeBtn.innerHTML = '❌ Beszélgetés lezárása';
+      }
+    });
+  }
+
+  // Értékesítő Heartbeat System
+  function sendHeartbeat() {
+    fetch('/admin/chat/heartbeat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        console.log('✅ Heartbeat sent - Értékesítő online');
+      }
+    })
+    .catch(err => {
+      console.error('❌ Heartbeat failed:', err);
+    });
+  }
+
+  // Send heartbeat immediately when page loads
+  sendHeartbeat();
+
+  // Send heartbeat every 30 seconds to keep sales person online
+  setInterval(sendHeartbeat, 30000);
+
+  // Poll for new messages in active session
+  function pollForNewMessages() {
+    // Only poll if there's an active session AND chat modal is open
+    if (!currentSessionId || !chatModal) return;
+    
+    fetch(`/admin/chat/session/${currentSessionId}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.success) {
+          const newMessages = data.session.messages || [];
+          
+          // Check if there are new messages
+          if (newMessages.length > messageCount) {
+            // Reload messages
+            const messagesDiv = chatModal.modalElement.querySelector('#chatMessages');
+            if (messagesDiv) {
+              messagesDiv.innerHTML = newMessages.map(msg => {
+                let msgClass = msg.role;
+                let content = msg.content || '';
+                let createdAt = msg.createdAt || msg.created_at;
+                let time = new Date(createdAt).toLocaleTimeString('hu-HU', { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                });
+                
+                return `
+                  <div class="message-bubble ${msgClass}">
+                    ${content}
+                    <span class="message-time">${time}</span>
+                  </div>
+                `;
+              }).join('');
+              
+              // Auto-scroll to new messages
+              setTimeout(() => {
+                if (messagesDiv) {
+                  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }
+              }, 50);
+              
+              messageCount = newMessages.length;
+            }
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Poll error:', err);
+        // Silent fail - don't spam console if modal is closed
+      });
+  }
+
+  // Poll every 2 seconds when a session is open
+  setInterval(pollForNewMessages, 2000);
+
+  // Reset message count when opening a session
+  const originalOpenChatSession = openChatSession;
+  openChatSession = function(sessionId) {
+    messageCount = 0;
+    originalOpenChatSession(sessionId);
+  };
+
+  // Auto-refresh page every 2 minutes for dashboard data (session list, stats)
+  setInterval(() => {
+    // Only reload if chat modal is closed (don't interrupt active chat)
+    if (!chatModal || !currentSessionId) {
+      location.reload();
+    }
+  }, 120000);
+
+  // Mark sales person offline when leaving page
+  window.addEventListener('beforeunload', function() {
+    // Use sendBeacon for reliable delivery during page unload
+    const data = JSON.stringify({ goingOffline: true });
+    navigator.sendBeacon('/admin/chat/heartbeat', data);
+  });
+</script>

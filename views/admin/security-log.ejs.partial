@@ -1,0 +1,372 @@
+<!-- ✅ HELYES admin template - CSAK tartalom, layout nélkül -->
+<style>
+  .security-log-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .stat-card .label {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-card .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .stat-card.critical .value { color: #e74c3c; }
+  .stat-card.medium .value { color: #f39c12; }
+  .stat-card.low .value { color: #27ae60; }
+
+  .filters-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .filter-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .table-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow-x: auto;
+  }
+
+  .security-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .security-table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .security-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .security-table tr:hover {
+    background: #f8f9fa;
+  }
+
+  .severity-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .severity-critical { background: #fee; color: #c00; }
+  .severity-high { background: #ffe; color: #f60; }
+  .severity-medium { background: #fff4e6; color: #e67e22; }
+  .severity-low { background: #eef; color: #27ae60; }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary { background: #3498db; color: white; }
+  .btn-primary:hover { background: #2980b9; }
+  .btn-secondary { background: #95a5a6; color: white; }
+  .btn-success { background: #27ae60; color: white; }
+  .btn-error { background: #e74c3c; color: white; }
+
+  .flash {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+  .flash.success { background: #d4edda; color: #155724; }
+  .flash.error { background: #f8d7da; color: #721c24; }
+</style>
+
+<div class="security-log-container">
+  <div class="flex justify-between items-center mb-8">
+    <h1><%= title %></h1>
+    <a href="<%= basePath %>admin" class="btn btn-secondary">← Vissza</a>
+  </div>
+
+  <!-- Flash messages placeholder (will be injected by JS) -->
+  <div id="flash-container"></div>
+
+  <!-- Statistics -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">📊 Összes Esemény</div>
+      <div class="value"><%= stats.total.toLocaleString() %></div>
+    </div>
+    <div class="stat-card critical">
+      <div class="label">🔴 Kritikus</div>
+      <div class="value"><%= stats.critical.toLocaleString() %></div>
+    </div>
+    <div class="stat-card critical">
+      <div class="label">🟠 Magas</div>
+      <div class="value"><%= stats.high.toLocaleString() %></div>
+    </div>
+    <div class="stat-card medium">
+      <div class="label">🟡 Közepes</div>
+      <div class="value"><%= stats.medium.toLocaleString() %></div>
+    </div>
+    <div class="stat-card low">
+      <div class="label">🟢 Alacsony</div>
+      <div class="value"><%= stats.low.toLocaleString() %></div>
+    </div>
+    <div class="stat-card">
+      <div class="label">⏰ Utolsó 24 óra</div>
+      <div class="value"><%= stats.last24h.toLocaleString() %></div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-panel">
+    <h3>Szűrők</h3>
+    <form method="GET" action="<%= basePath %>admin/security-log">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label>Súlyosság</label>
+          <select name="severity">
+            <option value="all" <%= filters.severity === 'all' ? 'selected' : '' %>>Összes</option>
+            <option value="critical" <%= filters.severity === 'critical' ? 'selected' : '' %>>Kritikus</option>
+            <option value="high" <%= filters.severity === 'high' ? 'selected' : '' %>>Magas</option>
+            <option value="medium" <%= filters.severity === 'medium' ? 'selected' : '' %>>Közepes</option>
+            <option value="low" <%= filters.severity === 'low' ? 'selected' : '' %>>Alacsony</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Esemény típus</label>
+          <select name="eventType">
+            <option value="all" <%= filters.eventType === 'all' ? 'selected' : '' %>>Összes</option>
+            <% eventTypes.forEach(type => { %>
+              <option value="<%= type %>" <%= filters.eventType === type ? 'selected' : '' %>><%= type %></option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>IP cím keresés</label>
+          <input type="text" name="searchIp" value="<%= filters.searchIp %>" placeholder="pl. 192.168.">
+        </div>
+
+        <div class="filter-group">
+          <label>Kezdő dátum</label>
+          <input type="date" name="startDate" value="<%= filters.startDate %>">
+        </div>
+
+        <div class="filter-group">
+          <label>Vége dátum</label>
+          <input type="date" name="endDate" value="<%= filters.endDate %>">
+        </div>
+
+        <div class="filter-group" class="flex items-end gap-2">
+          <button type="submit" class="btn btn-primary" class="flex-1">Szűrés</button>
+          <a href="<%= basePath %>admin/security-log" class="btn btn-secondary">Törlés</a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex gap-4 mb-4">
+    <a href="<%= basePath %>admin/security-log/export?<%= new URLSearchParams(filters).toString() %>" class="btn btn-success">
+      📥 CSV Export
+    </a>
+    <button onclick="openClearModal()" class="btn btn-error">
+      🗑️ Régi logok törlése
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <table class="security-table">
+      <thead>
+        <tr>
+          <th>Dátum</th>
+          <th>Súlyosság</th>
+          <th>Esemény</th>
+          <th>IP cím</th>
+          <th>Felhasználó</th>
+          <th>Részletek</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (logs.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center p-8 text-secondary">
+              Nincs találat a megadott szűrőkkel.
+            </td>
+          </tr>
+        <% } else { %>
+          <% logs.forEach(log => { %>
+            <tr>
+              <td class="whitespace-nowrap">
+                <%= new Date(log.createdAt).toLocaleString('hu-HU', {
+                  year: 'numeric', month: '2-digit', day: '2-digit',
+                  hour: '2-digit', minute: '2-digit'
+                }) %>
+              </td>
+              <td>
+                <span class="severity-badge severity-<%= log.severity %>">
+                  <%= log.severity %>
+                </span>
+              </td>
+              <td><%= log.eventType %></td>
+              <td class="font-mono"><%= log.ipAddress %></td>
+              <td><%= log.userId || '-' %></td>
+              <td class="max-w-xs overflow-hidden text-ellipsis">
+                <%= log.details ? (typeof log.details === 'string' ? log.details : JSON.stringify(log.details)) : '-' %>
+              </td>
+            </tr>
+          <% }); %>
+        <% } %>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <% if (pagination.totalPages > 1) { %>
+      <div class="pagination">
+        <% if (pagination.hasPrev) { %>
+          <a href="?page=<%= pagination.page - 1 %>&<%= new URLSearchParams(filters).toString() %>" class="btn btn-secondary">
+            ← Előző
+          </a>
+        <% } %>
+        <span class="px-4 py-2">
+          <%= pagination.page %> / <%= pagination.totalPages %>
+        </span>
+        <% if (pagination.hasNext) { %>
+          <a href="?page=<%= pagination.page + 1 %>&<%= new URLSearchParams(filters).toString() %>" class="btn btn-secondary">
+            Következő →
+          </a>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Clear Old Logs Modal -->
+<div id="clearModal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background: var(--bg-overlay);">
+  <div class="bg-surface rounded-lg p-8 max-w-lg w-11/12">
+    <h3 class="mt-0">Régi logok törlése</h3>
+    <p class="text-secondary mb-6">
+      A kritikus súlyosságú események megmaradnak.
+    </p>
+    <form method="POST" action="<%= basePath %>admin/security-log/clear-old">
+      <div class="filter-group" class="mb-6">
+        <label>Napok száma (ennél régebbi törlődik)</label>
+        <select name="days" class="w-full p-2">
+          <option value="30">30 nap (1 hónap)</option>
+          <option value="60">60 nap (2 hónap)</option>
+          <option value="90" selected>90 nap (3 hónap)</option>
+          <option value="180">180 nap (6 hónap)</option>
+          <option value="365">365 nap (1 év)</option>
+        </select>
+      </div>
+      <div class="flex gap-4 justify-end">
+        <button type="button" class="btn btn-secondary" onclick="closeClearModal()">Mégse</button>
+        <button type="submit" class="btn btn-error">Törlés</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Flash messages from query params
+  const urlParams = new URLSearchParams(window.location.search);
+  const deleted = urlParams.get('deleted');
+  const days = urlParams.get('days');
+  const error = urlParams.get('error');
+  
+  if (deleted && days) {
+    const div = document.createElement('div');
+    div.className = 'flash success';
+    div.textContent = deleted + ' régi biztonsági log törölve (régebbi mint ' + days + ' nap)';
+    document.getElementById('flash-container').appendChild(div);
+    setTimeout(() => div.remove(), 5000);
+  }
+  
+  if (error === 'clear_failed') {
+    const div = document.createElement('div');
+    div.className = 'flash error';
+    div.textContent = 'Hiba történt a logok törlése során';
+    document.getElementById('flash-container').appendChild(div);
+    setTimeout(() => div.remove(), 5000);
+  }
+
+  // Modal functions
+  function openClearModal() {
+    document.getElementById('clearModal').style.display = 'flex';
+  }
+
+  function closeClearModal() {
+    document.getElementById('clearModal').style.display = 'none';
+  }
+
+  // Close on outside click
+  document.getElementById('clearModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeClearModal();
+    }
+  });
+</script>

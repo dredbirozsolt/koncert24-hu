@@ -1,0 +1,401 @@
+
+
+<div class="page-container">
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <div class="admin-two-col">
+        
+        <!-- Bal oldal: Integration Forms -->
+        <div>
+            <!-- Vtiger CRM -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🏢 Vtiger CRM
+                </h3>
+                
+                <form id="vtiger-form">
+                    <div class="form__group">
+                        <label for="vtiger.url">
+                            Vtiger URL <span class="required-asterisk">*</span>
+                        </label>
+                        <input type="url" 
+                               name="vtiger.url" 
+                               id="vtiger.url"
+                               class="form__control"
+                               value="<%= flatSettings['vtiger.url'] || '' %>"
+                               placeholder="https://your-instance.od2.vtiger.com"
+                               required>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="vtiger.username">
+                            Username <span class="required-asterisk">*</span>
+                        </label>
+                        <input type="text" 
+                               name="vtiger.username" 
+                               id="vtiger.username"
+                               class="form__control"
+                               value="<%= flatSettings['vtiger.username'] || '' %>"
+                               placeholder="admin"
+                               required>
+                    </div>
+
+                    <div class="form__group">
+                        <label for="vtiger.access_key">
+                            🔑 Access Key <span class="required-asterisk">*</span>
+                        </label>
+                        <input type="password" 
+                               name="vtiger.access_key" 
+                               id="vtiger.access_key"
+                               class="form__control"
+                               value="<%= flatSettings['vtiger.access_key'] || '' %>"
+                               placeholder="Access Key"
+                               required>
+                    </div>
+
+                    <div class="btn__group btn__group--equal">
+                        <button type="button" onclick="testVtiger()" class="btn btn--secondary">
+                            ✓ Teszt
+                        </button>
+                        <button type="submit" class="btn btn--primary">
+                            💾 Mentés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Geonames API -->
+            <div class="card--data integration-card-spacing">
+                <h3 class="section-title">
+                    🌍 Geonames API
+                </h3>
+                
+                <form id="geonames-form">
+                    <div class="form__group">
+                        <label for="geonames.username">
+                            Username <span class="required-asterisk">*</span>
+                        </label>
+                        <input type="text" 
+                               name="geonames.username" 
+                               id="geonames.username"
+                               class="form__control"
+                               value="<%= flatSettings['geonames.username'] || '' %>"
+                               placeholder="your-geonames-username"
+                               required>
+                    </div>
+
+                    <div class="btn__group btn__group--equal">
+                        <button type="button" onclick="testGeonames()" class="btn btn--secondary">
+                            ✓ Teszt
+                        </button>
+                        <button type="submit" class="btn btn--primary">
+                            💾 Mentés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- OpenAI API -->
+            <div class="card--data integration-card-spacing">
+                <h3 class="section-title">
+                    🤖 OpenAI API (Chat AI)
+                </h3>
+                
+                <form id="openai-form">
+                    <div class="form__group">
+                        <label for="chat.openai_api_key">
+                            🔑 API Key <span class="required-asterisk">*</span>
+                        </label>
+                        <input type="password" 
+                               name="chat.openai_api_key" 
+                               id="chat.openai_api_key"
+                               class="form__control monospace-input"
+                               value="<%= flatSettings['chat.openai_api_key'] || '' %>"
+                               placeholder="sk-proj-..."
+                               required>
+                    </div>
+
+                    <div class="btn__group btn__group--equal">
+                        <button type="button" onclick="testOpenAI()" class="btn btn--secondary">
+                            ✓ Teszt
+                        </button>
+                        <button type="submit" class="btn btn--primary">
+                            💾 Mentés
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Jobb oldal: Info Panels -->
+        <div>
+            <!-- Vtiger Info -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🏢 Vtiger CRM
+                </h3>
+                
+                <div class="integration-card__info-content">
+                    <p>
+                        <strong>🎯 Mire jó?</strong><br>
+                        Automatikus lead és kontakt szinkronizálás a Vtiger CRM rendszerrel.
+                    </p>
+                    
+                    <p>
+                        <strong>🔑 Access Key:</strong><br>
+                        Vtiger → Settings → My Preferences → User Advanced Options
+                    </p>
+                    
+                    <p>
+                        <strong>✓ Teszt funkció:</strong><br>
+                        Ellenőrzi a kapcsolatot és az API hozzáférést.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Geonames Info -->
+            <div class="card--data integration-card-spacing">
+                <h3 class="section-title">
+                    🌍 Geonames API
+                </h3>
+                
+                <div class="integration-card__info-content">
+                    <p>
+                        <strong>🌍 Mire jó?</strong><br>
+                        Automatikus helyadat kiegészítés eseményeknél (város, ország, koordináták).
+                    </p>
+                    
+                    <p>
+                        <strong>📝 Regisztráció:</strong><br>
+                        Ingyenes fiók: <a href="http://www.geonames.org/login" target="_blank" class="integration-link">geonames.org/login</a>
+                    </p>
+                    
+                    <p>
+                        <strong>⚡ Használat:</strong><br>
+                        Automatikus, nincs további beállítás.
+                    </p>
+                </div>
+            </div>
+
+            <!-- OpenAI Info -->
+            <div class="card--data integration-card-spacing">
+                <h3 class="section-title">
+                    🤖 OpenAI Chat AI
+                </h3>
+                
+                <div class="integration-card__info-content">
+                    <p>
+                        <strong>🤖 Funkció:</strong><br>
+                        GPT-4 alapú AI asszisztens a chat widgetben.
+                    </p>
+                    
+                    <p>
+                        <strong>🔗 Regisztráció:</strong><br>
+                        <a href="https://platform.openai.com/api-keys" target="_blank" class="integration-link">https://platform.openai.com/api-keys</a>
+                    </p>
+                    
+                    <p>
+                        <strong>⚙️ Beállítás:</strong><br>
+                        API kulcs itt, AI be/ki a <a href="/admin/chat/settings" class="integration-link">Chat Settings</a> oldalon.
+                    </p>
+                    
+                    <p>
+                        <strong>🔄 Működés:</strong><br>
+                        Hibrid mód: AI azonnali válasz, admin átvétel lehetséges.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Státusz -->
+            <div class="card--data integration-card-spacing">
+                <h3 class="section-title">
+                    📈 Aktív Integrációk
+                </h3>
+                
+                <div class="integration-status-list">
+                    <div class="integration-status-item">
+                        <span>Vtiger CRM:</span>
+                        <strong class="<%= flatSettings['vtiger.url'] ? 'status-active' : 'status-inactive' %>">
+                            <%= flatSettings['vtiger.url'] ? '✓ Beállítva' : '✗ Nincs' %>
+                        </strong>
+                    </div>
+                    <div class="integration-status-item">
+                        <span>Geonames:</span>
+                        <strong class="<%= flatSettings['geonames.username'] ? 'status-active' : 'status-inactive' %>">
+                            <%= flatSettings['geonames.username'] ? '✓ Beállítva' : '✗ Nincs' %>
+                        </strong>
+                    </div>
+                    <div class="integration-status-item">
+                        <span>OpenAI API:</span>
+                        <strong class="<%= flatSettings['chat.openai_api_key'] ? 'status-active' : 'status-inactive' %>">
+                            <%= flatSettings['chat.openai_api_key'] ? '✓ Beállítva' : '✗ Nincs' %>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+const csrfToken = '<%= csrfToken %>';
+
+// Vtiger Form Submission
+document.getElementById('vtiger-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await saveIntegration(e.target, 'vtiger');
+});
+
+// Geonames Form Submission
+document.getElementById('geonames-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await saveIntegration(e.target, 'geonames');
+});
+
+// OpenAI Form Submission
+document.getElementById('openai-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await saveIntegration(e.target, 'openai');
+});
+
+// Save Integration Settings
+async function saveIntegration(form, integration) {
+    const formData = new FormData(form);
+    const data = {};
+    
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    try {
+        const response = await fetch(`/admin/integrations/${integration}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', result.message || `${integration.toUpperCase()} beállítások sikeresen mentve!`);
+        } else {
+            showAlert('error', 'Hiba történt a mentés során: ' + (result.message || 'Ismeretlen hiba'));
+        }
+    } catch (error) {
+        showAlert('error', 'Hálózati hiba történt');
+        console.error('Error:', error);
+    }
+}
+
+// Test Vtiger Connection
+async function testVtiger() {
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = 'Teszt folyamatban...';
+    
+    try {
+        const response = await fetch('/admin/integrations/vtiger/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', result.message || 'Vtiger kapcsolat sikeres');
+        } else {
+            showAlert('error', result.message || 'Vtiger teszt sikertelen');
+        }
+    } catch (error) {
+        console.error('Vtiger test error:', error);
+        showAlert('error', error.message || 'Hálózati hiba történt');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// Test Geonames Connection
+async function testGeonames() {
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = 'Teszt folyamatban...';
+    
+    try {
+        const response = await fetch('/admin/integrations/geonames/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', result.message || 'Geonames kapcsolat sikeres');
+        } else {
+            showAlert('error', result.message || 'Geonames teszt sikertelen');
+        }
+    } catch (error) {
+        console.error('Geonames test error:', error);
+        showAlert('error', error.message || 'Hálózati hiba történt');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// Test OpenAI Connection
+async function testOpenAI() {
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = 'Teszt folyamatban...';
+    
+    try {
+        const response = await fetch('/admin/integrations/openai/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', result.message || 'OpenAI kapcsolat sikeres');
+        } else {
+            showAlert('error', result.message || 'OpenAI teszt sikertelen');
+        }
+    } catch (error) {
+        console.error('OpenAI test error:', error);
+        showAlert('error', error.message || 'Hálózati hiba történt');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+// ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+// No local definition needed - automatically available on all admin pages
+</script>

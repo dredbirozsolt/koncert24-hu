@@ -1,0 +1,563 @@
+/**
+ * Email Template Service
+ * Centralized email template generation using Design System tokens
+ *
+ * Purpose:
+ * - Single source of truth for all email templates
+ * - Design system color tokens converted to inline styles
+ * - Reusable components (header, footer, boxes)
+ * - Email client compatibility (inline CSS required)
+ *
+ * @module services/emailTemplateService
+ */
+
+// Note: logger imported for future use
+// const logger = require('../config/logger');
+
+/**
+ * Design System Color Tokens
+ * Mapped from public/css/design-system/tokens.css
+ */
+const COLORS = {
+  // Primary
+  primary: {
+    50: '#eff6ff',
+    100: '#dbeafe',
+    200: '#bfdbfe',
+    300: '#93c5fd',
+    400: '#60a5fa',
+    500: '#3b82f6',
+    600: '#2563eb',
+    700: '#1d4ed8',
+    800: '#1e40af',
+    900: '#1e3a8a'
+  },
+  // Gray
+  gray: {
+    50: '#f8fafc',
+    100: '#f1f5f9',
+    200: '#e2e8f0',
+    300: '#cbd5e1',
+    400: '#94a3b8',
+    500: '#64748b',
+    600: '#475569',
+    700: '#334155',
+    800: '#1e293b',
+    900: '#0f172a',
+    950: '#020617'
+  },
+  // Success
+  success: {
+    50: '#f0fdf4',
+    100: '#dcfce7',
+    200: '#bbf7d0',
+    300: '#86efac',
+    400: '#4ade80',
+    500: '#10b981',
+    600: '#059669',
+    700: '#047857'
+  },
+  // Warning
+  warning: {
+    50: '#fffbeb',
+    100: '#fef3c7',
+    200: '#fde68a',
+    300: '#fcd34d',
+    400: '#fbbf24',
+    500: '#f59e0b',
+    600: '#d97706',
+    700: '#b45309'
+  },
+  // Error/Danger
+  error: {
+    50: '#fef2f2',
+    100: '#fee2e2',
+    200: '#fecaca',
+    300: '#fca5a5',
+    400: '#f87171',
+    500: '#ef4444',
+    600: '#dc2626',
+    700: '#b91c1c',
+    800: '#991b1b'
+  },
+  // Special
+  white: '#ffffff',
+  black: '#000000'
+};
+
+/**
+ * Spacing Scale (4px base)
+ * Mapped from Design System tokens.css --spacing-* values
+ */
+const SPACING = {
+  0: '0',
+  1: '0.25rem',  // 4px
+  2: '0.5rem',   // 8px
+  3: '0.75rem',  // 12px
+  4: '1rem',     // 16px
+  5: '1.25rem',  // 20px
+  6: '1.5rem',   // 24px
+  7: '1.75rem',  // 28px
+  8: '2rem',     // 32px
+  10: '2.5rem',  // 40px
+  12: '3rem',    // 48px
+  16: '4rem'     // 64px
+};
+
+/**
+ * Typography Scale
+ * Mapped from Design System tokens.css typography system
+ */
+const TYPOGRAPHY = {
+  size: {
+    xs: '0.75rem',    // 12px
+    sm: '0.875rem',   // 14px
+    base: '1rem',     // 16px
+    lg: '1.125rem',   // 18px
+    xl: '1.25rem',    // 20px
+    '2xl': '1.5rem',  // 24px
+    '3xl': '1.875rem' // 30px
+  },
+  weight: {
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700'
+  },
+  lineHeight: {
+    tight: '1.25',
+    normal: '1.5',
+    relaxed: '1.75'
+  }
+};
+
+/**
+ * Border Radius Scale
+ * Mapped from Design System tokens.css --radius-* values
+ */
+const RADIUS = {
+  none: '0',
+  sm: '0.25rem',   // 4px
+  base: '0.5rem',  // 8px
+  md: '0.75rem',   // 12px
+  lg: '1rem',      // 16px
+  xl: '1.5rem',    // 24px
+  full: '9999px'
+};
+
+/**
+ * Base email styles - email client compatible
+ */
+const BASE_STYLES = {
+  body: `
+    margin: ${SPACING[0]};
+    padding: ${SPACING[0]};
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: ${TYPOGRAPHY.size.base};
+    line-height: ${TYPOGRAPHY.lineHeight.normal};
+    color: ${COLORS.gray[800]};
+    background-color: ${COLORS.gray[100]};
+  `,
+  container: `
+    max-width: 600px;
+    margin: ${SPACING[5]} auto;
+    background-color: ${COLORS.white};
+    border-radius: ${RADIUS.base};
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  `,
+  content: `
+    padding: ${SPACING[8]};
+  `,
+  footer: `
+    text-align: center;
+    padding: ${SPACING[5]};
+    background-color: ${COLORS.gray[50]};
+    color: ${COLORS.gray[600]};
+    font-size: ${TYPOGRAPHY.size.sm};
+    border-top: 1px solid ${COLORS.gray[200]};
+  `
+};
+
+/**
+ * Component: Email Header
+ * @param {Object} options - Header options
+ * @param {string} options.title - Main title
+ * @param {string} options.subtitle - Subtitle text
+ * @param {string} options.emoji - Leading emoji
+ * @param {string} options.variant - Color variant (error, warning, success, info)
+ * @returns {string} HTML header component
+ */
+function renderHeader({ title, subtitle, emoji = '', variant = 'error' }) {
+  const variantColors = {
+    error: {
+      bg: `linear-gradient(135deg, ${COLORS.error[600]} 0%, ${COLORS.error[700]} 100%)`,
+      text: COLORS.white
+    },
+    warning: {
+      bg: `linear-gradient(135deg, ${COLORS.warning[500]} 0%, ${COLORS.warning[600]} 100%)`,
+      text: COLORS.gray[900]
+    },
+    success: {
+      bg: `linear-gradient(135deg, ${COLORS.success[500]} 0%, ${COLORS.success[600]} 100%)`,
+      text: COLORS.white
+    },
+    info: {
+      bg: `linear-gradient(135deg, ${COLORS.primary[600]} 0%, ${COLORS.primary[700]} 100%)`,
+      text: COLORS.white
+    }
+  };
+
+  const colors = variantColors[variant] || variantColors.error;
+
+  return `
+    <div style="
+      text-align: center;
+      background: ${colors.bg};
+      color: ${colors.text};
+      padding: ${SPACING[8]} ${SPACING[5]};
+    ">
+      <h1 style="
+        font-size: ${TYPOGRAPHY.size['3xl']};
+        font-weight: ${TYPOGRAPHY.weight.bold};
+        margin: ${SPACING[0]} ${SPACING[0]} ${SPACING[3]} ${SPACING[0]};
+      ">${emoji} ${title}</h1>
+      ${subtitle ? `<p style="margin: ${SPACING[0]}; font-size: ${TYPOGRAPHY.size.base}; opacity: 0.9;">
+        ${subtitle}
+      </p>` : ''}
+    </div>
+  `;
+}
+
+/**
+ * Component: Email Footer
+ * @param {Object} options - Footer options
+ * @param {string} options.siteName - Site name
+ * @param {string} options.companyName - Company name
+ * @param {string} options.year - Copyright year
+ * @returns {string} HTML footer component
+ */
+function renderFooter({ siteName, companyName, year = new Date().getFullYear() }) {
+  const footerText = companyName
+    ? `© ${year} ${siteName} - ${companyName}`
+    : `© ${year} ${siteName}`;
+
+  return `
+    <div style="${BASE_STYLES.footer}">
+      <p style="margin: ${SPACING[0]} ${SPACING[0]} ${SPACING[1]} ${SPACING[0]};">
+        ${footerText}
+      </p>
+      <p style="margin: ${SPACING[0]}; font-size: ${TYPOGRAPHY.size.xs}; color: ${COLORS.gray[500]};">
+        Ez egy automatikus értesítés a rendszerből.
+      </p>
+    </div>
+  `;
+}
+
+/**
+ * Component: Info Box
+ * @param {Object} options - Info box options
+ * @param {string} options.title - Box title
+ * @param {Array<{label: string, value: string}|string>} options.items - List items (objects or HTML strings)
+ * @param {string} options.variant - Color variant (error, warning, success, info)
+ * @returns {string} HTML info box component
+ */
+function renderInfoBox({ title, items = [], variant = 'info' }) {
+  const variantColors = {
+    error: { border: COLORS.error[600], title: COLORS.error[700] },
+    warning: { border: COLORS.warning[500], title: COLORS.warning[700] },
+    success: { border: COLORS.success[600], title: COLORS.success[700] },
+    info: { border: COLORS.primary[600], title: COLORS.primary[700] }
+  };
+
+  const colors = variantColors[variant] || variantColors.info;
+
+  const itemsHtml = items.map((item) => {
+    // Support both object format {label, value} and string format
+    if (typeof item === 'string') {
+      return `<li style="margin: ${SPACING[2]} ${SPACING[0]};">${item}</li>`;
+    }
+    return `
+      <li style="margin: ${SPACING[2]} ${SPACING[0]};">
+        <strong style="color: ${COLORS.gray[900]};">${item.label}:</strong> ${item.value}
+      </li>
+    `;
+  }).join('');
+
+  return `
+    <div style="
+      background: ${COLORS.gray[50]};
+      padding: ${SPACING[5]};
+      border-radius: ${RADIUS.base};
+      margin: ${SPACING[5]} ${SPACING[0]};
+      border-left: 4px solid ${colors.border};
+    ">
+      <h3 style="
+        margin-top: ${SPACING[0]};
+        color: ${colors.title};
+        font-size: ${TYPOGRAPHY.size.lg};
+        font-weight: ${TYPOGRAPHY.weight.semibold};
+      ">${title}</h3>
+      <ul style="
+        margin: ${SPACING[3]} ${SPACING[0]};
+        padding-left: ${SPACING[5]};
+        list-style-type: disc;
+      ">
+        ${itemsHtml}
+      </ul>
+    </div>
+  `;
+}
+
+/**
+ * Component: Alert Box (for errors, warnings)
+ * @param {Object} options - Alert box options
+ * @param {string} options.title - Alert title
+ * @param {string} options.message - Alert message
+ * @param {string} options.variant - Color variant (error, warning, info)
+ * @returns {string} HTML alert box component
+ */
+function renderAlertBox({ title, message, variant = 'error' }) {
+  const variantColors = {
+    error: {
+      bg: COLORS.warning[50],
+      border: COLORS.warning[400],
+      title: COLORS.warning[800],
+      text: COLORS.warning[700]
+    },
+    warning: {
+      bg: COLORS.warning[50],
+      border: COLORS.warning[300],
+      title: COLORS.warning[700],
+      text: COLORS.warning[600]
+    },
+    info: {
+      bg: COLORS.primary[50],
+      border: COLORS.primary[300],
+      title: COLORS.primary[700],
+      text: COLORS.primary[600]
+    }
+  };
+
+  const colors = variantColors[variant] || variantColors.error;
+
+  return `
+    <div style="
+      background: ${colors.bg};
+      border: 1px solid ${colors.border};
+      border-radius: ${RADIUS.base};
+      padding: ${SPACING[4]};
+      margin: ${SPACING[5]} ${SPACING[0]};
+    ">
+      <h3 style="
+        margin-top: ${SPACING[0]};
+        color: ${colors.title};
+        font-size: ${TYPOGRAPHY.size.base};
+        font-weight: ${TYPOGRAPHY.weight.semibold};
+      ">${title}</h3>
+      <p style="
+        color: ${colors.text};
+        font-weight: ${TYPOGRAPHY.weight.medium};
+        margin: ${SPACING[0]};
+        word-break: break-word;
+      ">${message}</p>
+    </div>
+  `;
+}
+
+/**
+ * Component: Code Block (for stack traces, JSON)
+ * @param {Object} options - Code block options
+ * @param {string} options.title - Block title
+ * @param {string} options.code - Code content
+ * @param {string} options.variant - Color variant (gray, primary)
+ * @returns {string} HTML code block component
+ */
+function renderCodeBlock({ title, code, variant = 'gray' }) {
+  const variantColors = {
+    gray: { bg: COLORS.gray[50], border: COLORS.gray[300] },
+    primary: { bg: COLORS.primary[50], border: COLORS.primary[200] }
+  };
+
+  const colors = variantColors[variant] || variantColors.gray;
+
+  return `
+    <div style="
+      background: ${colors.bg};
+      border: 1px solid ${colors.border};
+      border-radius: ${RADIUS.base};
+      padding: ${SPACING[4]};
+      margin: ${SPACING[4]} ${SPACING[0]};
+      overflow-x: auto;
+    ">
+      ${title ? `<h4 style="
+        margin-top: ${SPACING[0]};
+        color: ${COLORS.gray[800]};
+        font-size: ${TYPOGRAPHY.size.sm};
+        font-weight: ${TYPOGRAPHY.weight.semibold};
+      ">${title}</h4>` : ''}
+      <pre style="
+        margin: ${title ? SPACING[3] : SPACING[0]} ${SPACING[0]} ${SPACING[0]} ${SPACING[0]};
+        font-family: 'Courier New', Consolas, Monaco, monospace;
+        font-size: ${TYPOGRAPHY.size.xs};
+        color: ${COLORS.gray[800]};
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      ">${code}</pre>
+    </div>
+  `;
+}
+
+/**
+ * Component: Badge
+ * @param {Object} options - Badge options
+ * @param {string} options.text - Badge text
+ * @param {string} options.variant - Color variant (success, warning, error, info)
+ * @returns {string} HTML badge component
+ */
+function renderBadge({ text, variant = 'info' }) {
+  const variantColors = {
+    success: { bg: COLORS.success[600], text: COLORS.white },
+    warning: { bg: COLORS.warning[500], text: COLORS.gray[900] },
+    error: { bg: COLORS.error[600], text: COLORS.white },
+    info: { bg: COLORS.primary[600], text: COLORS.white }
+  };
+
+  const colors = variantColors[variant] || variantColors.info;
+
+  return `
+    <span style="
+      display: inline-block;
+      background: ${colors.bg};
+      color: ${colors.text};
+      padding: ${SPACING[1]} ${SPACING[3]};
+      border-radius: ${RADIUS.md};
+      font-size: ${TYPOGRAPHY.size.xs};
+      font-weight: ${TYPOGRAPHY.weight.bold};
+      margin-left: ${SPACING[2]};
+    ">${text}</span>
+  `;
+}
+
+/**
+ * Template: Base Email Layout
+ * @param {Object} options - Layout options
+ * @param {string} options.title - Email title (for <title> tag)
+ * @param {string} options.headerHtml - Header HTML
+ * @param {string} options.contentHtml - Main content HTML
+ * @param {string} options.footerHtml - Footer HTML
+ * @returns {string} Complete HTML email
+ */
+function renderBaseLayout({ title, headerHtml, contentHtml, footerHtml }) {
+  return `
+    <!DOCTYPE html>
+    <html lang="hu">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>${title}</title>
+    </head>
+    <body style="${BASE_STYLES.body}">
+      <div style="${BASE_STYLES.container}">
+        ${headerHtml}
+        <div style="${BASE_STYLES.content}">
+          ${contentHtml}
+        </div>
+        ${footerHtml}
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Template: Cron Job Error Notification
+ * @param {Object} data - Template data
+ * @param {string} data.cronJobName - Cron job name
+ * @param {string} data.errorMessage - Error message
+ * @param {string} data.stackTrace - Stack trace (optional)
+ * @param {Object} data.additionalData - Additional context data
+ * @param {string} data.timestamp - Timestamp string
+ * @param {string} data.emailMethod - Email method (OAuth2/SMTP)
+ * @param {string} data.siteName - Site name
+ * @returns {Object} { subject, html, text }
+ */
+
+// Booking email generator - wrapper function
+const bookingEmailGenerator = require('./emailTemplateService-booking');
+
+/**
+ * Generate booking email template (delegated to booking helper module)
+ */
+function generateBookingEmail(params) {
+  return bookingEmailGenerator.generateBookingEmail(params, {
+    renderHeader,
+    renderFooter,
+    renderInfoBox,
+    renderBadge,
+    renderAlertBox,
+    renderBaseLayout,
+    BASE_STYLES,
+    COLORS
+  });
+}
+
+// Admin email generators - wrapper functions
+const adminEmailGenerator = require('./emailTemplateService-admin');
+
+/**
+ * Generate cron error email template (delegated to admin helper module)
+ */
+function generateCronErrorEmail(data) {
+  return adminEmailGenerator.generateCronErrorEmail(data, {
+    renderHeader,
+    renderInfoBox,
+    renderBadge,
+    renderAlertBox,
+    renderCodeBlock,
+    renderFooter,
+    renderBaseLayout,
+    COLORS
+  });
+}
+
+/**
+ * Generate admin test email template (delegated to admin helper module)
+ */
+function generateAdminTestEmail(data) {
+  return adminEmailGenerator.generateAdminTestEmail(data, {
+    renderHeader,
+    renderInfoBox,
+    renderBadge,
+    renderFooter,
+    renderBaseLayout,
+    COLORS
+  });
+}
+
+module.exports = {
+  // Design System Tokens
+  COLORS,
+  SPACING,
+  TYPOGRAPHY,
+  RADIUS,
+  BASE_STYLES,
+
+  // Component exports
+  renderHeader,
+  renderFooter,
+  renderInfoBox,
+  renderAlertBox,
+  renderCodeBlock,
+  renderBadge,
+  renderBaseLayout,
+
+  // Template exports
+  generateCronErrorEmail,
+  generateAdminTestEmail,
+  generateBookingEmail,
+
+  // Extended templates (from emailTemplateService2.js)
+  ...require('./emailTemplateService2')
+};

@@ -1,0 +1,340 @@
+<!-- FAQ Management Page -->
+
+
+<div class="page-container">
+    <% if (success) { %>
+        <div class="alert alert-success">
+            <%= decodeURIComponent(success) %>
+        </div>
+    <% } %>
+
+    <% if (error) { %>
+        <div class="alert alert-error">
+            <%= decodeURIComponent(error) %>
+        </div>
+    <% } %>
+
+    <!-- 2 oszlopos grid -->
+    <div class="admin-two-col">
+        <!-- BAL OSZLOP: Kategóriák és Kérdések -->
+        <div>
+            <!-- Action Buttons -->
+            <div class="btn__group btn__group--equal mb-4">
+                <a href="/admin/faq/categories/new" class="btn btn--primary">
+                    📁 Új Kategória
+                </a>
+                <a href="/admin/faq/items/new" class="btn btn--primary">
+                    ➕ Új Kérdés
+                </a>
+            </div>
+
+    <% if (!categories || categories.length === 0) { %>
+        <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <h2 class="empty-state-title">Még nincs GYIK kategória</h2>
+            <p class="empty-state-text">Kezdd el az első kategória létrehozásával!</p>
+            <a href="/admin/faq/categories/new" class="btn btn--primary btn--lg">
+                ➕ Első Kategória Létrehozása
+            </a>
+        </div>
+    <% } else { %>
+        <!-- Categories with Tables -->
+        <% categories.forEach((category) => { %>
+            <div class="card--data">
+                <!-- Category Header -->
+                <div class="py-4 border-b flex items-center">
+                    <div class="flex items-center gap-3 flex-1">
+                        <span class="text-3xl"><%= category.icon %></span>
+                        <div>
+                            <h2 class="m-0 text-xl"><%= category.name %></h2>
+                            <% if (category.description) { %>
+                                <small class="text-secondary"><%= category.description %></small>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <span class="badge <%= category.isActive ? 'badge-success' : 'badge-error' %>">
+                            <%= category.isActive ? 'Aktív' : 'Inaktív' %>
+                        </span>
+                        <span class="text-secondary">Sorrend: <%= category.displayOrder %></span>
+                        <span class="text-secondary"><%= category.items.length %> kérdés</span>
+                        <div class="flex gap-2">
+                            <a href="/admin/faq/categories/<%= category.id %>/edit" 
+                               class="btn btn--secondary btn-icon-only"
+                               title="Szerkesztés">
+                                ✏️
+                            </a>
+                            <button class="btn btn-error btn-icon-only"
+                                    onclick="deleteFaqCategory('<%= category.id %>', '<%= category.name %>', <%= category.items.length %>)"
+                                    title="Törlés">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Items Table -->
+                <% if (category.items && category.items.length > 0) { %>
+                    <div class="table--responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Kérdés</th>
+                                    <th class="text-center">Státusz</th>
+                                    <th class="text-center">Sorrend</th>
+                                    <th class="text-center">Megtekintés</th>
+                                    <th>Műveletek</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% category.items.forEach((item) => { %>
+                                    <tr>
+                                        <td data-label="Kérdés">
+                                            <%= item.question %>
+                                        </td>
+                                        <td data-label="Státusz" class="text-center">
+                                            <span class="badge <%= item.isActive ? 'badge-success' : 'badge-error' %>">
+                                                <%= item.isActive ? 'Aktív' : 'Inaktív' %>
+                                            </span>
+                                        </td>
+                                        <td data-label="Sorrend" class="text-center"><%= item.displayOrder %></td>
+                                        <td data-label="Megtekintés" class="text-center">
+                                            <%= item.viewCount %>
+                                        </td>
+                                        <td data-label="Műveletek">
+                                            <div class="actions">
+                                                <a href="/admin/faq/items/<%= item.id %>/edit" 
+                                                   class="btn btn-icon-only btn--secondary" 
+                                                   
+                                                   title="Szerkesztés">
+                                                    ✏️
+                                                </a>
+                                                <button class="btn btn-icon-only btn-error"
+                                                        onclick="deleteFaqItem('<%= item.id %>', '<%= item.question.replace(/'/g, "\\'") %>')"
+                                                        title="Törlés">
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="p-8 text-center text-secondary">
+                        <p>Még nincs kérdés ebben a kategóriában.</p>
+                        <a href="/admin/faq/items/new" class="btn btn--primary">
+                            ➕ Új Kérdés Hozzáadása
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        <% }); %>
+    <% } %>
+        </div>
+        <!-- /.bal oszlop -->
+
+        <!-- JOBB OSZLOP: Info Boxok -->
+        <div>
+            
+            <!-- GYIK Struktúra -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🗺️ GYIK Struktúra
+                </h3>
+                <div class="card__info-content">
+                    <p class="mb-3">A GYIK (Gyakran Ismételt Kérdések) két szintből áll:</p>
+                    
+                    <p><strong>1️⃣ Kategóriák:</strong></p>
+                    <p class="text-sm my-2">
+                        Témák szerinti csoportosítás (pl. Jegyek, Szállás, Parkolás)
+                    </p>
+                    
+                    <p class="mt-3"><strong>2️⃣ Kérdések:</strong></p>
+                    <p class="text-sm my-2">
+                        Az egyes kérdések és válaszok a kategóriákon belül
+                    </p>
+                    
+                    <p class="text-sm text-muted mt-3">
+                        💡 Tipp: Először hozz létre kategóriákat, majd adj hozzá kérdéseket!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Kategória Kezelés -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📁 Kategória Kezelés
+                </h3>
+                <div class="card__info-content">
+                    <p><strong>Kategória tulajdonságok:</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2"><strong>Név:</strong> A kategória megnevezése</li>
+                        <li class="mb-2"><strong>Ikon:</strong> Emoji vagy ikon a vizuális megkülönböztetéshez</li>
+                        <li class="mb-2"><strong>Leírás:</strong> Opcionális rövid ismertető</li>
+                        <li class="mb-2"><strong>Státusz:</strong> Aktív vagy Inaktív</li>
+                        <li><strong>Sorrend:</strong> A megjelenítési sorrend száma</li>
+                    </ul>
+                    
+                    <p class="text-sm text-muted mt-3">
+                        ⚠️ Kategória törlésekor az összes benne lévő kérdés is törlődik!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Kérdés Kezelés -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ❓ Kérdés Kezelés
+                </h3>
+                <div class="card__info-content">
+                    <p><strong>Kérdés tulajdonságok:</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2"><strong>Kérdés:</strong> A felhasználó kérdése (rövid, tömör)</li>
+                        <li class="mb-2"><strong>Válasz:</strong> Részletes válasz, támogatja a HTML-t</li>
+                        <li class="mb-2"><strong>Kategória:</strong> Melyik kategóriához tartozik</li>
+                        <li class="mb-2"><strong>Státusz:</strong> Aktív vagy Inaktív</li>
+                        <li><strong>Sorrend:</strong> Sorrend a kategórián belül</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Sorrend Kezelése -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⇅ Sorrend Kezelése
+                </h3>
+                <div class="card__info-content">
+                    <p>A sorrend számok határozzák meg a megjelenési sorrendet a weboldalon.</p>
+                    
+                    <p class="mt-3"><strong>Kategóriák sorrendje:</strong></p>
+                    <p class="text-sm my-2">
+                        Alacsonyabb szám = előrébb jelenik meg a listában
+                    </p>
+                    
+                    <p class="mt-3"><strong>Kérdések sorrendje:</strong></p>
+                    <p class="text-sm my-2">
+                        A kategórián belüli sorrend (alacsonyabb = előrébb)
+                    </p>
+                    
+                    <p class="text-sm text-muted mt-3">
+                        ℹ️ Alapértelmezett érték: 0. Azonos sorrend esetén ABC sorrend.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Státusz Kezelés -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🔛 Aktív/Inaktív Státusz
+                </h3>
+                <div class="card__info-content">
+                    <div class="mb-3">
+                        <strong class="text-success">✅ Aktív:</strong>
+                        <p class="my-1 text-sm">Megjelenik a weboldalon a látogatók számára</p>
+                    </div>
+                    <div>
+                        <strong class="text-error">❌ Inaktív:</strong>
+                        <p class="my-1 text-sm">Nem jelenik meg, de az adatok megmaradnak</p>
+                    </div>
+                    
+                    <p class="mt-3"><strong>Használati javaslatok:</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2">Inaktív kategória: az összes benne lévő kérdés is elrejthető</li>
+                        <li>Inaktív kérdés: ideiglenes elrejtés frissítés vagy átdolgozás előtt</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Megtekintés Statisztika -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    📈 Megtekintés Statisztika
+                </h3>
+                <div class="card__info-content">
+                    <p>Minden kérdésnél nyomon követheted a megtekintések számát.</p>
+                    
+                    <p class="mt-3"><strong>Mit mutat?</strong></p>
+                    <p class="text-sm my-2">
+                        Hányszor nyitották meg az adott kérdést a weboldalon
+                    </p>
+                    
+                    <p class="mt-3"><strong>Mire használható?</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2">Népszerű témák azonosítása</li>
+                        <li class="mb-2">Tartalmi prioritások meghatározása</li>
+                        <li>Ritkán nézett kérdések átdolgozása vagy törlése</li>
+                    </ul>
+                    
+                    <p class="text-sm text-muted mt-3">
+                        💡 Tipp: A legtöbbet nézett kérdéseket tedd előrébb a sorrendben!
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- /.jobb oszlop -->
+    </div>
+    <!-- /.faq-grid -->
+</div>
+<!-- /.page-container -->
+
+<script>
+// Delete FAQ Category
+async function deleteFaqCategory(categoryId, categoryName, itemCount) {
+    const message = itemCount > 0 
+        ? `Biztosan törölni szeretnéd a "${categoryName}" kategóriát? Ez ${itemCount} kérdést is töröl!`
+        : `Biztosan törölni szeretnéd a "${categoryName}" kategóriát?`;
+    
+    const confirmed = await Modal.confirm({
+        title: 'Kategória törlése',
+        message: message,
+        confirmText: 'Törlés',
+        cancelText: 'Mégse'
+    });
+    
+    if (confirmed) {
+        const csrfToken = document.querySelector('input[name="_csrf"]').value;
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/faq/categories/${categoryId}/delete`;
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf';
+        csrfInput.value = csrfToken;
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Delete FAQ Item
+async function deleteFaqItem(itemId, question) {
+    const confirmed = await Modal.confirm({
+        title: 'Kérdés törlése',
+        message: `Biztosan törölni szeretnéd ezt a kérdést?\n\n"${question}"`,
+        confirmText: 'Törlés',
+        cancelText: 'Mégse'
+    });
+    
+    if (confirmed) {
+        const csrfToken = document.querySelector('input[name="_csrf"]').value;
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/faq/items/${itemId}/delete`;
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_csrf';
+        csrfInput.value = csrfToken;
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>

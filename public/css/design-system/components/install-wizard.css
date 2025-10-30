@@ -1,0 +1,310 @@
+/* ==========================================
+   INSTALL WIZARD COMPONENT
+   Design System - Installation wizard pages
+   ========================================== */
+
+/* Wizard Container */
+.install-wizard {
+  text-align: center;
+  max-width: var(--container-md);
+  margin: 0 auto;
+  padding: var(--space-8);
+}
+
+/* Success Icon */
+.install-wizard__success-icon {
+  font-size: var(--text-6xl);
+  margin-bottom: var(--space-5);
+  color: var(--color-success-600);
+}
+
+/* Wizard Title */
+.install-wizard__title {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gray-900);
+  margin-bottom: var(--space-5);
+}
+
+:root[data-theme="dark"] .install-wizard__title {
+  color: var(--color-gray-100);
+}
+
+/* Wizard Text */
+.install-wizard__text {
+  font-size: var(--text-base);
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-5);
+  line-height: var(--leading-relaxed);
+}
+
+:root[data-theme="dark"] .install-wizard__text {
+  color: var(--color-gray-400);
+}
+
+/* Feature List */
+.install-wizard__feature-list {
+  text-align: left;
+  max-width: var(--container-sm);
+  margin: var(--space-6) auto;
+  padding-left: var(--space-8);
+  list-style-type: disc;
+}
+
+.install-wizard__feature-list li {
+  margin-bottom: var(--space-2);
+  color: var(--color-gray-700);
+}
+
+:root[data-theme="dark"] .install-wizard__feature-list li {
+  color: var(--color-gray-300);
+}
+
+/* Info Box */
+.install-wizard__info-box {
+  background: var(--color-gray-50);
+  border: var(--border-width) solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin: var(--space-5) 0;
+}
+
+:root[data-theme="dark"] .install-wizard__info-box {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+}
+
+.install-wizard__info-box h3 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-4);
+  color: var(--color-gray-900);
+}
+
+:root[data-theme="dark"] .install-wizard__info-box h3 {
+  color: var(--color-gray-100);
+}
+
+.install-wizard__info-box p {
+  margin-bottom: var(--space-3);
+  color: var(--color-gray-700);
+}
+
+:root[data-theme="dark"] .install-wizard__info-box p {
+  color: var(--color-gray-300);
+}
+
+.install-wizard__info-box p:last-child {
+  margin-bottom: 0;
+}
+
+.install-wizard__info-box strong {
+  color: var(--color-gray-900);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-theme="dark"] .install-wizard__info-box strong {
+  color: var(--color-gray-100);
+}
+
+/* Credentials Box */
+.install-wizard__credentials {
+  background: var(--color-gray-50);
+  border: var(--border-width-thick) solid var(--color-primary-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin: var(--space-6) 0;
+  text-align: left;
+}
+
+:root[data-theme="dark"] .install-wizard__credentials {
+  background: var(--color-gray-800);
+  border-color: var(--color-primary-700);
+}
+
+.install-wizard__credentials h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-4);
+  color: var(--color-gray-900);
+}
+
+:root[data-theme="dark"] .install-wizard__credentials h3 {
+  color: var(--color-gray-100);
+}
+
+.install-wizard__credentials p {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-base);
+  color: var(--color-gray-700);
+}
+
+:root[data-theme="dark"] .install-wizard__credentials p {
+  color: var(--color-gray-300);
+}
+
+.install-wizard__credentials strong {
+  color: var(--color-gray-900);
+  font-weight: var(--font-weight-semibold);
+}
+
+:root[data-theme="dark"] .install-wizard__credentials strong {
+  color: var(--text-inverse);
+}
+
+.install-wizard__credentials code {
+  background: var(--color-gray-200);
+  color: var(--color-primary-700);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+:root[data-theme="dark"] .install-wizard__credentials code {
+  background: var(--color-gray-700);
+  color: var(--color-primary-300);
+}
+
+/* Step Indicator */
+.install-wizard__step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.install-wizard__step {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  color: var(--color-gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-semibold);
+  transition: all var(--transition-base);
+}
+
+.install-wizard__step--active {
+  background: var(--color-primary-600);
+  color: var(--text-inverse);
+  transform: scale(1.1);
+}
+
+.install-wizard__step--completed {
+  background: var(--color-success-600);
+  color: var(--text-inverse);
+}
+
+/* Button Group */
+.install-wizard__btn-group {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.install-wizard__btn-group .btn {
+  min-width: calc(var(--space-48) - var(--space-12));
+}
+
+/* Loading State */
+.install-wizard--loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10);
+}
+
+.install-wizard__loading-spinner {
+  width: var(--icon-3xl);
+  height: var(--icon-3xl);
+  border: var(--border-width-heavy) solid var(--color-gray-200);
+  border-top-color: var(--color-primary-600);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-4);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.install-wizard__loading-text {
+  font-size: var(--text-lg);
+  color: var(--color-gray-600);
+}
+
+:root[data-theme="dark"] .install-wizard__loading-text {
+  color: var(--color-gray-400);
+}
+
+/* Success State */
+.install-wizard--success {
+  text-align: center;
+  padding: var(--space-10);
+}
+
+.install-wizard__success-title {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-success-600);
+  margin-bottom: var(--space-6);
+}
+
+/* Error State */
+.install-wizard--error {
+  background: var(--color-error-50);
+  border: var(--border-width-thick) solid var(--color-error-300);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin: var(--space-6) 0;
+}
+
+:root[data-theme="dark"] .install-wizard--error {
+  background: var(--bg-error-soft);
+  border-color: var(--color-error-700);
+}
+
+.install-wizard__error-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error-700);
+  margin-bottom: var(--space-3);
+}
+
+:root[data-theme="dark"] .install-wizard__error-title {
+  color: var(--color-error-400);
+}
+
+.install-wizard__error-text {
+  color: var(--color-error-600);
+  margin-bottom: var(--space-2);
+}
+
+:root[data-theme="dark"] .install-wizard__error-text {
+  color: var(--color-error-300);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .install-wizard {
+    padding: var(--space-4);
+  }
+
+  .install-wizard__title {
+    font-size: var(--text-2xl);
+  }
+
+  .install-wizard__btn-group {
+    flex-direction: column;
+  }
+
+  .install-wizard__btn-group .btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Database migrations (contain snake_case SQL column definitions)
+migrations/
+
+# Logs
+logs/
+*.log
+
+# Backup files
+backup/
+backup_manual/
+backups/
+
+# Vendor/External libraries
+public/js/lib/**
+public/js/vendor/**
+public/js/external/**
+
+# Minified files
+*.min.js
+
+# Coverage
+coverage/

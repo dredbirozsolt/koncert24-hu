@@ -1,0 +1,493 @@
+/**
+ * Admin Cron Jobs Routes - Manual job execution endpoints
+ * Sub-router for cron job manual triggers (/sync/* and /run/*)
+ */
+
+/* eslint-disable sonarjs/no-duplicate-string */
+
+const express = require('express');
+const router = express.Router();
+const { requireAdmin } = require('../middleware/auth');
+const cronService = require('../services/cronService');
+const logger = require('../config/logger');
+
+// ============================================
+// MANUÁLIS FUTTATÁSI ENDPOINTOK
+// ============================================
+
+/**
+ * POST /admin/cron/sync/performers
+ * Manuális előadó szinkronizálás vTiger-ből
+ */
+router.post('/sync/performers', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualSync',
+      type: 'performers',
+      userId: req.session?.userId
+    }, 'Manual performer sync triggered');
+
+    const { SyncService } = require('../services/syncService');
+    const syncService = new SyncService();
+    const result = await syncService.syncPerformers(false);
+
+    req.session.messages = {
+      success: `Előadó szinkronizálás sikeres! ${result.newCount} új, ${result.updatedCount} frissített előadó.`
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error in manual performer sync');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/sync/geonames
+ * Manuális földrajzi adatok szinkronizálása
+ */
+router.post('/sync/geonames', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualSync',
+      type: 'geonames',
+      userId: req.session?.userId
+    }, 'Manual geonames sync triggered');
+
+    const { SyncService } = require('../services/syncService');
+    const syncService = new SyncService();
+    await syncService.syncGeonames();
+
+    req.session.messages = {
+      success: 'Földrajzi adatok szinkronizálása sikeres!'
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error in manual geonames sync');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/sync/bookings
+ * Manuális foglalások szinkronizálása
+ */
+router.post('/sync/bookings', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualSync',
+      type: 'bookings',
+      userId: req.session?.userId
+    }, 'Manual booking sync triggered');
+
+    const { SyncService } = require('../services/syncService');
+    const syncService = new SyncService();
+    const result = await syncService.syncBookings();
+
+    req.session.messages = {
+      success: `Foglalások szinkronizálása sikeres! ${result.newCount} új foglalás.`
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error in manual booking sync');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/sync/events
+ * Manuális események szinkronizálása vTiger-ből
+ */
+router.post('/sync/events', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualSync',
+      type: 'events',
+      userId: req.session?.userId
+    }, 'Manual event sync triggered');
+
+    const { SyncService } = require('../services/syncService');
+    const syncService = new SyncService();
+    const result = await syncService.syncEvents();
+
+    let successMsg = 'Események szinkronizálása sikeres!';
+    if (result && result.newCount !== undefined) {
+      successMsg = `Események szinkronizálása sikeres! ${result.newCount} új esemény.`;
+    }
+
+    req.session.messages = {
+      success: successMsg
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error in manual event sync');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/maintenance
+ * Manuális karbantartási feladatok futtatása
+ */
+router.post('/run/maintenance', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'maintenance',
+      userId: req.session?.userId
+    }, 'Manual maintenance task triggered');
+
+    await cronService.runMaintenanceTasks();
+
+    req.session.messages = {
+      success: 'Karbantartási feladatok sikeresen lefutottak!'
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error running maintenance tasks');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/backup
+ * Manuális biztonsági mentés készítése
+ */
+router.post('/run/backup', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'backup',
+      userId: req.session?.userId
+    }, 'Manual backup triggered');
+
+    const backupService = require('../services/backupService');
+    const result = await backupService.createBackup();
+
+    if (result.success) {
+      req.session.messages = {
+        success: `Biztonsági mentés sikeres! Fájl: ${result.filename || 'ismeretlen'}`
+      };
+    } else {
+      req.session.messages = {
+        error: `Biztonsági mentés részben sikeres. ${result.errors?.length || 0} hiba történt.`
+      };
+    }
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error creating backup');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/chat-cleanup
+ * Manuális chat session cleanup
+ */
+router.post('/run/chat-cleanup', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'chatCleanup',
+      userId: req.session?.userId
+    }, 'Manual chat cleanup triggered');
+
+    const chatService = require('../services/chatService');
+    const result = await chatService.cleanupExpiredSessions();
+
+    req.session.messages = {
+      success: `Chat session cleanup sikeres! ${result.deletedCount || 0} lejárt session törölve.`
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error cleaning up chat sessions');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/blog-publish
+ * Manuális időzített blog bejegyzések publikálása
+ */
+router.post('/run/blog-publish', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'blogPublish',
+      userId: req.session?.userId
+    }, 'Manual blog publish triggered');
+
+    const { BlogPost } = require('../models');
+    const { Op } = require('sequelize');
+
+    const published = await BlogPost.update(
+      { status: 'published' },
+      {
+        where: {
+          status: 'scheduled',
+          publishedAt: { [Op.lte]: new Date() }
+        }
+      }
+    );
+
+    req.session.messages = {
+      success: `Blog publikálás sikeres! ${published[0] || 0} bejegyzés publikálva.`
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error publishing scheduled blog posts');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/admin-heartbeat
+ * Manuális admin heartbeat ellenőrzés
+ */
+router.post('/run/admin-heartbeat', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'adminHeartbeat',
+      userId: req.session?.userId
+    }, 'Manual admin heartbeat triggered');
+
+    const adminAlertService = require('../services/adminAlertService');
+    await adminAlertService.checkAdminAvailability();
+
+    req.session.messages = {
+      success: 'Admin heartbeat ellenőrzés sikeres!'
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error checking admin heartbeat');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/admin-heartbeat-cleanup
+ * Manuális admin heartbeat cleanup futtatás
+ */
+router.post('/run/admin-heartbeat-cleanup', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'adminHeartbeatCleanup',
+      userId: req.session?.userId
+    }, 'Manual admin heartbeat cleanup triggered');
+
+    const availabilityService = require('../services/availabilityService');
+    const cleanedCount = await availabilityService.cleanupStaleAdmins();
+
+    res.json({
+      success: true,
+      message: `Admin heartbeat cleanup sikeres! ${cleanedCount} elavult admin törölve.`
+    });
+  } catch (error) {
+    logger.error({ err: error }, 'Error in admin heartbeat cleanup');
+    res.json({
+      success: false,
+      message: `Hiba történt: ${error.message}`
+    });
+  }
+});
+
+/**
+ * POST /admin/cron/run/security-alert-check
+ * Manuális biztonsági riasztások ellenőrzése
+ */
+router.post('/run/security-alert-check', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'securityAlertCheck',
+      userId: req.session?.userId
+    }, 'Manual security alert check triggered');
+
+    const securityAlertService = require('../services/securityAlertService');
+    await securityAlertService.checkForAlerts();
+
+    req.session.messages = {
+      success: 'Biztonsági riasztások ellenőrzése sikeres!'
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error checking security alerts');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/security-log-cleanup
+ * Manuális biztonsági naplók tisztítása
+ */
+router.post('/run/security-log-cleanup', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'securityLogCleanup',
+      userId: req.session?.userId
+    }, 'Manual security log cleanup triggered');
+
+    const { SecurityLog } = require('../models');
+    const { Op } = require('sequelize');
+
+    const thirtyDaysAgo = new Date(Date.now() - (30 * 24 * 60 * 60 * 1000));
+    const deleted = await SecurityLog.destroy({
+      where: {
+        createdAt: { [Op.lt]: thirtyDaysAgo }
+      }
+    });
+
+    req.session.messages = {
+      success: `Biztonsági naplók tisztítása sikeres! ${deleted || 0} régi bejegyzés törölve.`
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error cleaning up security logs');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/geonames-stats
+ * Manuális Geonames statisztikák frissítése
+ */
+router.post('/run/geonames-stats', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'geonamesStats',
+      userId: req.session?.userId
+    }, 'Manual geonames stats update triggered');
+
+    const { Location } = require('../models');
+    const statsService = require('../services/statsService');
+
+    const locationCount = await Location.count();
+    await statsService.updateGeonamesStats(locationCount);
+
+    req.session.messages = {
+      success: `Geonames statisztikák frissítése sikeres! ${locationCount} helyszín.`
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error updating geonames stats');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/infrastructure-health
+ * Manuális infrastruktúra health check
+ */
+router.post('/run/infrastructure-health', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'infrastructureHealth',
+      userId: req.session?.userId
+    }, 'Manual infrastructure health check triggered');
+
+    const healthService = require('../services/healthService');
+    const result = await healthService.checkInfrastructureHealth();
+
+    if (result.healthy) {
+      req.session.messages = {
+        success: 'Infrastruktúra health check sikeres! Minden rendben.'
+      };
+    } else {
+      req.session.messages = {
+        error: `Infrastruktúra problémák: ${result.issues?.join(', ') || 'Ismeretlen'}`
+      };
+    }
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error checking infrastructure health');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+/**
+ * POST /admin/cron/run/offline-email-retry
+ * Manuális offline message email újraküldés
+ */
+router.post('/run/offline-email-retry', requireAdmin, async (req, res) => {
+  try {
+    logger.info({
+      service: 'adminCron',
+      operation: 'manualRun',
+      type: 'offlineEmailRetry',
+      userId: req.session?.userId
+    }, 'Manual offline email retry triggered');
+
+    const chatService = require('../services/chatService');
+    const result = await chatService.retryFailedOfflineEmails();
+
+    req.session.messages = {
+      success: `Offline email újraküldés sikeres! ${result.sentCount || 0} email elküldve.`
+    };
+    res.redirect('/admin/cron');
+  } catch (error) {
+    logger.error({ err: error }, 'Error retrying offline emails');
+    req.session.messages = {
+      error: `Hiba történt: ${error.message}`
+    };
+    res.redirect('/admin/cron');
+  }
+});
+
+module.exports = router;

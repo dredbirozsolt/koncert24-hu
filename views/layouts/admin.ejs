@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="hu" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+    
+    <title><%= title || 'Admin' %> | <%= siteName || 'Admin Panel' %></title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    
+    <!-- Styles -->
+    <% if (NODE_ENV === 'production') { %>
+        <!-- Production: Optimized Admin Bundle (13 files → 1 file, 238 KB → 22 KB Brotli) -->
+        <link rel="stylesheet" href="/css/dist/admin-bundle.min.css">
+    <% } else { %>
+        <!-- Development: Individual files for debugging -->
+        <!-- Design System -->
+        <link rel="stylesheet" href="/css/design-system/tokens.css?v=3">
+        <!-- Design System Components - SHARED BETWEEN PUBLIC & ADMIN -->
+        <link rel="stylesheet" href="/css/design-system/components/typography.css">
+        <link rel="stylesheet" href="/css/design-system/components/button.css">
+        <link rel="stylesheet" href="/css/design-system/components/card.css">
+        <link rel="stylesheet" href="/css/design-system/components/badge.css">
+        <link rel="stylesheet" href="/css/design-system/components/alert.css">
+        <link rel="stylesheet" href="/css/design-system/components/table.css">
+        <link rel="stylesheet" href="/css/design-system/components/modal.css">
+        <!-- Exit Popup Styles (for preview in admin) -->
+        <link rel="stylesheet" href="/css/modules/exit-popup.css">
+        <!-- Admin Complete CSS (consolidated: admin-layout + admin-common + admin) -->
+        <link rel="stylesheet" href="/css/admin-complete.css?v=<%= Date.now() %>">
+        <!-- Admin Utilities & Components -->
+        <link rel="stylesheet" href="/css/design-system/utilities.css?v=3">
+        <!-- FORM CSS LAST - to override legacy styles -->
+        <link rel="stylesheet" href="/css/design-system/components/form.css?v=3">
+    <% } %>
+    <!-- Theme Toggle (load early to prevent flash) -->
+    <script src="/js/theme-toggle.js"></script>
+</head>
+
+<body class="admin-layout">
+    <!-- Skip to main content for accessibility -->
+    <a href="#admin-main-content" class="skip-to-main">Ugrás a tartalomhoz</a>
+    
+    <div class="admin-wrapper">
+        <!-- Sidebar Navigation -->
+        <%- include('../partials/admin-sidebar') %>
+        
+        <!-- Main Content Area -->
+        <div class="admin-content-wrapper">
+            <!-- Top Bar -->
+            <header class="admin-topbar">
+                <div class="admin-topbar__left">
+                    <!-- Mobile Menu Toggle -->
+                    <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Menü megnyitása">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    
+                    <h1 class="admin-topbar__title"><%= title || 'Admin' %></h1>
+                </div>
+                
+                <div class="admin-topbar__right">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="admin-theme-toggle" aria-label="Téma váltás" title="Téma váltás">
+                        <svg class="nav__theme-icon theme-icon--light" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+                            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <svg class="nav__theme-icon theme-icon--dark" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- User Menu -->
+                    <div class="admin-user-menu">
+                        <button class="admin-user-menu__trigger" id="userMenuTrigger">
+                            <span class="admin-user-menu__name"><%= user && user.name ? user.name : 'Felhasználó' %></span>
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        
+                        <div class="admin-user-menu__dropdown" id="userMenuDropdown">
+                            <a href="/auth/profile" class="admin-user-menu__item">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                                Profil
+                            </a>
+                            <% if (user && user.role === 'admin') { %>
+                            <a href="/styleguide" class="admin-user-menu__item">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2h-1.528A6 6 0 004 9.528V4z" />
+                                    <path fill-rule="evenodd" d="M8 10a4 4 0 00-3.446 6.032l-1.261 1.26a1 1 0 101.414 1.415l1.261-1.261A4 4 0 108 10zm-2 4a2 2 0 114 0 2 2 0 01-4 0z" clip-rule="evenodd" />
+                                </svg>
+                                Styleguide
+                            </a>
+                            <% } %>
+                            <a href="/" class="admin-user-menu__item">
+                                <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                                </svg>
+                                Főoldal
+                            </a>
+                            <hr class="admin-user-menu__divider">
+                            <form method="POST" action="/auth/logout" class="admin-user-menu__form">
+                                <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+                                <button type="submit" class="admin-user-menu__item admin-user-menu__item--danger">
+                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
+                                    </svg>
+                                    Kijelentkezés
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content -->
+            <main class="admin-main" id="admin-main-content">
+                <%- body %>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+    
+    <!-- Admin Scripts -->
+    <script>
+        // Sidebar scroll position memory
+        const sidebarNav = document.querySelector('.admin-sidebar__nav');
+        
+        if (sidebarNav) {
+            // Restore scroll position on page load
+            const savedScrollPos = localStorage.getItem('adminSidebarScroll');
+            if (savedScrollPos !== null) {
+                // Set scroll position immediately without animation
+                sidebarNav.style.scrollBehavior = 'auto';
+                sidebarNav.scrollTop = parseInt(savedScrollPos, 10);
+                // Re-enable smooth scrolling after restoration
+                setTimeout(() => {
+                    sidebarNav.style.scrollBehavior = '';
+                }, 100);
+            }
+            
+            // Save scroll position when sidebar is scrolled
+            sidebarNav.addEventListener('scroll', () => {
+                localStorage.setItem('adminSidebarScroll', sidebarNav.scrollTop);
+            });
+            
+            // Handle active link state and scroll position
+            const sidebarLinks = sidebarNav.querySelectorAll('.admin-sidebar__link');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    // Save scroll position before navigation
+                    localStorage.setItem('adminSidebarScroll', sidebarNav.scrollTop);
+                    
+                    // Update active state immediately (visual feedback)
+                    sidebarLinks.forEach(l => l.classList.remove('admin-sidebar__link--active'));
+                    link.classList.add('admin-sidebar__link--active');
+                    
+                    // Save clicked link for persistence
+                    localStorage.setItem('adminActivePath', link.getAttribute('href'));
+                });
+            });
+            
+            // Restore active state on page load (in case server-side rendering didn't catch it)
+            const activePath = localStorage.getItem('adminActivePath');
+            const currentPath = window.location.pathname;
+            if (activePath && activePath === currentPath) {
+                const activeLink = sidebarNav.querySelector(`a[href="${activePath}"]`);
+                if (activeLink) {
+                    sidebarLinks.forEach(l => l.classList.remove('admin-sidebar__link--active'));
+                    activeLink.classList.add('admin-sidebar__link--active');
+                }
+            }
+        }
+        
+        // Mobile Menu Toggle
+        const mobileToggle = document.getElementById('adminMobileToggle');
+        const sidebar = document.querySelector('.admin-sidebar');
+        const overlay = document.getElementById('adminSidebarOverlay');
+        
+        if (mobileToggle && sidebar && overlay) {
+            mobileToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('admin-sidebar--open');
+                overlay.classList.toggle('admin-sidebar-overlay--visible');
+                mobileToggle.classList.toggle('active');
+                document.body.style.overflow = sidebar.classList.contains('admin-sidebar--open') ? 'hidden' : '';
+            });
+            
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('admin-sidebar--open');
+                overlay.classList.remove('admin-sidebar-overlay--visible');
+                mobileToggle.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        }
+        
+        // User Menu Dropdown
+        const userMenuTrigger = document.getElementById('userMenuTrigger');
+        const userMenuDropdown = document.getElementById('userMenuDropdown');
+        
+        if (userMenuTrigger && userMenuDropdown) {
+            userMenuTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenuDropdown.classList.toggle('admin-user-menu__dropdown--open');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!userMenuTrigger.contains(e.target) && !userMenuDropdown.contains(e.target)) {
+                    userMenuDropdown.classList.remove('admin-user-menu__dropdown--open');
+                }
+            });
+        }
+    </script>
+    
+    <!-- Admin Alert System - Globális visszajelzés -->
+    <script src="/js/admin-alerts.js"></script>
+    
+    <!-- Design System Modal -->
+    <script src="/js/design-system/modal.js"></script>
+    
+    <!-- Session Timeout Warning (only for logged-in users) -->
+    <% if (typeof user !== 'undefined' && user) { %>
+        <script src="/js/session-timeout.js"></script>
+    <% } %>
+</body>
+</html>

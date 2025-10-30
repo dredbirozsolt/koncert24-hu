@@ -1,0 +1,115 @@
+/* ==========================================================================
+   HERO COMPONENT
+   Globális hero szekciók az egész rendszerre
+   ========================================================================== */
+
+/* Base Hero */
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+  padding: var(--space-12) 0;
+  color: var(--color-gray-900);
+}
+
+/* Hero Variants */
+.hero--tall {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero--centered {
+  text-align: center;
+}
+
+.hero--gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+}
+
+.hero--gradient-dark {
+  background: linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-primary-950) 100%);
+  color: var(--color-white);
+}
+
+/* Hero Container */
+.hero__container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+/* Hero Content */
+.hero__content {
+  max-width: 800px;
+}
+
+.hero--centered .hero__content {
+  margin-inline: auto;
+}
+
+/* Hero Typography */
+.hero__title {
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+  font-weight: var(--font-weight-black);
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-6);
+}
+
+.hero__subtitle {
+  font-size: clamp(var(--text-lg), 2.5vw, var(--text-xl));
+  line-height: var(--leading-relaxed);
+  opacity: var(--opacity-90);
+}
+
+.hero--gradient-dark .hero__title,
+.hero--gradient-dark .hero__subtitle {
+  color: var(--color-white);
+}
+
+/* Hero Actions */
+.hero__actions {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.hero--centered .hero__actions {
+  justify-content: center;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .hero {
+    padding: var(--space-16) 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero__container {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-20);
+  }
+  
+  .hero--centered .hero__container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .hero {
+  background: linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-primary-950) 100%);
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .hero--gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary-800) 0%, var(--color-primary-900) 100%);
+  color: var(--color-white);
+}
+
+[data-theme="dark"] .hero__title,
+[data-theme="dark"] .hero__subtitle {
+  color: var(--color-white);
+}

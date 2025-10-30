@@ -1,0 +1,82 @@
+/**
+ * Legacy Compatibility Layer
+ * TEMPORARY - To be removed after full migration
+ * 
+ * This file provides CSS aliases from old class names to new BEM format
+ * DO NOT USE THESE CLASSES IN NEW CODE!
+ * 
+ * NOTE: All these classes are DEPRECATED and migrated to BEM format in views/
+ * This file exists only for CSS fallback in case any inline scripts use old classes
+ */
+
+/* Since HTML is already migrated, these are minimal fallbacks only */
+
+/* Grid Classes - Only used in few places like booking form */
+.form-row {
+  /* Use flex gap-4 or grid grid-cols-2 instead */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.col-md-6 {
+  /* Use flex-1 or grid column utilities instead */
+  flex: 0 0 calc(50% - var(--space-2));
+  max-width: calc(50% - var(--space-2));
+}
+
+@media (max-width: 768px) {
+  .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* Grid Classes - Aliasing to utility classes */
+.form-row {
+  /* Use flex gap-4 or grid grid-cols-2 instead */
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.col-md-6 {
+  /* Use flex-1 or grid column utilities instead */
+  flex: 0 0 calc(50% - var(--space-2));
+  max-width: calc(50% - var(--space-2));
+}
+
+@media (max-width: 768px) {
+  .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* Container Classes */
+.container-fluid {
+  /* Use container or custom width */
+  width: 100%;
+  max-width: 100%;
+  padding: 0 var(--space-4);
+}
+
+/* MIGRATION NOTES:
+ * 
+ * 1. Form Classes:
+ *    - form-control → form__control
+ *    - form-group → form__group
+ *    - form-text → form__hint
+ *    
+ * 2. Button Classes:
+ *    - btn-primary → btn btn--primary
+ *    - btn-secondary → btn btn--secondary
+ *    
+ * 3. Grid System:
+ *    - form-row → flex gap-4 or grid grid-cols-2
+ *    - col-md-6 → flex-1 or grid column utilities
+ *    
+ * 4. After migration complete, remove this file from layout.ejs
+ */

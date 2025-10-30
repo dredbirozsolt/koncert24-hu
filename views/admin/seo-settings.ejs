@@ -1,0 +1,769 @@
+<!-- SEO Settings Page - 2 Column Layout -->
+<!-- Using Design System -->
+
+<div class="page-container">
+    <div class="admin-two-col">
+        <!-- Bal oldal: Forms & Settings -->
+        <div>
+            <!-- Sitemap Statisztikák -->
+            <div class="card--data">
+                <h3 class="section-title">📊 Sitemap Statisztikák</h3>
+                <div id="sitemap-stats-container">
+                    <p class="text-center">⏳ Betöltés...</p>
+                </div>
+            </div>
+
+            <!-- Sitemap Beállítások -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🗺️ Sitemap Beállítások
+                </h3>
+                
+                <div class="form__group">
+                    <!-- Sitemap Enabled -->
+                    <div class="form__switch-row">
+                        <span class="form__switch-row-label">Sitemap generálás</span>
+                        <input type="checkbox" 
+                               class="form-switch-input"
+                               data-setting="sitemap-enabled"
+                               data-label="Sitemap generálás"
+                               <%= settings.sitemapEnabled ? 'checked' : '' %> 
+                               onchange="toggleSetting(this)">
+                    </div>
+                    
+                    <!-- Auto Generate -->
+                    <div class="form__switch-row">
+                        <span class="form__switch-row-label">Automatikus generálás (napi 2:00)</span>
+                        <input type="checkbox" 
+                               class="form-switch-input"
+                               data-setting="auto-generate"
+                               data-label="Automatikus generálás"
+                               <%= settings.autoGenerate ? 'checked' : '' %> 
+                               onchange="toggleSetting(this)">
+                    </div>
+                    
+                    <!-- Ping Enabled -->
+                    <div class="form__switch-row">
+                        <span class="form__switch-row-label">Keresőmotorok automatikus értesítése</span>
+                        <input type="checkbox" 
+                               class="form-switch-input"
+                               data-setting="ping-enabled"
+                               data-label="Keresőmotor értesítés"
+                               <%= settings.pingEnabled ? 'checked' : '' %> 
+                               onchange="toggleSetting(this)">
+                    </div>
+                </div>
+
+                <div class="btn__group btn__group--equal mt-3">
+                    <button type="button" class="btn btn--primary" onclick="generateSitemap()">
+                        🔄 Sitemap Generálás
+                    </button>
+                    <button type="button" class="btn btn--secondary" onclick="pingSearchEngines()">
+                        📡 Keresőmotorok Értesítése
+                    </button>
+                    <button type="button" class="btn btn--secondary" onclick="showSitemapPreview()">
+                        👁️ Előnézet
+                    </button>
+                </div>
+            </div>
+
+            <!-- Robots.txt Statisztikák -->
+            <div class="card--data">
+                <h3 class="section-title">📊 Robots.txt Statisztikák</h3>
+                <div id="robots-stats-container">
+                    <p class="text-center">⏳ Betöltés...</p>
+                </div>
+            </div>
+
+            <!-- Robots.txt Beállítások -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🤖 Robots.txt Beállítások
+                </h3>
+                
+                <div class="form__group">
+                    <!-- Robots.txt Enabled -->
+                    <div class="form__switch-row">
+                        <span class="form__switch-row-label">Robots.txt dinamikus generálás</span>
+                        <input type="checkbox" 
+                               class="form-switch-input"
+                               data-setting="robots-enabled"
+                               data-label="Robots.txt generálás"
+                               <%= settings.robotsTxtEnabled ? 'checked' : '' %> 
+                               onchange="toggleSetting(this)">
+                    </div>
+                </div>
+
+                <div class="btn__group btn__group--equal mb-4">
+                    <button type="button" class="btn btn--secondary" onclick="showRobotsPreview()">
+                        👁️ Robots.txt Előnézet
+                    </button>
+                </div>
+            </div>
+
+            <!-- Google Tag Manager -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🏷️ Google Tag Manager
+                </h3>
+                
+                <form id="google-services-form">
+                    <div class="form__group">
+                        <label class="form__label" for="googleTagManagerId">
+                            Google Tag Manager ID
+                        </label>
+                        <input 
+                            type="text" 
+                            name="googleTagManagerId"
+                            id="googleTagManagerId"
+                            class="form__control"
+                            value="<%= settings.googleTagManagerId %>"
+                            placeholder="GTM-XXXXXXX"
+                        >
+                        <small class="form__hint">
+                            Pl: GTM-ABC1234 - Ez kezeli az összes tracking-et (GA4, Meta Pixel, stb.)
+                        </small>
+                    </div>
+                    
+                    <div class="btn__group btn__group--equal mb-4">
+                        <button type="submit" class="btn btn--primary">
+                            💾 GTM Mentése
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 3. SEO Kulcsszavak -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🔑 SEO Kulcsszavak
+                </h3>
+                
+                <form id="keywords-form">
+                    <div class="form__group">
+                        <label class="form__label" for="defaultKeywords">
+                            Alapértelmezett SEO Kulcsszavak
+                        </label>
+                        <textarea 
+                            name="defaultKeywords"
+                            id="defaultKeywords"
+                            class="form__control"
+                            rows="4"
+                            placeholder="koncert, rendezvény, előadó, fellépő..."
+                        ><%= settings.defaultKeywords || 'koncert, rendezvény, előadó, fellépő, zenész, esküvő, céges rendezvény' %></textarea>
+                        <small class="form__hint">
+                            Használat: oldal címek, leírások bővítése, Schema.org (vesszővel elválasztva)
+                        </small>
+                    </div>
+                    
+                    <div class="btn__group btn__group--equal mb-4">
+                        <button type="submit" class="btn btn--primary">
+                            💾 Kulcsszavak Mentése
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Jobb oldal: Info Panels -->
+        <div>
+            <!-- Sitemap Info -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ℹ️ Mi az a Sitemap?
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>📄 Sitemap.xml:</strong><br>
+                        XML fájl, amely tartalmazza az összes publikus oldal URL-jét. Segíti a keresőmotorokat az oldal indexelésében.
+                    </p>
+                    
+                    <p>
+                        <strong>🔄 Automatikus generálás:</strong><br>
+                        Ha be van kapcsolva, a rendszer minden éjjel 2:00-kor automatikusan újragenerálja a sitemap-et.
+                    </p>
+                    
+                    <p>
+                        <strong>📡 Keresőmotor értesítés:</strong><br>
+                        Ping-eli a Google-t és Bing-et, hogy értesítse őket az új sitemap-ről.
+                    </p>
+                </div>
+            </div>
+
+            <!-- GTM Info -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🏷️ Google Tag Manager
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>🎯 Mire jó?</strong><br>
+                        Központi kezelés minden tracking kódhoz (GA4, Meta Pixel, stb.) kód módosítás nélkül.
+                    </p>
+                    
+                    <p>
+                        <strong>💡 Előnyök:</strong><br>
+                        • Nincs szükség kód módosításra<br>
+                        • Központi tracking kezelés<br>
+                        • Verziókezelés és előnézet<br>
+                        • Könnyű tesztelés
+                    </p>
+                    
+                    <hr class="my-3">
+                    
+                    <h3 class="section-title">
+                        📋 GTM Beállítási Útmutató
+                    </h3>
+                    
+                    <p>
+                        <strong>1. Google Tag Manager fiók létrehozása</strong><br>
+                        Menj ide: <a href="https://tagmanager.google.com" target="_blank">https://tagmanager.google.com</a><br>
+                        Hozz létre egy új fiókot (Account) és containert.
+                    </p>
+                    
+                    <p>
+                        <strong>2. GTM ID beszerzése</strong><br>
+                        A GTM Dashboard-on látod a Container ID-t (pl. GTM-ABC1234).
+                    </p>
+                    
+                    <p>
+                        <strong>3. ID beillesztése</strong><br>
+                        Másold be az ID-t a bal oldali mezőbe és mentsd el.
+                    </p>
+                    
+                    <p>
+                        <strong>4. Tagek hozzáadása GTM-ben</strong><br>
+                        Ezután a GTM felületén adhatsz hozzá Google Analytics, Meta Pixel és egyéb tracking scripteket.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Kulcsszavak Info -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    💡 Kulcsszavak Tippek
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>✏️ Jó kulcsszavak:</strong><br>
+                        • Relevánsak a szolgáltatáshoz<br>
+                        • Természetes kifejezések<br>
+                        • Long-tail kulcsszavak<br>
+                        • Földrajzi helynevek
+                    </p>
+                    
+                    <p>
+                        <strong>🎯 Használat:</strong><br>
+                        Ezek a kulcsszavak automatikusan bekerülnek a meta keywords tagekbe és a Schema.org adatokba.
+                    </p>
+                    
+                    <p>
+                        <strong>⚠️ Tipp:</strong><br>
+                        Ne túlozd el! 5-10 releváns kulcsszó elegendő.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Robots.txt Info -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🤖 Robots.txt
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>🤖 Mi az?</strong><br>
+                        Szöveges fájl, amely megmondja a keresőrobotoknak, mit indexelhetnek és mit nem.
+                    </p>
+                    
+                    <p>
+                        <strong>🔧 Dinamikus generálás:</strong><br>
+                        A rendszer automatikusan generálja a robots.txt-et a beállítások alapján.
+                    </p>
+                </div>
+            </div>
+
+            <!-- SEO Tippek -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⭐ SEO Tippek
+                </h3>
+                
+                <div>
+                    <p>
+                        <strong>✅ Sitemap:</strong><br>
+                        Minden új tartalomnál generálj új sitemap-et és értesítsd a keresőmotorokat.
+                    </p>
+                    
+                    <p>
+                        <strong>🔍 Google Search Console:</strong><br>
+                        Add hozzá az oldalt a Search Console-hoz és küldd be a sitemap-et.
+                    </p>
+                    
+                    <p>
+                        <strong>📊 GTM Testing:</strong><br>
+                        Használd a GTM Preview módját a tagek teszteléséhez éles környezet előtt.
+                    </p>
+                    
+                    <p>
+                        <strong>⏰ Automatizálás:</strong><br>
+                        Kapcsold be az automatikus sitemap generálást a rendszeres frissítéshez.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- /.jobb oldal -->
+    </div>
+    <!-- /.admin-two-col -->
+</div>
+<!-- /.page-container -->
+
+<script src="/js/design-system/modal.js"></script>
+<script>
+const csrfToken = '<%= csrfToken %>';
+let robotsModal = null;
+let sitemapModal = null;
+
+// Toggle setting AJAX hívással (használja a globális showAlert()-et)
+async function toggleSetting(checkbox) {
+    const setting = checkbox.dataset.setting;
+    const label = checkbox.dataset.label;
+    const newValue = checkbox.checked;
+    const originalState = !newValue;
+    
+    // Optimistic UI update már megtörtént (checkbox átváltott)
+    checkbox.disabled = true;
+    
+    try {
+        const response = await fetch(`/admin/seo/toggle/${setting}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ value: newValue })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', `✅ ${label}: ${newValue ? 'Bekapcsolva' : 'Kikapcsolva'}`);
+        } else {
+            // Hiba esetén visszaállítjuk az eredeti állapotot
+            checkbox.checked = originalState;
+            showAlert('error', `❌ ${data.message || 'Hiba történt'}`);
+        }
+    } catch (error) {
+        // Hiba esetén visszaállítjuk
+        checkbox.checked = originalState;
+        showAlert('error', '❌ Hálózati hiba történt');
+    } finally {
+        checkbox.disabled = false;
+    }
+}
+
+async function generateSitemap() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '🔄 Generálás...';
+    
+    try {
+        const response = await fetch('/admin/seo/generate-sitemap', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', `✅ ${data.message}`);
+            setTimeout(() => loadSitemapStats(), 500);
+        } else {
+            showAlert('error', `❌ ${data.message}`);
+        }
+    } catch (error) {
+        showAlert('error', '❌ Hálózati hiba történt');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+async function pingSearchEngines() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '📡 Értesítés...';
+    
+    try {
+        const response = await fetch('/admin/seo/ping-search-engines', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', `✅ ${data.message}`);
+        } else {
+            showAlert('error', `❌ ${data.message}`);
+        }
+    } catch (error) {
+        showAlert('error', '❌ Hálózati hiba történt');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+document.getElementById('google-services-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Mentés...';
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        const response = await fetch('/admin/seo/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', `✅ ${result.message || 'Google Tag Manager ID sikeresen mentve'}`);
+        } else {
+            showAlert('error', `❌ ${result.message || 'Hiba történt a mentés során'}`);
+        }
+    } catch (error) {
+        showAlert('error', '❌ Hálózati hiba történt');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+});
+
+document.getElementById('keywords-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Mentés...';
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        const response = await fetch('/admin/seo/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', `✅ ${result.message || 'SEO kulcsszavak sikeresen mentve'}`);
+        } else {
+            showAlert('error', `❌ ${result.message || 'Hiba történt a mentés során'}`);
+        }
+    } catch (error) {
+        showAlert('error', '❌ Hálózati hiba történt');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+});
+
+async function showRobotsPreview() {
+    const statsContainer = document.getElementById('robots-stats-container');
+    const content = '<pre id="robots-content" class="text-center">🔄 Betöltés...</pre>';
+    
+    const footer = `
+        <a href="/robots.txt" target="_blank" class="btn btn--primary">🔗 Élő Robots.txt</a>
+        <button type="button" class="btn btn--secondary modal-robots-close">Bezárás</button>
+    `;
+    
+    robotsModal = Modal.create({
+        title: '🤖 Robots.txt Előnézet',
+        content: content,
+        footer: footer,
+        size: 'lg'
+    });
+    
+    robotsModal.open();
+    
+    // Bind close button
+    setTimeout(() => {
+        const closeBtn = robotsModal.modalElement.querySelector('.modal-robots-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => robotsModal.close());
+        }
+    }, 0);
+    
+    try {
+        const response = await fetch('/admin/seo/robots-preview');
+        const data = await response.json();
+        
+        if (data.success) {
+            let statsHtml = '';
+            
+            if (data.stats) {
+                const stats = data.stats;
+                statsHtml = `
+                    <div class="stats-grid">
+                        <div class="card--stat card--stat--info">
+                            <h3>📄 Sorok</h3>
+                            <div class="stat-value">${stats.totalLines}</div>
+                        </div>
+                        <div class="card--stat card--stat--primary">
+                            <h3>🤖 User-agents</h3>
+                            <div class="stat-value">${stats.userAgents}</div>
+                        </div>
+                        <div class="card--stat card--stat--error">
+                            <h3>🚫 Disallow</h3>
+                            <div class="stat-value">${stats.disallowRules}</div>
+                        </div>
+                        <div class="card--stat card--stat--success">
+                            <h3>✅ Allow</h3>
+                            <div class="stat-value">${stats.allowRules}</div>
+                        </div>
+                        <div class="card--stat card--stat--warning">
+                            <h3>🗺️ Sitemaps</h3>
+                            <div class="stat-value">${stats.sitemaps}</div>
+                        </div>
+                        <div class="card--stat card--stat--primary">
+                            <h3>💾 Méret</h3>
+                            <div class="stat-value">${stats.size} <small>byte</small></div>
+                        </div>
+                    </div>
+                `;
+                
+                // Update stats on page
+                statsContainer.innerHTML = statsHtml;
+            }
+            
+            // Update modal with just the code
+            robotsModal.setContent(`<pre>${data.content}</pre>`);
+        } else {
+            robotsModal.setContent(`<p class="text-error">❌ Hiba: ${data.message}</p>`);
+            statsContainer.innerHTML = `<p class="text-error">❌ Hiba: ${data.message}</p>`;
+        }
+    } catch (error) {
+        robotsModal.setContent(`<p class="text-error">❌ Hiba: ${error.message}</p>`);
+        statsContainer.innerHTML = `<p class="text-error">❌ Hiba: ${error.message}</p>`;
+    }
+}
+
+async function showSitemapPreview() {
+    const statsContainer = document.getElementById('sitemap-stats-container');
+    const content = '<pre id="sitemap-content" class="text-center">🔄 Betöltés...</pre>';
+    
+    const footer = `
+        <a href="/sitemap.xml" target="_blank" class="btn btn--primary">🔗 Élő Sitemap.xml</a>
+        <button type="button" class="btn btn--secondary modal-sitemap-close">Bezárás</button>
+    `;
+    
+    sitemapModal = Modal.create({
+        title: '📄 Sitemap.xml Előnézet',
+        content: content,
+        footer: footer,
+        size: 'lg'
+    });
+    
+    sitemapModal.open();
+    
+    // Bind close button
+    setTimeout(() => {
+        const closeBtn = sitemapModal.modalElement.querySelector('.modal-sitemap-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => sitemapModal.close());
+        }
+    }, 0);
+    
+    try {
+        const response = await fetch('/sitemap.xml');
+        const text = await response.text();
+        
+        if (response.ok) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(text, 'text/xml');
+            const urls = xmlDoc.getElementsByTagName('url');
+            const lastmod = xmlDoc.getElementsByTagName('lastmod');
+            const changefreq = xmlDoc.getElementsByTagName('changefreq');
+            const priority = xmlDoc.getElementsByTagName('priority');
+            
+            let statsHtml = `
+                <div class="stats-grid">
+                    <div class="card--stat card--stat--primary">
+                        <h3>🔗 URL-ek</h3>
+                        <div class="stat-value">${urls.length}</div>
+                    </div>
+                    <div class="card--stat card--stat--info">
+                        <h3>📅 Lastmod</h3>
+                        <div class="stat-value">${lastmod.length}</div>
+                    </div>
+                    <div class="card--stat card--stat--warning">
+                        <h3>🔄 Changefreq</h3>
+                        <div class="stat-value">${changefreq.length}</div>
+                    </div>
+                    <div class="card--stat card--stat--success">
+                        <h3>⭐ Priority</h3>
+                        <div class="stat-value">${priority.length}</div>
+                    </div>
+                    <div class="card--stat card--stat--primary">
+                        <h3>💾 Méret</h3>
+                        <div class="stat-value">${(text.length / 1024).toFixed(2)} <small>KB</small></div>
+                    </div>
+                    <div class="card--stat card--stat--warning">
+                        <h3>📝 Karakterek</h3>
+                        <div class="stat-value">${text.length.toLocaleString()}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Update stats on page
+            statsContainer.innerHTML = statsHtml;
+            
+            // Update modal with just the XML
+            sitemapModal.setContent(`<pre>${text}</pre>`);
+        } else {
+            sitemapModal.setContent(`<p class="text-error">❌ Hiba: ${response.status}</p>`);
+            statsContainer.innerHTML = `<p class="text-error">❌ Hiba: ${response.status}</p>`;
+        }
+    } catch (error) {
+        sitemapModal.setContent(`<p class="text-error">❌ Hiba: ${error.message}</p>`);
+        statsContainer.innerHTML = `<p class="text-error">❌ Hiba: ${error.message}</p>`;
+    }
+}
+
+// Load Robots.txt stats on page load
+async function loadRobotsStats() {
+    const statsContainer = document.getElementById('robots-stats-container');
+    
+    try {
+        const response = await fetch('/admin/seo/robots-preview');
+        const data = await response.json();
+        
+        if (data.success && data.stats) {
+            const stats = data.stats;
+            statsContainer.innerHTML = `
+                <div class="stats-grid">
+                    <div class="card--stat card--stat--info">
+                        <h3>📄 Sorok</h3>
+                        <div class="stat-value">${stats.totalLines}</div>
+                    </div>
+                    <div class="card--stat card--stat--primary">
+                        <h3>🤖 User-agents</h3>
+                        <div class="stat-value">${stats.userAgents}</div>
+                    </div>
+                    <div class="card--stat card--stat--error">
+                        <h3>🚫 Disallow</h3>
+                        <div class="stat-value">${stats.disallowRules}</div>
+                    </div>
+                    <div class="card--stat card--stat--success">
+                        <h3>✅ Allow</h3>
+                        <div class="stat-value">${stats.allowRules}</div>
+                    </div>
+                    <div class="card--stat card--stat--warning">
+                        <h3>🗺️ Sitemaps</h3>
+                        <div class="stat-value">${stats.sitemaps}</div>
+                    </div>
+                    <div class="card--stat card--stat--primary">
+                        <h3>💾 Méret</h3>
+                        <div class="stat-value">${stats.size} <small>byte</small></div>
+                    </div>
+                </div>
+            `;
+        } else {
+            statsContainer.innerHTML = `<p class="text-error">❌ Hiba: ${data.message || 'Ismeretlen hiba'}</p>`;
+        }
+    } catch (error) {
+        statsContainer.innerHTML = `<p class="text-error">❌ Hiba: ${error.message}</p>`;
+    }
+}
+
+// Load Sitemap stats on page load
+async function loadSitemapStats() {
+    const statsContainer = document.getElementById('sitemap-stats-container');
+    
+    try {
+        const response = await fetch('/sitemap.xml');
+        const text = await response.text();
+        
+        if (response.ok) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(text, 'text/xml');
+            const urls = xmlDoc.getElementsByTagName('url');
+            const lastmod = xmlDoc.getElementsByTagName('lastmod');
+            const changefreq = xmlDoc.getElementsByTagName('changefreq');
+            const priority = xmlDoc.getElementsByTagName('priority');
+            
+            statsContainer.innerHTML = `
+                <div class="stats-grid">
+                    <div class="card--stat card--stat--primary">
+                        <h3>🔗 URL-ek</h3>
+                        <div class="stat-value">${urls.length}</div>
+                    </div>
+                    <div class="card--stat card--stat--info">
+                        <h3>📅 Lastmod</h3>
+                        <div class="stat-value">${lastmod.length}</div>
+                    </div>
+                    <div class="card--stat card--stat--warning">
+                        <h3>🔄 Changefreq</h3>
+                        <div class="stat-value">${changefreq.length}</div>
+                    </div>
+                    <div class="card--stat card--stat--success">
+                        <h3>⭐ Priority</h3>
+                        <div class="stat-value">${priority.length}</div>
+                    </div>
+                    <div class="card--stat card--stat--primary">
+                        <h3>💾 Méret</h3>
+                        <div class="stat-value">${(text.length / 1024).toFixed(2)} <small>KB</small></div>
+                    </div>
+                    <div class="card--stat card--stat--warning">
+                        <h3>📝 Karakterek</h3>
+                        <div class="stat-value">${text.length.toLocaleString()}</div>
+                    </div>
+                </div>
+            `;
+        } else {
+            statsContainer.innerHTML = `<p class="text-error">❌ Hiba: ${response.status}</p>`;
+        }
+    } catch (error) {
+        statsContainer.innerHTML = `<p class="text-error">❌ Hiba: ${error.message}</p>`;
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadRobotsStats();
+    loadSitemapStats();
+});
+</script>

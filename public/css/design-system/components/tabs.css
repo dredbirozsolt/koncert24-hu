@@ -1,0 +1,383 @@
+/**
+ * Tabs Component
+ * Tabbed navigation for content sections
+ */
+
+/* ==========================================
+   TABS CONTAINER
+   ========================================== */
+
+.tabs {
+  width: 100%;
+}
+
+/* ==========================================
+   TAB LIST
+   ========================================== */
+
+.tabs__list {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 2px solid var(--border-base);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.tabs__list::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabs__list::-webkit-scrollbar-track {
+  background: var(--bg-subtle);
+}
+
+.tabs__list::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+}
+
+/* ==========================================
+   TAB ITEM
+   ========================================== */
+
+.tabs__tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: calc(var(--space-0-5) * -1);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-colors);
+  text-decoration: none;
+}
+
+.tabs__tab:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-surface-hover);
+}
+
+.tabs__tab:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* Active Tab */
+.tabs__tab[aria-selected="true"],
+.tabs__tab.is-active {
+  color: var(--color-primary-600);
+  border-bottom-color: var(--color-primary-600);
+}
+
+/* Disabled Tab */
+.tabs__tab:disabled,
+.tabs__tab.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ==========================================
+   TAB ICON & BADGE
+   ========================================== */
+
+.tabs__tab svg,
+.tabs__tab .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  flex-shrink: 0;
+}
+
+.tabs__tab .badge {
+  margin-left: var(--space-1);
+}
+
+/* ==========================================
+   TAB PANELS
+   ========================================== */
+
+.tabs__panels {
+  margin-top: var(--space-6);
+}
+
+.tabs__panel {
+  display: none;
+  animation: tabs-fade-in var(--duration-200) var(--ease-out);
+}
+
+.tabs__panel[aria-hidden="false"],
+.tabs__panel.is-active {
+  display: block;
+}
+
+@keyframes tabs-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   TABS VARIANTS
+   ========================================== */
+
+/* Pills/Buttons Style */
+.tabs--pills .tabs__list {
+  border-bottom: none;
+  gap: var(--space-2);
+  padding: var(--space-1);
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.tabs--pills .tabs__tab {
+  border-bottom: none;
+  margin-bottom: 0;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+}
+
+.tabs--pills .tabs__tab[aria-selected="true"],
+.tabs--pills .tabs__tab.is-active {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Boxed/Card Style */
+.tabs--boxed .tabs__list {
+  border: none;
+  gap: 0;
+}
+
+.tabs--boxed .tabs__tab {
+  border: 1px solid var(--border-base);
+  border-bottom: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  margin-right: calc(var(--space-px) * -1);
+  margin-bottom: 0;
+}
+
+.tabs--boxed .tabs__tab[aria-selected="true"],
+.tabs--boxed .tabs__tab.is-active {
+  background-color: var(--bg-surface);
+  border-color: var(--border-strong);
+  border-bottom-color: var(--bg-surface);
+  z-index: 1;
+}
+
+.tabs--boxed .tabs__panels {
+  border: 1px solid var(--border-base);
+  border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
+  padding: var(--space-6);
+  margin-top: calc(var(--space-px) * -1);
+}
+
+/* Vertical Tabs */
+.tabs--vertical {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.tabs--vertical .tabs__list {
+  flex-direction: column;
+  border-bottom: none;
+  border-right: 2px solid var(--border-base);
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+.tabs--vertical .tabs__tab {
+  border-bottom: none;
+  border-right: 2px solid transparent;
+  margin-bottom: 0;
+  margin-right: calc(var(--space-0-5) * -1);
+  justify-content: flex-start;
+}
+
+.tabs--vertical .tabs__tab[aria-selected="true"],
+.tabs--vertical .tabs__tab.is-active {
+  border-right-color: var(--color-primary-600);
+}
+
+.tabs--vertical .tabs__panels {
+  flex: 1;
+  margin-top: 0;
+}
+
+/* ==========================================
+   TABS SIZES
+   ========================================== */
+
+/* Small */
+.tabs--sm .tabs__tab {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+}
+
+/* Large */
+.tabs--lg .tabs__tab {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-base);
+}
+
+/* ==========================================
+   TABS ALIGNMENT
+   ========================================== */
+
+.tabs--center .tabs__list {
+  justify-content: center;
+}
+
+.tabs--end .tabs__list {
+  justify-content: flex-end;
+}
+
+.tabs--between .tabs__list {
+  justify-content: space-between;
+}
+
+/* Full width tabs */
+.tabs--full .tabs__tab {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE
+   ========================================== */
+
+@media (max-width: 768px) {
+  .tabs__tab {
+    padding: var(--space-2-5) var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  /* Stack vertically on mobile */
+  .tabs--mobile-stack {
+    display: block;
+  }
+
+  .tabs--mobile-stack .tabs__list {
+    flex-direction: column;
+    border-bottom: none;
+  }
+
+  .tabs--mobile-stack .tabs__tab {
+    border-bottom: 1px solid var(--border-base);
+    margin-bottom: 0;
+  }
+
+  .tabs--mobile-stack .tabs__tab[aria-selected="true"],
+  .tabs--mobile-stack .tabs__tab.is-active {
+    border-left: 3px solid var(--color-primary-600);
+    background-color: var(--bg-surface-hover);
+  }
+}
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+
+/* Dark Mode Theme Selector */
+  .tabs__list {
+    border-bottom-color: var(--border-base);
+  }
+
+  .tabs__tab {
+    color: var(--text-secondary);
+  }
+
+  .tabs__tab:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-surface-hover);
+  }
+
+  .tabs__tab[aria-selected="true"],
+  .tabs__tab.is-active {
+    color: var(--color-primary-400);
+    border-bottom-color: var(--color-primary-400);
+  }
+
+  .tabs--pills .tabs__list {
+    background-color: var(--bg-subtle);
+  }
+
+  .tabs--pills .tabs__tab[aria-selected="true"],
+  .tabs--pills .tabs__tab.is-active {
+    background-color: var(--bg-surface);
+  }
+}
+
+[data-theme="dark"] {
+  .tabs__list {
+    border-bottom-color: var(--border-base);
+  }
+
+  .tabs__tab {
+    color: var(--text-secondary);
+  }
+
+  .tabs__tab:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-surface-hover);
+  }
+
+  .tabs__tab[aria-selected="true"],
+  .tabs__tab.is-active {
+    color: var(--color-primary-400);
+    border-bottom-color: var(--color-primary-400);
+  }
+
+  .tabs--pills .tabs__list {
+    background-color: var(--bg-subtle);
+  }
+
+  .tabs--pills .tabs__tab[aria-selected="true"],
+  .tabs--pills .tabs__tab.is-active {
+    background-color: var(--bg-surface);
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+
+/* Keyboard navigation indicator */
+.tabs__tab:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .tabs__panel {
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .tabs__tab[aria-selected="true"],
+  .tabs__tab.is-active {
+    outline: 2px solid currentColor;
+    outline-offset: -4px;
+  }
+}

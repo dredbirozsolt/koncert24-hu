@@ -1,0 +1,426 @@
+/**
+ * Performer Detail Page Styles
+ * Dedicated styles for performer profile pages
+ */
+
+/* ==========================================
+   PERFORMER DETAIL LAYOUT
+   ========================================== */
+
+.performer-detail {
+  min-height: 60vh;
+}
+
+/* ==========================================
+   PERFORMER CARD HERO
+   ========================================== */
+
+.performer-detail__card-hero {
+  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-gray-50) 100%);
+  border-bottom: 1px solid var(--border-base);
+  padding: var(--space-6) 0;
+}
+
+.performer-detail__card-expanded {
+  background: var(--bg-surface);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-base);
+  text-align: center;
+}
+
+.performer-detail__image-large {
+  margin: 0 auto var(--space-6);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.performer-detail__photo-large {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  border: 3px solid var(--color-primary-600);
+}
+
+.performer-detail__name-large {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-6);
+  line-height: var(--leading-tight);
+}
+
+/* ==========================================
+   PERFORMER DATA BLOCK
+   ========================================== */
+
+.performer-detail__data-block {
+  background: var(--bg-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  text-align: left;
+}
+
+.performer-detail__block-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.performer-detail__data-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-base);
+}
+
+.performer-detail__data-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.performer-detail__data-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.performer-detail__data-value {
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.performer-detail__category-value {
+  color: var(--color-primary-600);
+}
+
+.performer-detail__price-value {
+  color: var(--color-primary-600);
+  font-size: var(--text-xl);
+}
+
+.performer-detail__login-notice {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin: var(--space-2) 0;
+}
+
+.performer-detail__login-notice .performer-detail__data-value {
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+}
+
+.performer-detail__login-link,
+.performer-detail__register-link,
+.performer-detail__verify-link {
+  color: var(--color-primary-600);
+  text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+  transition: var(--transition-colors);
+}
+
+.performer-detail__login-link:hover,
+.performer-detail__register-link:hover,
+.performer-detail__verify-link:hover {
+  text-decoration: underline;
+  color: var(--color-primary-700);
+}
+
+/* ==========================================
+   PERFORMER ACTIONS
+   ========================================== */
+
+.performer-detail__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.performer-detail__actions .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ==========================================
+   BOOKING CTA SECTION
+   ========================================== */
+
+.performer-detail__booking-section {
+  padding: var(--space-8) 0;
+}
+
+.performer-detail__booking-cta {
+  background: var(--bg-surface);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-base);
+  margin-bottom: var(--space-6);
+}
+
+.performer-detail__cta-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+/* ==========================================
+   DESCRIPTION SECTION
+   ========================================== */
+
+.performer-detail__description-section {
+  padding: var(--space-8) 0;
+}
+
+.description-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-base);
+}
+
+.description-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.description-content {
+  color: var(--text-secondary);
+  line-height: var(--leading-relaxed);
+}
+
+/* ==========================================
+   SIMILAR PERFORMERS SECTION
+   ========================================== */
+
+.similar-performers {
+  padding: var(--space-12) 0;
+  background: var(--bg-subtle);
+}
+
+.similar-performers-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+/* Grid styles for related performers - inherits from performer-card.css */
+
+/* ==========================================
+   PERFORMER CARD (Similar Performers)
+   ========================================== */
+
+.performer__card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-base);
+  overflow: hidden;
+  transition: var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.performer__card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary-300);
+}
+
+.performer__image {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.performer__image a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.performer__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-base);
+}
+
+.performer__card:hover .performer__image img {
+  transform: scale(1.05);
+}
+
+.performer__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-subtle);
+  color: var(--text-tertiary);
+}
+
+.performer__placeholder svg {
+  width: 64px;
+  height: 64px;
+}
+
+.performer__content {
+  padding: var(--space-6);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Performer header and badge styles moved to performer-card.css */
+
+.performer__name {
+  margin-bottom: var(--space-3);
+}
+
+.performer__name a {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: var(--transition-colors);
+}
+
+.performer__name a:hover {
+  color: var(--color-primary-600);
+}
+
+.performer__description {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: var(--space-1);
+}
+
+/* ==========================================
+   DESKTOP RESPONSIVE (768px+)
+   ========================================== */
+
+@media (min-width: 768px) {
+  .performer-detail__card-expanded {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    text-align: left;
+    padding: var(--space-8);
+  }
+
+  .performer-detail__image-large {
+    grid-column: 1;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .performer-detail__photo-large {
+    width: 100%;
+    aspect-ratio: 1;
+    flex-shrink: 0;
+  }
+
+  .performer-info {
+    grid-column: 2 / 4;
+    flex: 1;
+  }
+
+  .performer-detail__name-large {
+    font-size: var(--text-4xl);
+    text-align: left;
+  }
+
+  .performer-detail__data-item {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .performer-detail__data-label {
+    min-width: 150px;
+    flex-shrink: 0;
+  }
+
+  .performer-actions {
+    flex-direction: row;
+    gap: var(--space-4);
+  }
+
+  .performer-actions .btn {
+    width: auto;
+    flex: 1;
+  }
+
+  .performer-detail__cta-buttons {
+    flex-direction: row;
+    gap: var(--space-4);
+  }
+
+  .performers-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  .performer-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+/* ==========================================
+   TABLET RESPONSIVE (481px - 768px)
+   ========================================== */
+
+@media (min-width: 640px) and (max-width: 768px) {
+  .performers-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+
+/* Dark Mode - performer category and price badge moved to performer-card.css */
+
+[data-theme="dark"] {
+  .performer-detail__card-hero {
+    background: linear-gradient(135deg, var(--color-gray-900) 0%, var(--color-gray-950) 100%);
+  }
+}

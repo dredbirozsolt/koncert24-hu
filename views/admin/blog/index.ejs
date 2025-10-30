@@ -1,0 +1,388 @@
+<!-- Admin Blog Management -->
+
+
+<div class="page-container">
+    <% if (typeof success !== 'undefined') { %>
+        <% if (success === 'created') { %>
+            <div class="alert alert-success">✓ Cikk sikeresen létrehozva!</div>
+        <% } else if (success === 'updated') { %>
+            <div class="alert alert-success">✓ Cikk sikeresen frissítve!</div>
+        <% } else if (success === 'deleted') { %>
+            <div class="alert alert-success">✓ Cikk sikeresen törölve!</div>
+        <% } %>
+    <% } %>
+
+    <!-- 2-Column Grid Layout -->
+    <div class="admin-two-col">
+        
+        <!-- Left Column: Main Content -->
+        <div>
+
+    <!-- Statistics -->
+    <div class="card--data">
+        <h3>📊 Blog Statisztikák</h3>
+        <div class="stats-grid">
+            <div class="card--stat card--stat--success">
+                <h3>📝 Publikált</h3>
+                <div class="stat-value"><%= posts.filter(p => p.status === 'published').length %></div>
+            </div>
+            <div class="card--stat card--stat--primary">
+                <h3>⏱️ Időzített</h3>
+                <div class="stat-value"><%= posts.filter(p => p.status === 'scheduled').length %></div>
+            </div>
+            <div class="card--stat card--stat--warning">
+                <h3>📝 Piszkozat</h3>
+                <div class="stat-value"><%= posts.filter(p => p.status === 'draft').length %></div>
+            </div>
+            <div class="card--stat card--stat--primary">
+                <h3>📊 Összes</h3>
+                <div class="stat-value"><%= posts.length %></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card--filter">
+        <form method="GET" action="/admin/blog">
+            <div class="filter-grid-inline">
+                <div class="form__group">
+                    <label>Keresés</label>
+                    <input type="text" name="search" class="form__control"
+                           placeholder="Cím vagy leírás..."
+                           value="<%= search %>">
+                </div>
+                <div class="form__group">
+                    <label>Státusz</label>
+                    <select name="status" class="form__select">
+                        <option value="all" <%= status === 'all' ? 'selected' : '' %>>Összes</option>
+                        <option value="published" <%= status === 'published' ? 'selected' : '' %>>Publikált</option>
+                        <option value="scheduled" <%= status === 'scheduled' ? 'selected' : '' %>>⏱️ Időzített</option>
+                        <option value="draft" <%= status === 'draft' ? 'selected' : '' %>>Piszkozat</option>
+                        <option value="archived" <%= status === 'archived' ? 'selected' : '' %>>Archivált</option>
+                    </select>
+                </div>
+                <div class="form__group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn--primary w-full">
+                        🔍 Szűrés
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn__group btn__group--equal mb-4">
+        <a href="/admin/blog/categories" class="btn btn--secondary">
+            📁 Kategóriák
+        </a>
+        <a href="/admin/blog/tags" class="btn btn--secondary">
+            🏷️ Címkék
+        </a>
+        <a href="/admin/blog/new" class="btn btn--primary">
+            + Új Cikk
+        </a>
+    </div>
+
+    <!-- Blog Posts -->
+    <div class="card--data">
+        <% if (posts.length === 0) { %>
+            <div class="empty-state">
+                <h3>😕 Nincs megjeleníthető cikk</h3>
+                <p>Próbáljon más szűrési feltételeket vagy hozzon létre az első cikket.</p>
+                <a href="/admin/blog/new" class="btn btn--primary mt-2">
+                    Első cikk létrehozása
+                </a>
+            </div>
+        <% } else { %>
+            <div class="table--responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Kép</th>
+                            <th>Cím</th>
+                            <th>Státusz</th>
+                            <th>Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% posts.forEach(post => { %>
+                            <tr>
+                                <td data-label="Kép">
+                                    <% if (post.featuredImage) { %>
+                                        <img src="<%= post.featuredImage %>" 
+                                             alt="<%= post.title %>" 
+                                             title="<%= post.title %>" 
+                                             class="table__avatar w-15 h-15 object-cover rounded-lg">
+                                    <% } else { %>
+                                        <div class="table__avatar-placeholder w-15 h-15 rounded-lg text-2xl">
+                                            📝
+                                        </div>
+                                    <% } %>
+                                </td>
+                                <td data-label="Cím">
+                                    <strong><%= post.title %></strong>
+                                </td>
+                                <td data-label="Státusz">
+                                    <% if (post.status === 'published') { %>
+                                        <span class="badge badge-success">
+                                            Publikált
+                                        </span>
+                                    <% } else if (post.status === 'scheduled') { %>
+                                        <span class="badge badge-info">
+                                            Időzített
+                                        </span>
+                                        <% if (post.publishedAt) { %>
+                                            <br><small class="text-secondary text-xs">
+                                                <%= new Date(post.publishedAt).toLocaleString('hu-HU', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                                            </small>
+                                        <% } %>
+                                    <% } else if (post.status === 'archived') { %>
+                                        <span class="badge badge-secondary">
+                                            Archivált
+                                        </span>
+                                    <% } else { %>
+                                        <span class="badge badge-warning">
+                                            Piszkozat
+                                        </span>
+                                    <% } %>
+                                </td>
+                                <td data-label="Műveletek">
+                                    <div class="actions">
+                                        <a href="/blog/<%= post.slug %>" target="_blank" class="btn btn-icon-only btn--primary" title="Megtekintés">
+                                            👁
+                                        </a>
+                                        <a href="/admin/blog/<%= post.id %>/edit" class="btn btn-icon-only btn--secondary" title="Szerkesztés">
+                                            ✏️
+                                        </a>
+                                        <button class="btn btn-icon-only btn-error delete-post" 
+                                                data-id="<%= post.id %>" 
+                                                data-title="<%= post.title %>"
+                                                title="Törlés">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <% if (totalPages > 1) { %>
+                <div class="p-6 flex justify-center gap-2 items-center">
+                    <% if (hasPrevPage) { %>
+                        <a href="?page=<%= currentPage - 1 %>&status=<%= status %>&search=<%= search %>" class="btn btn--secondary">← Előző</a>
+                    <% } %>
+                    <span class="px-4 text-muted font-medium">
+                        <%= currentPage %> / <%= totalPages %>
+                    </span>
+                    <% if (hasNextPage) { %>
+                        <a href="?page=<%= currentPage + 1 %>&status=<%= status %>&search=<%= search %>" class="btn btn--secondary">Következő →</a>
+                    <% } %>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+
+        </div>
+        <!-- End of Left Column -->
+
+        <!-- Right Column: Info Boxes -->
+        <div>
+            
+            <!-- Info Box 1: Státusz Típusok -->
+            <div class="card--data">
+                <h3>📋 Státusz Típusok</h3>
+                <div class="card__info-content">
+                    <p><strong class="text-success">✅ Publikált:</strong> A cikk élőben van, mindenki láthatja a weboldalon</p>
+                    <p><strong class="text-primary">⏱️ Időzített:</strong> A cikk automatikusan publikálódik a beállított időpontban</p>
+                    <p><strong class="text-warning">📝 Piszkozat:</strong> Még nem publikált cikk, csak adminok látják</p>
+                    <p><strong class="text-secondary">📦 Archivált:</strong> Régi cikk, már nem jelenik meg, de megőrzött</p>
+                </div>
+            </div>
+
+            <!-- Info Box 2: SEO Best Practices -->
+            <div class="card--data">
+                <h3>🔍 SEO Legjobb Gyakorlatok</h3>
+                <div class="card__info-content">
+                    <ul>
+                        <li><strong>Cím:</strong> Legyen rövid (50-60 karakter), tartalmazza a kulcsszót</li>
+                        <li><strong>Meta leírás:</strong> 150-160 karakter, hívjon cselekvésre</li>
+                        <li><strong>Slug:</strong> Használj kötőjelet, kerüld a speciális karaktereket</li>
+                        <li><strong>Kiemelt kép:</strong> Optimális méret: 1200x630px (Open Graph)</li>
+                        <li><strong>Kategória:</strong> Mindig adj meg kategóriát a jobb szervezésért</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Info Box 3: Időzített Publikálás -->
+            <div class="card--data">
+                <h3>⏱️ Időzített Publikálás</h3>
+                <div class="card__info-content">
+                    <p>Az időzített cikkek automatikusan publikálódnak a megadott időpontban.</p>
+                    <p><strong>Hogyan működik?</strong></p>
+                    <ol>
+                        <li>Állítsd be a publikálás dátumát és időpontját</li>
+                        <li>Válaszd az "Időzített" státuszt</li>
+                        <li>A rendszer automatikusan publikálja a cikket</li>
+                    </ol>
+                    <p class="text-sm text-secondary mt-4">
+                        💡 Tipp: Használd hétvégék és ünnepi időszakok előkészítésére!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Info Box 4: Kategóriák -->
+            <div class="card--data">
+                <h3>📁 Kategóriák</h3>
+                <div class="card__info-content">
+                    <p>A kategóriák segítenek szervezni és csoportosítani a blog cikkeket.</p>
+                    <p><strong>Előnyök:</strong></p>
+                    <ul>
+                        <li>Jobb felhasználói élmény (könnyebb navigáció)</li>
+                        <li>SEO előnyök (strukturált tartalom)</li>
+                        <li>Szűrési lehetőségek a látogatóknak</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Info Box 5: Képek és Média -->
+            <div class="card--data">
+                <h3>🖼️ Képek és Média</h3>
+                <div class="card__info-content">
+                    <p><strong>Kiemelt kép (Featured Image):</strong></p>
+                    <p>Ez a kép jelenik meg a blog listában és a közösségi megosztásoknál.</p>
+                    <p><strong>Ajánlott méretek:</strong></p>
+                    <ul>
+                        <li>Kiemelt kép: 1200x630px (16:9 arány)</li>
+                        <li>Thumbnail: 400x300px</li>
+                        <li>Cikken belüli képek: max 1920px szélesség</li>
+                        <li>Fájlformátum: JPG vagy WebP optimalizált mérettel</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Info Box 6: Tag Ajánlatok -->
+            <div class="card--data">
+                <h3>🏷️ Népszerű Tag-ek</h3>
+                <div class="card__info-content">
+                    <p class="mb-3">Használd ezeket a tag-eket a jobb kategorizálásért és kereshetőségért:</p>
+                    
+                    <div class="mb-4">
+                        <p class="font-semibold text-sm mb-2">📋 Általános</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-secondary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#koncertszervezés</span>
+                            <span class="badge badge-secondary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#rendezvényszervezés</span>
+                            <span class="badge badge-secondary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#élőzene</span>
+                            <span class="badge badge-secondary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#fellépés</span>
+                            <span class="badge badge-secondary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#zeneipar</span>
+                            <span class="badge badge-secondary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#koncerttippek</span>
+                            <span class="badge badge-secondary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#műsorszervezés</span>
+                            <span class="badge badge-secondary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#produkció</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="font-semibold text-sm mb-2">🎯 Megrendelőknek</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-primary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#cégesrendezvény</span>
+                            <span class="badge badge-primary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#fesztivál</span>
+                            <span class="badge badge-primary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#önkormányzatiesemény</span>
+                            <span class="badge badge-primary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#iskolairendezvény</span>
+                            <span class="badge badge-primary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#rendezvényszervező</span>
+                            <span class="badge badge-primary cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#koncertszervező</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="font-semibold text-sm mb-2">🎤 Előadóknak</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-success cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#zenészélet</span>
+                            <span class="badge badge-success cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#előadóivagyok</span>
+                            <span class="badge badge-success cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#fellépés</span>
+                            <span class="badge badge-success cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#showreel</span>
+                            <span class="badge badge-success cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#zenekar</span>
+                            <span class="badge badge-success cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#művészkarrier</span>
+                            <span class="badge badge-success cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#turnéélet</span>
+                            <span class="badge badge-success cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#élőzene</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="font-semibold text-sm mb-2">🛠️ Szakmai</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-warning cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#backstage</span>
+                            <span class="badge badge-warning cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#koncertélmény</span>
+                            <span class="badge badge-warning cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#zeneiszakma</span>
+                            <span class="badge badge-warning cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#rendezvénystáb</span>
+                            <span class="badge badge-warning cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#hangtechnika</span>
+                            <span class="badge badge-warning cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#fénytechnika</span>
+                            <span class="badge badge-warning cursor-pointer" onclick="copyTag(this)" title="Kattints a másoláshoz">#produkciómenedzsment</span>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-secondary mt-4">
+                        💡 Tipp: Kattints bármelyik tag-re a vágólapra másoláshoz!
+                    </p>
+                </div>
+            </div>
+
+        </div>
+        <!-- End of Right Column -->
+
+    </div>
+    <!-- End of Grid -->
+</div>
+
+<script>
+document.querySelectorAll('.delete-post').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        const title = this.dataset.title;
+        const id = this.dataset.id;
+        
+        const confirmed = await Modal.confirm({
+            title: 'Cikk törlése',
+            message: 'Biztosan törölni szeretnéd ezt a cikket?',
+            confirmText: 'Törlés',
+            cancelText: 'Mégse'
+        });
+        
+        if (confirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/blog/${id}/delete`;
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_csrf';
+            csrfInput.value = '<%= csrfToken %>';
+            
+            form.appendChild(csrfInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+});
+
+// Tag másolása vágólapra
+function copyTag(element) {
+    const tagText = element.textContent.trim();
+    
+    // Vágólapra másolás
+    navigator.clipboard.writeText(tagText).then(() => {
+        // Vizuális feedback
+        const originalBg = element.className;
+        element.className = 'badge badge-info cursor-pointer';
+        element.textContent = '✓ Másolva!';
+        
+        setTimeout(() => {
+            element.className = originalBg;
+            element.textContent = tagText;
+        }, 1000);
+    }).catch(err => {
+        console.error('Nem sikerült másolni:', err);
+        alert('Másolás sikertelen. Próbáld újra!');
+    });
+}
+</script>

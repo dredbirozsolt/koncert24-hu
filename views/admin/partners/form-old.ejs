@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="container-fluid mt-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h1>
+        🤝 <%= isEdit ? 'Partner Szerkesztése' : 'Új Partner' %>
+      </h1>
+    </div>
+    <div class="col-auto">
+      <a href="/admin/partners" class="btn btn--secondary">
+        ← Vissza
+      </a>
+    </div>
+  </div>
+
+  <form method="POST" action="<%= isEdit ? `/admin/partners/${partner.id}` : '/admin/partners' %>">
+    <div class="row">
+      <!-- Bal oldal - Alapadatok -->
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card__header">
+            <h5 class="mb-0">Alapadatok</h5>
+          </div>
+          <div class="card__body">
+            <div class="mb-3">
+              <label for="name" class="form__label">Partner neve *</label>
+              <input type="text" class="form__control" id="name" name="name" 
+                     value="<%= partner.name || '' %>" required>
+              <small class="form__hint text-muted">
+                A slug automatikusan generálódik ebből
+              </small>
+            </div>
+
+            <div class="mb-3">
+              <label for="websiteUrl" class="form__label">Weboldal URL *</label>
+              <input type="url" class="form__control" id="websiteUrl" name="websiteUrl" 
+                     value="<%= partner.websiteUrl || '' %>" 
+                     placeholder="https://example.com" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="logo" class="form__label">Logó URL</label>
+              <input type="url" class="form__control" id="logo" name="logo" 
+                     value="<%= partner.logo || '' %>" 
+                     placeholder="https://example.com/logo.png">
+              <small class="form__hint text-muted">
+                ℹ️ A logó képének teljes URL-je
+              </small>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="category" class="form__label">Kategória *</label>
+                <select class="form__select" id="category" name="category" required>
+                  <option value="egyeb" <%= partner.category === 'egyeb' ? 'selected' : '' %>>Egyéb</option>
+                  <option value="szolgaltato" <%= partner.category === 'szolgaltato' ? 'selected' : '' %>>Szolgáltató</option>
+                  <option value="helyszin" <%= partner.category === 'helyszin' ? 'selected' : '' %>>Helyszín</option>
+                  <option value="media" <%= partner.category === 'media' ? 'selected' : '' %>>Média</option>
+                  <option value="zeneipar" <%= partner.category === 'zeneipar' ? 'selected' : '' %>>Zeneipar</option>
+                  <option value="technologia" <%= partner.category === 'technologia' ? 'selected' : '' %>>Technológia</option>
+                </select>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="partnershipType" class="form__label">Partnerség típusa *</label>
+                <select class="form__select" id="partnershipType" name="partnershipType" required>
+                  <option value="organic" <%= partner.partnershipType === 'organic' ? 'selected' : '' %>>Organikus</option>
+                  <option value="reciprocal" <%= partner.partnershipType === 'reciprocal' ? 'selected' : '' %>>Kölcsönös</option>
+                  <option value="sponsored" <%= partner.partnershipType === 'sponsored' ? 'selected' : '' %>>Szponzorált</option>
+                  <option value="affiliate" <%= partner.partnershipType === 'affiliate' ? 'selected' : '' %>>Affiliate</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form__label">Leírás</label>
+              <textarea class="form__control" id="description" name="description" rows="5"><%= partner.description || '' %></textarea>
+              <small class="form__hint text-muted">
+                ℹ️ Rövid bemutatkozás a partnerről
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backlink adatok -->
+        <div class="card mb-4">
+          <div class="card__header">
+            <h5 class="mb-0">🔗 Backlink információk</h5>
+          </div>
+          <div class="card__body">
+            <div class="mb-3">
+              <label for="backlinkUrl" class="form__label">Backlink URL</label>
+              <input type="url" class="form__control" id="backlinkUrl" name="backlinkUrl" 
+                     value="<%= partner.backlinkUrl || '' %>" 
+                     placeholder="https://partner.hu/linkek">
+              <small class="form__hint text-muted">
+                ℹ️ Az oldal URL-je, ahol a backlink található
+              </small>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="isVerified" 
+                       name="isVerified" <%= partner.isVerified ? 'checked' : '' %>>
+                <label class="form-check-label" for="isVerified">
+                  Backlink ellenőrizve
+                </label>
+              </div>
+              <% if (partner.lastVerified) { %>
+                <small class="text-muted d-block mt-1">
+                  Utoljára ellenőrizve: <%= new Date(partner.lastVerified).toLocaleString('hu-HU') %>
+                </small>
+              <% } %>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="domainAuthority" class="form__label">Domain Authority (DA)</label>
+                <input type="number" class="form__control" id="domainAuthority" name="domainAuthority" 
+                       value="<%= partner.domainAuthority || '' %>" min="0" max="100">
+                <small class="form__hint text-muted">0-100 közötti érték</small>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="pageAuthority" class="form__label">Page Authority (PA)</label>
+                <input type="number" class="form__control" id="pageAuthority" name="pageAuthority" 
+                       value="<%= partner.pageAuthority || '' %>" min="0" max="100">
+                <small class="form__hint text-muted">0-100 közötti érték</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kapcsolattartó -->
+        <div class="card mb-4">
+          <div class="card__header">
+            <h5 class="mb-0">📇 Kapcsolattartó</h5>
+          </div>
+          <div class="card__body">
+            <div class="mb-3">
+              <label for="contactName" class="form__label">Kapcsolattartó neve</label>
+              <input type="text" class="form__control" id="contactName" name="contactName" 
+                     value="<%= partner.contactName || '' %>">
+            </div>
+
+            <div class="mb-3">
+              <label for="contactEmail" class="form__label">Email cím</label>
+              <input type="email" class="form__control" id="contactEmail" name="contactEmail" 
+                     value="<%= partner.contactEmail || '' %>">
+            </div>
+
+            <div class="mb-3">
+              <label for="contactPhone" class="form__label">Telefonszám</label>
+              <input type="tel" class="form__control" id="contactPhone" name="contactPhone" 
+                     value="<%= partner.contactPhone || '' %>" 
+                     placeholder="+36 30 123 4567">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobb oldal - Beállítások -->
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card__header">
+            <h5 class="mb-0">⚙️ Beállítások</h5>
+          </div>
+          <div class="card__body">
+            <div class="mb-3">
+              <label for="status" class="form__label">Státusz *</label>
+              <select class="form__select" id="status" name="status" required>
+                <option value="pending" <%= partner.status === 'pending' ? 'selected' : '' %>>
+                  Függőben
+                </option>
+                <option value="active" <%= partner.status === 'active' ? 'selected' : '' %>>
+                  Aktív
+                </option>
+                <option value="inactive" <%= partner.status === 'inactive' ? 'selected' : '' %>>
+                  Inaktív
+                </option>
+                <option value="rejected" <%= partner.status === 'rejected' ? 'selected' : '' %>>
+                  Elutasítva
+                </option>
+              </select>
+              <small class="form__hint text-muted">
+                Csak az "Aktív" partnerek jelennek meg a publikus oldalon
+              </small>
+            </div>
+
+            <div class="mb-3">
+              <label for="displayOrder" class="form__label">Megjelenítési sorrend</label>
+              <input type="number" class="form__control" id="displayOrder" name="displayOrder" 
+                     value="<%= partner.displayOrder || 0 %>" min="0">
+              <small class="form__hint text-muted">
+                Magasabb érték = előbb jelenik meg
+              </small>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showOnHomepage" 
+                       name="showOnHomepage" <%= partner.showOnHomepage ? 'checked' : '' %>>
+                <label class="form-check-label" for="showOnHomepage">
+                  Megjelenítés a főoldalon
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Belső megjegyzések -->
+        <div class="card mb-4">
+          <div class="card__header">
+            <h5 class="mb-0">📝 Belső megjegyzések</h5>
+          </div>
+          <div class="card__body">
+            <div class="mb-3">
+              <label for="notes" class="form__label">Megjegyzések</label>
+              <textarea class="form__control" id="notes" name="notes" rows="5"><%= partner.notes || '' %></textarea>
+              <small class="form__hint text-muted">
+                Csak az admin felületen látható
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mentés -->
+        <div class="card">
+          <div class="card__body">
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn--primary btn--lg">
+                💾 <%= isEdit ? 'Módosítások mentése' : 'Partner létrehozása' %>
+              </button>
+              <a href="/admin/partners" class="btn btn--secondary">
+                ✖️ Mégse
+              </a>
+            </div>
+
+            <% if (isEdit && partner.createdAt) { %>
+              <hr>
+              <small class="text-muted">
+                ℹ️ Létrehozva: 
+                <%= new Date(partner.createdAt).toLocaleString('hu-HU') %>
+                <br>
+                ℹ️ Utoljára módosítva: 
+                <%= new Date(partner.updatedAt).toLocaleString('hu-HU') %>
+              </small>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

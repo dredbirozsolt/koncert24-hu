@@ -1,0 +1,313 @@
+<div x-data="installWizard()" x-init="init()">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+        <div class="step" :class="{ active: step === 1, completed: step > 1 }">
+            <div class="step-circle">1</div>
+            <div class="step-label">Üdvözlet</div>
+        </div>
+        <div class="step" :class="{ active: step === 2, completed: step > 2 }">
+            <div class="step-circle">2</div>
+            <div class="step-label">Adatbázis</div>
+        </div>
+        <div class="step" :class="{ active: step === 3, completed: step > 3 }">
+            <div class="step-circle">3</div>
+            <div class="step-label">Admin</div>
+        </div>
+        <div class="step" :class="{ active: step === 4, completed: step > 4 }">
+            <div class="step-circle">4</div>
+            <div class="step-label">Kész</div>
+        </div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div x-show="step === 1" x-transition class="install-wizard">
+        <h2 class="install-wizard__title">Üdvözöljük!</h2>
+        <p class="install-wizard__text">
+            Ez a telepítő varázsló végigvezeti Önt a Koncert24.hu rendszer beállításán.
+        </p>
+        
+        <div class="alert alert-info">
+            <strong>Mielőtt elkezdené:</strong>
+            <ul class="install-wizard__feature-list">
+                <li>MySQL adatbázis fut és elérhető</li>
+                <li>.env fájl helyesen van konfigurálva</li>
+                <li>Node.js függőségek telepítve vannak</li>
+            </ul>
+        </div>
+
+        <div class="install-wizard__btn__group">
+            <button @click="nextStep()" class="btn btn--primary">Kezdjük el</button>
+        </div>
+    </div>
+
+    <!-- Step 2: Database -->
+    <div x-show="step === 2" x-transition class="install-wizard">
+        <h2 class="install-wizard__title">Adatbázis ellenőrzése</h2>
+        
+        <div x-show="!dbChecked">
+            <p class="install-wizard__text">
+                Ellenőrizzük az adatbázis kapcsolatot és futtatjuk a szükséges migrációkat.
+            </p>
+            
+            <div class="install-wizard__btn__group">
+                <button @click="checkDatabase()" class="btn btn--primary" :disabled="checking">
+                    <span x-show="!checking">Adatbázis ellenőrzése</span>
+                    <span x-show="checking">Ellenőrzés...</span>
+                </button>
+            </div>
+        </div>
+
+        <div x-show="dbChecked && !migrationRun">
+            <div class="alert alert-success">
+                <strong>✓</strong> Adatbázis kapcsolat rendben
+            </div>
+            
+            <p class="install-wizard__text">
+                Most futtassuk a táblák létrehozásához szükséges migrációkat.
+            </p>
+            
+            <div class="install-wizard__btn__group">
+                <button @click="runMigrations()" class="btn btn--primary" :disabled="migrating">
+                    <span x-show="!migrating">Migrációk futtatása</span>
+                    <span x-show="migrating">Futtatás...</span>
+                </button>
+            </div>
+        </div>
+
+        <div x-show="migrationRun">
+            <div class="alert alert-success">
+                <strong>✓</strong> Migrációk sikeresen lefutottak
+            </div>
+            
+            <div class="install-wizard__btn__group">
+                <button @click="prevStep()" class="btn btn--secondary">Vissza</button>
+                <button @click="nextStep()" class="btn btn--primary">Tovább</button>
+            </div>
+        </div>
+
+        <div x-show="dbError" class="alert alert-error" x-text="dbError"></div>
+    </div>
+
+    <!-- Step 3: Admin User -->
+    <div x-show="step === 3" x-transition class="install-wizard">
+        <h2 class="install-wizard__title">Admin felhasználó</h2>
+        <p class="install-wizard__text">
+            Hozza létre az első admin felhasználót.
+        </p>
+
+        <form @submit.prevent="createAdmin()">
+            <div class="form__group">
+                <label class="form__label">Teljes név *</label>
+                <input type="text" class="form__input" x-model="admin.name" required minlength="2">
+            </div>
+
+            <div class="form__group">
+                <label class="form__label">Email cím *</label>
+                <input type="email" class="form__input" x-model="admin.email" required>
+            </div>
+
+            <div class="form__group">
+                <label class="form__label">Telefonszám *</label>
+                <input type="tel" class="form__input" x-model="admin.phone" required 
+                       placeholder="+36301234567" pattern="[\+]?[0-9\s\-()]{6,20}">
+            </div>
+
+            <div class="form__group">
+                <label class="form__label">Jelszó *</label>
+                <input type="password" class="form__input" x-model="admin.password" 
+                       @input="checkPasswordStrength()" required minlength="8">
+                <div class="password-strength">
+                    <div class="password-strength-bar" :class="passwordStrength"></div>
+                </div>
+                <p class="form__help">
+                    Minimum 8 karakter, legalább 1 nagybetű, 1 kisbetű és 1 szám
+                </p>
+            </div>
+
+            <div class="form__group">
+                <label class="form__label">Jelszó megerősítése *</label>
+                <input type="password" class="form__input" x-model="admin.passwordConfirm" required>
+            </div>
+
+            <div x-show="adminError" class="alert alert-error" x-text="adminError"></div>
+
+            <div class="install-wizard__btn__group">
+                <button type="button" @click="prevStep()" class="btn btn--secondary">Vissza</button>
+                <button type="submit" class="btn btn--primary" :disabled="creating">
+                    <span x-show="!creating">Admin létrehozása</span>
+                    <span x-show="creating">Létrehozás...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Step 4: Complete -->
+    <div x-show="step === 4" x-transition class="install-wizard">
+        <h2 class="install-wizard__success-title">Telepítés sikeres!</h2>
+        
+        <div class="alert alert-success">
+            A Koncert24.hu rendszer sikeresen telepítve és konfigurálva lett.
+        </div>
+
+        <div class="install-wizard__credentials">
+            <h3>Bejelentkezési adatok:</h3>
+            <p>
+                <strong>Email:</strong> <span x-text="admin.email"></span>
+            </p>
+            <p>
+                <strong>Név:</strong> <span x-text="admin.name"></span>
+            </p>
+        </div>
+
+        <div class="install-wizard__btn__group">
+            <a href="/auth/login" class="btn btn--primary">
+                Bejelentkezés az admin felületre
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function installWizard() {
+    return {
+        step: 1,
+        dbChecked: false,
+        migrationRun: false,
+        checking: false,
+        migrating: false,
+        creating: false,
+        dbError: '',
+        adminError: '',
+        passwordStrength: '',
+        admin: {
+            name: '',
+            email: '',
+            phone: '',
+            password: '',
+            passwordConfirm: ''
+        },
+
+        init() {
+            // Initialization if needed
+        },
+
+        nextStep() {
+            this.step++;
+        },
+
+        prevStep() {
+            this.step--;
+        },
+
+        async checkDatabase() {
+            this.checking = true;
+            this.dbError = '';
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch('/install/check-database', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    this.dbChecked = true;
+                } else {
+                    this.dbError = data.error || 'Ismeretlen hiba történt';
+                }
+            } catch (error) {
+                this.dbError = 'Hálózati hiba: ' + error.message;
+            } finally {
+                this.checking = false;
+            }
+        },
+
+        async runMigrations() {
+            this.migrating = true;
+            this.dbError = '';
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch('/install/run-migrations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    this.migrationRun = true;
+                } else {
+                    this.dbError = data.error || 'Migráció sikertelen';
+                }
+            } catch (error) {
+                this.dbError = 'Hálózati hiba: ' + error.message;
+            } finally {
+                this.migrating = false;
+            }
+        },
+
+        checkPasswordStrength() {
+            const pwd = this.admin.password;
+            let strength = 0;
+
+            if (pwd.length >= 8) strength++;
+            if (/[A-Z]/.test(pwd)) strength++;
+            if (/[a-z]/.test(pwd)) strength++;
+            if (/[0-9]/.test(pwd)) strength++;
+
+            if (strength <= 2) this.passwordStrength = 'weak';
+            else if (strength === 3) this.passwordStrength = 'medium';
+            else this.passwordStrength = 'strong';
+        },
+
+        async createAdmin() {
+            if (this.admin.password !== this.admin.passwordConfirm) {
+                this.adminError = 'A jelszavak nem egyeznek';
+                return;
+            }
+
+            this.creating = true;
+            this.adminError = '';
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const response = await fetch('/install/create-admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify(this.admin)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Mark installation as complete
+                    await fetch('/install/complete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': csrfToken
+                        }
+                    });
+                    
+                    this.nextStep();
+                } else {
+                    this.adminError = data.error || 'Ismeretlen hiba történt';
+                }
+            } catch (error) {
+                this.adminError = 'Hálózati hiba: ' + error.message;
+            } finally {
+                this.creating = false;
+            }
+        }
+    };
+}
+</script>

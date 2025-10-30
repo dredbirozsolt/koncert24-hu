@@ -1,0 +1,157 @@
+/**
+ * Icon System
+ * Design System v1.0
+ * 
+ * SVG icon utilities to replace emoji icons
+ * 
+ * Usage:
+ * <svg class="icon icon--sm">...</svg>
+ * <span class="icon-wrapper icon-wrapper--calendar">...</span>
+ */
+
+/* ========================================
+   BASE ICON CLASS
+   ======================================== */
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* Icon Sizes */
+.icon--xs {
+  width: 12px;
+  height: 12px;
+}
+
+.icon--sm {
+  width: 16px;
+  height: 16px;
+}
+
+.icon--md {
+  width: 20px;
+  height: 20px;
+}
+
+.icon--lg {
+  width: 24px;
+  height: 24px;
+}
+
+.icon--xl {
+  width: 32px;
+  height: 32px;
+}
+
+.icon--2xl {
+  width: 48px;
+  height: 48px;
+}
+
+/* ========================================
+   ICON WRAPPER (for emoji replacement)
+   ======================================== */
+
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Common event icons with semantic names */
+.icon-wrapper--calendar::before,
+.icon-calendar::before {
+  content: '';
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.icon-wrapper--microphone::before,
+.icon-microphone::before {
+  content: '';
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.icon-wrapper--clock::before,
+.icon-clock::before {
+  content: '';
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.icon-wrapper--location::before,
+.icon-location::before {
+  content: '';
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.icon-wrapper--theater::before,
+.icon-theater::before {
+  content: '';
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  background: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+/* ========================================
+   ICON COLORS (semantic)
+   ======================================== */
+
+.icon--primary {
+  color: var(--color-primary-600);
+}
+
+.icon--secondary {
+  color: var(--text-secondary);
+}
+
+.icon--muted {
+  color: var(--text-tertiary);
+}
+
+.icon--white {
+  color: var(--color-white);
+}
+
+/* Dark mode */
+[data-theme="dark"] .icon--primary {
+  color: var(--color-primary-400);
+}

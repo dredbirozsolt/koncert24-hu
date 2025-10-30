@@ -1,0 +1,280 @@
+<!-- Offline Messages Page -->
+<div class="page-container">
+
+    <!-- Page Header -->
+    <div style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: flex-end; align-items: center;">
+            <a href="/admin/chat" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Vissza
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success" style="margin-bottom: 1.5rem;">
+            <i class="fas fa-check-circle"></i> <%= success %>
+        </div>
+    <% } %>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+            <i class="fas fa-exclamation-circle"></i> <%= error %>
+        </div>
+    <% } %>
+
+    <!-- Statistics Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- Pending Count -->
+        <div class="data-card" style="padding: 1.5rem; border-left: 4px solid #f59e0b;">
+            <div style="font-size: 2rem; font-weight: 700; color: #f59e0b; margin-bottom: 0.25rem;">
+                <%= messages.filter(m => m.status === 'pending').length %>
+            </div>
+            <div style="color: #6b7280; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                Függőben
+            </div>
+        </div>
+
+        <!-- Sent Count -->
+        <div class="data-card" style="padding: 1.5rem; border-left: 4px solid #10b981;">
+            <div style="font-size: 2rem; font-weight: 700; color: #10b981; margin-bottom: 0.25rem;">
+                <%= messages.filter(m => m.status === 'sent').length %>
+            </div>
+            <div style="color: #6b7280; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                Elküldve
+            </div>
+        </div>
+
+        <!-- Replied Count -->
+        <div class="data-card" style="padding: 1.5rem; border-left: 4px solid #3b82f6;">
+            <div style="font-size: 2rem; font-weight: 700; color: #3b82f6; margin-bottom: 0.25rem;">
+                <%= messages.filter(m => m.status === 'replied').length %>
+            </div>
+            <div style="color: #6b7280; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                Válaszolva
+            </div>
+        </div>
+
+        <!-- Archived Count -->
+        <div class="data-card" style="padding: 1.5rem; border-left: 4px solid #6b7280;">
+            <div style="font-size: 2rem; font-weight: 700; color: #6b7280; margin-bottom: 0.25rem;">
+                <%= messages.filter(m => m.status === 'archived').length %>
+            </div>
+            <div style="color: #6b7280; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                Archiválva
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Messages Table -->
+    <div class="data-card">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-default);">
+            <h5 style="margin: 0; font-weight: 600;">Beérkezett Üzenetek</h5>
+        </div>
+        
+        <% if (messages && messages.length > 0) { %>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-default); background: #f9fafb;">
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: #6b7280;">ID</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: #6b7280;">Küldő</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: #6b7280;">Elérhetőség</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: #6b7280;">Üzenet</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: #6b7280;">Státusz</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: #6b7280;">Dátum</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: 0.875rem; color: #6b7280;">Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% messages.forEach((msg, index) => { %>
+                            <tr style="border-bottom: 1px solid var(--border-default); <%= msg.status === 'pending' ? 'background: #fef3c7;' : '' %>">
+                                <!-- ID -->
+                                <td style="padding: 1rem;">
+                                    <span style="font-weight: 600; color: #6b7280;">#<%= msg.id %></span>
+                                </td>
+
+                                <!-- Küldő -->
+                                <td style="padding: 1rem;">
+                                    <div style="font-weight: 600;"><%= msg.name %></div>
+                                </td>
+
+                                <!-- Elérhetőség -->
+                                <td style="padding: 1rem;">
+                                    <div style="display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.875rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-envelope" style="color: #6b7280;"></i>
+                                            <a href="mailto:<%= msg.email %>" style="color: var(--color-primary-500);"><%= msg.email %></a>
+                                        </div>
+                                        <% if (msg.phone) { %>
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <i class="fas fa-phone" style="color: #6b7280;"></i>
+                                                <a href="tel:<%= msg.phone %>" style="color: var(--color-primary-500);"><%= msg.phone %></a>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </td>
+
+                                <!-- Üzenet -->
+                                <td style="padding: 1rem; max-width: 400px;">
+                                    <div style="color: #374151; line-height: 1.5;">
+                                        <%= msg.message.length > 100 ? msg.message.substring(0, 100) + '...' : msg.message %>
+                                    </div>
+                                    <% if (msg.message.length > 100) { %>
+                                        <button 
+                                            class="btn btn-sm btn-secondary" 
+                                            style="margin-top: 0.5rem;"
+                                            onclick="showFullMessage('<%= msg.id %>', `<%= msg.message.replace(/`/g, '\\`').replace(/\n/g, '\\n').replace(/'/g, "\\'") %>`)"
+                                        >
+                                            Teljes üzenet <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    <% } %>
+                                </td>
+
+                                <!-- Státusz -->
+                                <td style="padding: 1rem;">
+                                    <% 
+                                        let badgeColor = '#6b7280';
+                                        let statusText = msg.status;
+                                        let statusIcon = 'fas fa-circle';
+                                        
+                                        if (msg.status === 'pending') {
+                                            badgeColor = '#f59e0b';
+                                            statusText = 'Függőben';
+                                            statusIcon = 'fas fa-clock';
+                                        } else if (msg.status === 'sent') {
+                                            badgeColor = '#10b981';
+                                            statusText = 'Elküldve';
+                                            statusIcon = 'fas fa-paper-plane';
+                                        } else if (msg.status === 'replied') {
+                                            badgeColor = '#3b82f6';
+                                            statusText = 'Válaszolva';
+                                            statusIcon = 'fas fa-check-circle';
+                                        } else if (msg.status === 'archived') {
+                                            badgeColor = '#6b7280';
+                                            statusText = 'Archiválva';
+                                            statusIcon = 'fas fa-archive';
+                                        }
+                                    %>
+                                    <div>
+                                        <span style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; background: <%= badgeColor %>20; color: <%= badgeColor %>;">
+                                            <i class="<%= statusIcon %>"></i>
+                                            <%= statusText %>
+                                        </span>
+                                        
+                                        <% if (msg.email_sent_at) { %>
+                                            <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                                                <i class="fas fa-envelope"></i>
+                                                <%= new Date(msg.email_sent_at).toLocaleString('hu-HU') %>
+                                            </div>
+                                        <% } %>
+                                        
+                                        <% if (msg.replied_at) { %>
+                                            <div style="margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280;">
+                                                <i class="fas fa-reply"></i>
+                                                <%= new Date(msg.replied_at).toLocaleString('hu-HU') %>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </td>
+
+                                <!-- Dátum -->
+                                <td style="padding: 1rem;">
+                                    <div style="font-size: 0.875rem; color: #6b7280;">
+                                        <%= new Date(msg.created_at).toLocaleString('hu-HU', { 
+                                            year: 'numeric', 
+                                            month: 'short', 
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        }) %>
+                                    </div>
+                                </td>
+
+                                <!-- Műveletek -->
+                                <td style="padding: 1rem;">
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <% if (msg.status === 'pending' || msg.status === 'sent') { %>
+                                            <form method="POST" action="/admin/chat/offline-messages/<%= msg.id %>/reply" style="display: inline;">
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                <button type="submit" class="btn btn-sm btn-primary" title="Megjelölés válaszoltként">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                        <% } %>
+                                        
+                                        <% if (msg.status !== 'archived') { %>
+                                            <form method="POST" action="/admin/chat/offline-messages/<%= msg.id %>/archive" style="display: inline;">
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                <button type="submit" class="btn btn-sm btn-secondary" title="Archiválás">
+                                                    <i class="fas fa-archive"></i>
+                                                </button>
+                                            </form>
+                                        <% } %>
+                                        
+                                        <button 
+                                            class="btn btn-sm btn-secondary" 
+                                            onclick="showFullMessage('<%= msg.id %>', `<%= msg.message.replace(/`/g, '\\`').replace(/\n/g, '\\n').replace(/'/g, "\\'") %>`)"
+                                            title="Részletek"
+                                        >
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div style="padding: 3rem; text-align: center; color: #6b7280;">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p style="margin: 0; font-size: 1.125rem;">Nincs offline üzenet</p>
+            </div>
+        <% } %>
+    </div>
+
+</div>
+
+<!-- Message Detail Modal -->
+<div id="messageModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div class="data-card" style="max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; margin: 2rem;">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-default); display: flex; justify-content: between; align-items: center;">
+            <h5 style="margin: 0; font-weight: 600;">Teljes Üzenet</h5>
+            <button onclick="closeModal()" class="btn btn-sm btn-secondary" style="margin-left: auto;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div style="padding: 2rem;">
+            <div id="modalMessageContent" style="white-space: pre-wrap; line-height: 1.6; color: #374151;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showFullMessage(id, message) {
+    document.getElementById('modalMessageContent').textContent = message;
+    const modal = document.getElementById('messageModal');
+    modal.style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('messageModal').style.display = 'none';
+}
+
+// Close modal on background click
+document.getElementById('messageModal').addEventListener('click', (e) => {
+    if (e.target.id === 'messageModal') {
+        closeModal();
+    }
+});
+
+// Close modal on ESC key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>

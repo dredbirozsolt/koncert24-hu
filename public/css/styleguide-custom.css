@@ -1,0 +1,19 @@
+/* Custom styles for styleguide page */
+.styleguide-section {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.styleguide-demo {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.styleguide-demo h3,
+.styleguide-demo h4 {
+  margin-bottom: var(--space-3);
+}
+
+.card__body > div:not(:last-child) {
+  margin-bottom: var(--space-6);
+}

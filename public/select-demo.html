@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Stílus Variációk</title>
+    <style>
+        :root {
+            --color-primary: #667eea;
+            --color-border: #e2e8f0;
+            --color-bg-subtle: #f7fafc;
+            --color-text: #2d3748;
+            --color-text-muted: #718096;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            padding: 40px;
+            color: var(--color-text);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--color-primary);
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .variant-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .variant-title {
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--color-primary);
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        /* Variáció 1: Minimal Clean */
+        .select-v1 {
+            width: 100%;
+            padding: 10px 36px 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            color: var(--color-text);
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: all 0.2s;
+        }
+
+        .select-v1:hover {
+            border-color: var(--color-primary);
+        }
+
+        .select-v1:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Variáció 2: Rounded Soft */
+        .select-v2 {
+            width: 100%;
+            padding: 11px 40px 11px 16px;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--color-text);
+            background: var(--color-bg-subtle);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23667eea' d='M7 10L2 5h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            transition: all 0.2s;
+        }
+
+        .select-v2:hover {
+            background: #eef2ff;
+        }
+
+        .select-v2:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background: white;
+        }
+
+        /* Variáció 3: Bold Border */
+        .select-v3 {
+            width: 100%;
+            padding: 12px 40px 12px 14px;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text);
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%232d3748' d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: all 0.2s;
+        }
+
+        .select-v3:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .select-v3:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+        }
+
+        /* Variáció 4: Shadow Elevated */
+        .select-v4 {
+            width: 100%;
+            padding: 12px 40px 12px 14px;
+            border: 1px solid #e8ecf1;
+            border-radius: var(--radius-lg);
+            font-size: 14px;
+            color: var(--color-text);
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23667eea' d='M7 9.5L2.5 5h9z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+        }
+
+        .select-v4:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+        }
+
+        .select-v4:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Variáció 5: Icon Left */
+        .select-v5-wrapper {
+            position: relative;
+        }
+
+        .select-v5-wrapper::before {
+            content: '🔍';
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 14px;
+        }
+
+        .select-v5 {
+            width: 100%;
+            padding: 11px 40px 11px 40px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            color: var(--color-text);
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: all 0.2s;
+        }
+
+        .select-v5:hover {
+            border-color: var(--color-primary);
+            background-color: var(--color-bg-subtle);
+        }
+
+        .select-v5:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Variáció 6: Underline Only */
+        .select-v6 {
+            width: 100%;
+            padding: 10px 30px 10px 4px;
+            border: none;
+            border-bottom: 2px solid var(--color-border);
+            border-radius: 0;
+            font-size: 14px;
+            color: var(--color-text);
+            background: transparent;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            transition: all 0.2s;
+        }
+
+        .select-v6:hover {
+            border-bottom-color: var(--color-primary);
+        }
+
+        .select-v6:focus {
+            outline: none;
+            border-bottom-color: var(--color-primary);
+            border-bottom-width: 3px;
+        }
+
+        /* Variáció 7: Compact Dense */
+        .select-v7 {
+            width: 100%;
+            padding: 8px 32px 8px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--color-text);
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23718096' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            transition: all 0.15s;
+        }
+
+        .select-v7:hover {
+            background: var(--color-bg-subtle);
+        }
+
+        .select-v7:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        /* Variáció 8: Gradient Border */
+        .select-v8-wrapper {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--radius-lg);
+            padding: 2px;
+        }
+
+        .select-v8 {
+            width: 100%;
+            padding: 11px 40px 11px 14px;
+            border: none;
+            border-radius: calc(var(--radius-lg) - 2px);
+            font-size: 14px;
+            color: var(--color-text);
+            background: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23667eea' d='M7 10L2 5h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            transition: all 0.2s;
+        }
+
+        .select-v8:focus {
+            outline: none;
+        }
+
+        .notes {
+            margin-top: 40px;
+            padding: 20px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 8px;
+        }
+
+        .notes h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+
+        .notes ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .notes li {
+            margin: 8px 0;
+            color: #856404;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .combined-example {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .combined-example h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--color-primary);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Select Stílus Variációk</h1>
+
+        <div class="grid">
+            <!-- Variáció 1 -->
+            <div class="variant-card">
+                <div class="variant-title">1️⃣ Minimal Clean</div>
+                <div class="form-group">
+                    <label>Súlyosság</label>
+                    <select class="select-v1">
+                        <option>Összes</option>
+                        <option>Kritikus</option>
+                        <option>Közepes</option>
+                        <option>Alacsony</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Státusz</label>
+                    <select class="select-v1">
+                        <option>Minden</option>
+                        <option>Aktív</option>
+                        <option>Inaktív</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Variáció 2 -->
+            <div class="variant-card">
+                <div class="variant-title">2️⃣ Rounded Soft</div>
+                <div class="form-group">
+                    <label>Súlyosság</label>
+                    <select class="select-v2">
+                        <option>Összes</option>
+                        <option>Kritikus</option>
+                        <option>Közepes</option>
+                        <option>Alacsony</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Státusz</label>
+                    <select class="select-v2">
+                        <option>Minden</option>
+                        <option>Aktív</option>
+                        <option>Inaktív</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Variáció 3 -->
+            <div class="variant-card">
+                <div class="variant-title">3️⃣ Bold Border</div>
+                <div class="form-group">
+                    <label>Súlyosság</label>
+                    <select class="select-v3">
+                        <option>Összes</option>
+                        <option>Kritikus</option>
+                        <option>Közepes</option>
+                        <option>Alacsony</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Státusz</label>
+                    <select class="select-v3">
+                        <option>Minden</option>
+                        <option>Aktív</option>
+                        <option>Inaktív</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Variáció 4 -->
+            <div class="variant-card">
+                <div class="variant-title">4️⃣ Shadow Elevated</div>
+                <div class="form-group">
+                    <label>Súlyosság</label>
+                    <select class="select-v4">
+                        <option>Összes</option>
+                        <option>Kritikus</option>
+                        <option>Közepes</option>
+                        <option>Alacsony</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Státusz</label>
+                    <select class="select-v4">
+                        <option>Minden</option>
+                        <option>Aktív</option>
+                        <option>Inaktív</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Variáció 5 -->
+            <div class="variant-card">
+                <div class="variant-title">5️⃣ Icon Left</div>
+                <div class="form-group">
+                    <label>Súlyosság</label>
+                    <div class="select-v5-wrapper">
+                        <select class="select-v5">
+                            <option>Összes</option>
+                            <option>Kritikus</option>
+                            <option>Közepes</option>
+                            <option>Alacsony</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Státusz</label>
+                    <div class="select-v5-wrapper">
+                        <select class="select-v5">
+                            <option>Minden</option>
+                            <option>Aktív</option>
+                            <option>Inaktív</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variáció 6 -->
+            <div class="variant-card">
+                <div class="variant-title">6️⃣ Underline Only</div>
+                <div class="form-group">
+                    <label>Súlyosság</label>
+                    <select class="select-v6">
+                        <option>Összes</option>
+                        <option>Kritikus</option>
+                        <option>Közepes</option>
+                        <option>Alacsony</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Státusz</label>
+                    <select class="select-v6">
+                        <option>Minden</option>
+                        <option>Aktív</option>
+                        <option>Inaktív</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Variáció 7 -->
+            <div class="variant-card">
+                <div class="variant-title">7️⃣ Compact Dense</div>
+                <div class="form-group">
+                    <label>Súlyosság</label>
+                    <select class="select-v7">
+                        <option>Összes</option>
+                        <option>Kritikus</option>
+                        <option>Közepes</option>
+                        <option>Alacsony</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Státusz</label>
+                    <select class="select-v7">
+                        <option>Minden</option>
+                        <option>Aktív</option>
+                        <option>Inaktív</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Variáció 8 -->
+            <div class="variant-card">
+                <div class="variant-title">8️⃣ Gradient Border</div>
+                <div class="form-group">
+                    <label>Súlyosság</label>
+                    <div class="select-v8-wrapper">
+                        <select class="select-v8">
+                            <option>Összes</option>
+                            <option>Kritikus</option>
+                            <option>Közepes</option>
+                            <option>Alacsony</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Státusz</label>
+                    <div class="select-v8-wrapper">
+                        <select class="select-v8">
+                            <option>Minden</option>
+                            <option>Aktív</option>
+                            <option>Inaktív</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notes">
+            <h3>📝 Ajánlások:</h3>
+            <ul>
+                <li><strong>Variáció 1 (Minimal Clean)</strong> - Modern, tiszta, univerzális használatra</li>
+                <li><strong>Variáció 2 (Rounded Soft)</strong> - Barátságos, könnyed megjelenés</li>
+                <li><strong>Variáció 3 (Bold Border)</strong> - Határozott, professzionális</li>
+                <li><strong>Variáció 4 (Shadow Elevated)</strong> - Prémium, elegáns</li>
+                <li><strong>Variáció 7 (Compact Dense)</strong> - Helytakarékos, sok mezőhöz ideális</li>
+            </ul>
+            <p style="margin-top: 16px; color: #856404;"><strong>💡 Tipp:</strong> A Variáció 1 vagy 4 ajánlott admin felületre, mert professzionális és könnyen kezelhető.</p>
+        </div>
+
+        <h2 style="text-align: center; margin-top: 60px; margin-bottom: 30px; color: var(--color-primary);">
+            🔍 Kombinált Példa: Szűrő Sor
+        </h2>
+
+        <div class="preview-grid">
+            <div class="combined-example">
+                <h3>Variáció 1 Kombinálva</h3>
+                <div class="filter-row">
+                    <div>
+                        <label>Súlyosság</label>
+                        <select class="select-v1">
+                            <option>Összes</option>
+                            <option>Kritikus</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Esemény</label>
+                        <select class="select-v1">
+                            <option>Összes</option>
+                            <option>Login</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Limit</label>
+                        <select class="select-v1">
+                            <option>25</option>
+                            <option>50</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="combined-example">
+                <h3>Variáció 2 Kombinálva</h3>
+                <div class="filter-row">
+                    <div>
+                        <label>Súlyosság</label>
+                        <select class="select-v2">
+                            <option>Összes</option>
+                            <option>Kritikus</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Esemény</label>
+                        <select class="select-v2">
+                            <option>Összes</option>
+                            <option>Login</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Limit</label>
+                        <select class="select-v2">
+                            <option>25</option>
+                            <option>50</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="combined-example">
+                <h3>Variáció 4 Kombinálva</h3>
+                <div class="filter-row">
+                    <div>
+                        <label>Súlyosság</label>
+                        <select class="select-v4">
+                            <option>Összes</option>
+                            <option>Kritikus</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Esemény</label>
+                        <select class="select-v4">
+                            <option>Összes</option>
+                            <option>Login</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Limit</label>
+                        <select class="select-v4">
+                            <option>25</option>
+                            <option>50</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

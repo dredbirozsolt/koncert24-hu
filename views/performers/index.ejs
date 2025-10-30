@@ -1,0 +1,940 @@
+<!-- Server Data for JavaScript -->
+<div class="hidden" 
+     data-current-page="<%= currentPage %>" 
+     data-total-pages="<%= totalPages %>"
+     data-search="<%= search %>"
+     data-category="<%= category || '' %>"
+     data-sort="<%= sort %>">
+</div>
+
+<div class="performers__page">
+<!-- Page Header with Search -->
+<div class="page__hero page-hero--with-search">
+  <div class="container">
+    <h1 class="page__hero__title">
+      <% if (category) { %>
+        <%= categoryName %>
+      <% } else { %>
+        Előadók és műsorok rendezvényekre
+      <% } %>
+    </h1>
+      <% if (totalCount > 0) { %>
+        <% if (category) { %>
+          <p class="page__hero__subtitle">Válassz a kategória előadói közül</p>
+        <% } else { %>
+          <p class="page__hero__subtitle">Válogass több mint 500 fellépő közül – zenészek, humoristák, műsorvezetők, előadóművészek</p>
+        <% } %>
+      <% } else { %>
+        <p class="page__hero__subtitle">
+          <% if (search || category) { %>
+            Nincs találat a keresési feltételnek megfelelően
+          <% } else { %>
+            Jelenleg nincsenek elérhető előadók
+          <% } %>
+        </p>
+      <% } %>
+      
+      <!-- Hero Call-to-Action: Search -->
+      <div class="page__hero__cta">
+      <form method="GET" id="performerSearchForm" class="search__form" x-data="{ mobileFiltersOpen: false }">
+        <!-- Search Row -->
+        <div class="search__row">
+          <!-- Mobile Filter Trigger Button -->
+          <button 
+            type="button"
+            class="mobile-filter-trigger"
+            @click="mobileFiltersOpen = true"
+            aria-label="Szűrők megnyitása">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="mobile-filter-trigger__icon">
+              <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+            </svg>
+            <span>Szűrők</span>
+            <% if (category || (sort && sort !== 'name')) { %>
+              <span class="mobile-filter-trigger__badge"><%= (category ? 1 : 0) + (sort && sort !== 'name' ? 1 : 0) %></span>
+            <% } %>
+          </button>
+          
+          <div class="hero-search__form">
+            <input 
+              type="text" 
+              name="search" 
+              value="<%= search %>" 
+              placeholder="Keresés előadók között..."
+              class="hero-search__input" 
+              aria-label="Keresés előadók között"
+              aria-describedby="search-status"
+              id="search-input"
+              autocomplete="off" 
+              @input="handleLiveSearch($event.target.value); toggleSearchClearButton()">
+            
+            <button 
+              type="button" 
+              class="hero-search__clear <%= search ? '' : 'hidden' %>" 
+              onclick="clearSearch()"
+              aria-label="Keresés törlése" 
+              id="search-clear-btn">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            
+            <button type="submit" class="hero-search__button" aria-label="Keresés">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters Row -->
+        <div class="filters__row">
+          <!-- Category Filter -->
+          <div class="performer__filter-group performer__filter-group--desktop">
+            <div class="performer__filter-dropdown" x-data="{ open: false }">
+              <button 
+                type="button" 
+                @click="open = !open" 
+                class="filter-button <%= performanceTypeFilter ? 'active' : '' %>"
+                aria-haspopup="true"
+                :aria-expanded="open"
+                aria-controls="performancetype-dropdown-menu"
+                aria-label="Típus szűrő">
+                <span><%= performanceTypeFilter || 'Összes típus' %></span>
+                <% if (performanceTypeFilter) { %>
+                  <button type="button" class="filter-clear-button" onclick="clearPerformanceTypeFilter(event);" aria-label="Típus törlése">
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="filter-clear-icon">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                <% } else { %>
+                  <svg x-show="!open" viewBox="0 0 20 20" fill="currentColor" class="filter-icon">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                  <svg x-show="open" viewBox="0 0 20 20" fill="currentColor" class="filter-icon">
+                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                  </svg>
+                <% } %>
+              </button>
+              
+              <div 
+                x-show="open" 
+                @click.outside="open = false" 
+                x-transition 
+                class="performer__filter-dropdown-menu" 
+                id="performancetype-dropdown-menu"
+                role="menu"
+                aria-label="Típus választék">
+                <% const buildPerformanceTypeUrl = (perfType) => {
+                  const params = new URLSearchParams();
+                  if (search) params.set('search', search);
+                  if (sort && sort !== 'name') params.set('sort', sort);
+                  if (styleFilter) params.set('style', styleFilter);
+                  if (perfType) params.set('performanceType', perfType);
+                  if (priceMin) params.set('priceMin', priceMin);
+                  if (priceMax) params.set('priceMax', priceMax);
+                  const paramString = params.toString();
+                  return basePath + 'eloadok' + (paramString ? '?' + paramString : '');
+                }; %>
+                
+                <a href="<%= buildPerformanceTypeUrl() %>" class="filter-option <%= !performanceTypeFilter ? 'active' : '' %>" role="menuitem">
+                  <span>Összes típus</span>
+                  <% if (!performanceTypeFilter) { %>
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="check-icon">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  <% } %>
+                </a>
+                
+                <% if (availablePerformanceTypes && availablePerformanceTypes.length > 0) { %>
+                  <% availablePerformanceTypes.forEach(perfType => { %>
+                    <a href="<%= buildPerformanceTypeUrl(perfType) %>" class="filter-option <%= performanceTypeFilter === perfType ? 'active' : '' %>" role="menuitem">
+                      <span><%= perfType %></span>
+                      <% if (performanceTypeFilter === perfType) { %>
+                        <svg viewBox="0 0 20 20" fill="currentColor" class="check-icon">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      <% } %>
+                    </a>
+                  <% }); %>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="performer__filter-dropdown performer__filter-dropdown--desktop performer__filter-dropdown--price" 
+                 x-data="{ 
+                   open: false,
+                   minPrice: <%= typeof minPrice !== 'undefined' && minPrice !== null ? minPrice : 0 %>,
+                   maxPrice: <%= typeof maxPrice !== 'undefined' && maxPrice !== null ? maxPrice : 500000 %>,
+                   currentMin: <%= typeof priceMin !== 'undefined' && priceMin !== null ? priceMin : (typeof minPrice !== 'undefined' && minPrice !== null ? minPrice : 0) %>,
+                   currentMax: <%= typeof priceMax !== 'undefined' && priceMax !== null ? priceMax : (typeof maxPrice !== 'undefined' && maxPrice !== null ? maxPrice : 500000) %>,
+                   hasActiveFilter: false,
+                   sliderMin: 0,
+                   sliderMax: 100,
+                   init() {
+                     const dbMinPrice = <%= typeof minPrice !== 'undefined' && minPrice !== null ? minPrice : 0 %>;
+                     const dbMaxPrice = <%= typeof maxPrice !== 'undefined' && maxPrice !== null ? maxPrice : 500000 %>;
+                     this.hasActiveFilter = (this.currentMin > dbMinPrice) || (this.currentMax < dbMaxPrice);
+                     this.sliderMin = this.priceToSlider(this.currentMin);
+                     this.sliderMax = this.priceToSlider(this.currentMax);
+                     this.$nextTick(() => this.updateRange());
+                   },
+                   priceToSlider(price) {
+                     // Logaritmikus skála: 0 -> 0%, 500000 -> 100%
+                     if (price <= this.minPrice) return 0;
+                     if (price >= this.maxPrice) return 100;
+                     const minLog = Math.log10(Math.max(1, this.minPrice || 1));
+                     const maxLog = Math.log10(this.maxPrice);
+                     const priceLog = Math.log10(Math.max(1, price));
+                     return ((priceLog - minLog) / (maxLog - minLog)) * 100;
+                   },
+                   sliderToPrice(sliderValue) {
+                     // Exponenciális konverzió: slider pozíció -> ár
+                     const minLog = Math.log10(Math.max(1, this.minPrice || 1));
+                     const maxLog = Math.log10(this.maxPrice);
+                     const logValue = minLog + (sliderValue / 100) * (maxLog - minLog);
+                     return Math.round(Math.pow(10, logValue) / 10000) * 10000; // 10k-ra kerekítés
+                   },
+                   updateRange() {
+                     const rangeElement = this.$refs.priceRange;
+                     if (!rangeElement) return;
+                     rangeElement.style.left = this.sliderMin + '%';
+                     rangeElement.style.width = (this.sliderMax - this.sliderMin) + '%';
+                   },
+                   formatPrice(value) {
+                     return new Intl.NumberFormat('hu-HU').format(value) + ' Ft';
+                   },
+                   formatInputValue(value) {
+                     return new Intl.NumberFormat('hu-HU').format(value);
+                   },
+                   parseInputValue(input) {
+                     return parseInt(input.replace(/\s/g, '').replace(/\./g, '')) || 0;
+                   },
+                   applyFilter() {
+                     console.log('🎯 applyFilter called - currentMin:', this.currentMin, 'currentMax:', this.currentMax);
+                     
+                     // Update hasActiveFilter flag based on current values
+                     this.hasActiveFilter = (this.currentMin > this.minPrice) || (this.currentMax < this.maxPrice);
+                     
+                     const params = new URLSearchParams(window.location.search);
+                     if (this.currentMin > this.minPrice) {
+                       params.set('priceMin', this.currentMin);
+                     } else {
+                       params.delete('priceMin');
+                     }
+                     if (this.currentMax < this.maxPrice) {
+                       params.set('priceMax', this.currentMax);
+                     } else {
+                       params.delete('priceMax');
+                     }
+                     console.log('🎯 URL params:', params.toString());
+                     const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+                     console.log('🎯 Navigating to:', url);
+                     window.location.href = url;
+                   }
+                 }"
+                 @pricerange-updated.window="updateRange()">
+              <button 
+                type="button" 
+                @click="open = !open" 
+                class="filter-button <%= (typeof priceMin !== 'undefined' && priceMin !== null) || (typeof priceMax !== 'undefined' && priceMax !== null) ? 'active' : '' %>"
+                aria-haspopup="true"
+                :aria-expanded="open"
+                aria-controls="price-dropdown-menu"
+                aria-label="Ár szűrő">
+                <span x-text="hasActiveFilter ? formatPrice(currentMin) + ' - ' + formatPrice(currentMax) : 'Összes ár'"></span>
+                <% if ((typeof priceMin !== 'undefined' && priceMin !== null) || (typeof priceMax !== 'undefined' && priceMax !== null)) { %>
+                  <button type="button" class="filter-clear-button" onclick="clearPriceFilter(event);" aria-label="Ár szűrés törlése">
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="filter-clear-icon">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                <% } else { %>
+                  <svg x-show="!open" viewBox="0 0 20 20" fill="currentColor" class="filter-icon">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                  <svg x-show="open" viewBox="0 0 20 20" fill="currentColor" class="filter-icon">
+                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                  </svg>
+                <% } %>
+              </button>
+              
+              <div 
+                x-show="open" 
+                @click.outside="open = false" 
+                x-transition 
+                class="performer__filter-dropdown-menu performer__filter-dropdown-menu--wide"
+                id="price-dropdown-menu"
+                role="menu"
+                aria-label="Ár szűrés">
+                
+                <div class="range-slider">
+                  <div class="range-slider__track">
+                    <div class="range-slider__range" x-ref="priceRange"></div>
+                    <div class="range-slider__inputs">
+                      <input 
+                        type="range" 
+                        class="range-slider__input"
+                        min="0"
+                        max="100"
+                        step="1"
+                        x-model.number="sliderMin"
+                        @input="currentMin = sliderToPrice(sliderMin); if (currentMin >= currentMax) { currentMin = currentMax - 10000; sliderMin = priceToSlider(currentMin); } updateRange()">
+                      <input 
+                        type="range" 
+                        class="range-slider__input"
+                        min="0"
+                        max="100"
+                        step="1"
+                        x-model.number="sliderMax"
+                        @input="currentMax = sliderToPrice(sliderMax); if (currentMax <= currentMin) { currentMax = currentMin + 10000; sliderMax = priceToSlider(currentMax); } updateRange()">
+                    </div>
+                  </div>
+                  
+                  <div class="range-slider__text-inputs">
+                    <div class="range-slider__input-group">
+                      <label class="range-slider__input-label" for="price-min-input">Minimum</label>
+                      <input 
+                        type="text" 
+                        id="price-min-input"
+                        class="range-slider__text-input"
+                        :value="formatInputValue(currentMin)"
+                        @input="$event.target.value"
+                        @blur="currentMin = Math.max(minPrice, Math.min(parseInputValue($event.target.value), currentMax - 10000)); sliderMin = priceToSlider(currentMin); updateRange(); $event.target.value = formatInputValue(currentMin)"
+                        placeholder="0">
+                    </div>
+                    <span class="range-slider__separator">—</span>
+                    <div class="range-slider__input-group">
+                      <label class="range-slider__input-label" for="price-max-input">Maximum</label>
+                      <input 
+                        type="text" 
+                        id="price-max-input"
+                        class="range-slider__text-input"
+                        :value="formatInputValue(currentMax)"
+                        @input="$event.target.value"
+                        @blur="currentMax = Math.min(maxPrice, Math.max(parseInputValue($event.target.value), currentMin + 10000)); sliderMax = priceToSlider(currentMax); updateRange(); $event.target.value = formatInputValue(currentMax)"
+                        :placeholder="formatInputValue(maxPrice)">
+                    </div>
+                  </div>
+                  
+                  <button 
+                    type="button" 
+                    class="btn btn--primary w-full mt-4" 
+                    @click="applyFilter(); open = false">
+                    Szűrés alkalmazása
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Style Filter -->
+            <% if (availableStyles && availableStyles.length > 0) { %>
+            <div class="performer__filter-dropdown performer__filter-dropdown--desktop" x-data="{ open: false }">
+              <button 
+                type="button" 
+                @click="open = !open" 
+                class="filter-button <%= styleFilter ? 'active' : '' %>"
+                aria-haspopup="true"
+                :aria-expanded="open"
+                aria-controls="style-dropdown-menu"
+                aria-label="Stílus szűrő">
+                <span>
+                  <%= styleFilter || 'Stílus szűrő' %>
+                </span>
+                <% if (styleFilter) { %>
+                  <button type="button" 
+                          class="filter-clear-button" 
+                          @click.stop="clearStyleFilter($event)"
+                          aria-label="Stílus szűrő törlése">
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="filter-clear-icon">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                <% } else { %>
+                  <svg x-show="!open" viewBox="0 0 20 20" fill="currentColor" class="filter-icon">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                  <svg x-show="open" viewBox="0 0 20 20" fill="currentColor" class="filter-icon">
+                    <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                  </svg>
+                <% } %>
+              </button>
+              
+              <div 
+                x-show="open" 
+                @click.outside="open = false" 
+                x-transition 
+                class="performer__filter-dropdown-menu"
+                id="style-dropdown-menu"
+                role="menu"
+                aria-label="Stílus szűrés">
+                
+                <% const buildStyleUrl = (style) => {
+                  const params = new URLSearchParams();
+                  if (search) params.set('search', search);
+                  if (sort && sort !== 'name') params.set('sort', sort);
+                  if (style) params.set('style', style);
+                  if (performanceTypeFilter) params.set('performanceType', performanceTypeFilter);
+                  if (priceMin) params.set('priceMin', priceMin);
+                  if (priceMax) params.set('priceMax', priceMax);
+                  const paramString = params.toString();
+                  return basePath + 'eloadok' + (paramString ? '?' + paramString : '');
+                }; %>
+                
+                <a href="<%= buildStyleUrl('') %>" class="filter-option <%= !styleFilter ? 'active' : '' %>" role="menuitem">
+                  <span>Összes stílus</span>
+                  <% if (!styleFilter) { %>
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="check-icon">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  <% } %>
+                </a>
+                
+                <% availableStyles.forEach(style => { %>
+                  <a href="<%= buildStyleUrl(style) %>" class="filter-option <%= styleFilter === style ? 'active' : '' %>" role="menuitem">
+                    <span><%= style %></span>
+                    <% if (styleFilter === style) { %>
+                      <svg viewBox="0 0 20 20" fill="currentColor" class="check-icon">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    <% } %>
+                  </a>
+                <% }); %>
+              </div>
+            </div>
+            <% } %>
+          </div>
+        </div>
+        <!-- End of Filters Row -->
+        
+        <!-- Mobile Bottom Sheet Filters -->
+        <div 
+          x-show="mobileFiltersOpen"
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
+          @click="mobileFiltersOpen = false"
+          class="bottom-sheet-overlay">
+          <div 
+            @click.stop
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="transform translate-y-full"
+            x-transition:enter-end="transform translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="transform translate-y-0"
+            x-transition:leave-end="transform translate-y-full"
+            class="bottom-sheet">
+            <div class="bottom-sheet__header">
+              <h3 class="bottom-sheet__title">Szűrők</h3>
+              <button 
+                type="button" 
+                @click="mobileFiltersOpen = false"
+                class="bottom-sheet__close"
+                aria-label="Bezárás">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+            
+            <div class="bottom-sheet__content">
+              <!-- Performance Type Filter Mobile -->
+              <div class="bottom-sheet__section">
+                <h4 class="bottom-sheet__section-title">Típus</h4>
+                <div class="bottom-sheet__options">
+                  <% const buildPerformanceTypeUrlMobile = (perfType) => {
+                    const params = new URLSearchParams();
+                    if (search) params.set('search', search);
+                    if (sort && sort !== 'name') params.set('sort', sort);
+                    if (styleFilter) params.set('style', styleFilter);
+                    if (perfType) params.set('performanceType', perfType);
+                    if (priceMin) params.set('priceMin', priceMin);
+                    if (priceMax) params.set('priceMax', priceMax);
+                    const paramString = params.toString();
+                    return basePath + 'eloadok' + (paramString ? '?' + paramString : '');
+                  }; %>
+                  
+                  <a href="<%= buildPerformanceTypeUrlMobile() %>" class="bottom-sheet__option <%= !performanceTypeFilter ? 'active' : '' %>">
+                    Összes típus
+                  </a>
+                  <% if (availablePerformanceTypes && availablePerformanceTypes.length > 0) { %>
+                    <% availablePerformanceTypes.forEach(perfType => { %>
+                      <a href="<%= buildPerformanceTypeUrlMobile(perfType) %>" class="bottom-sheet__option <%= performanceTypeFilter === perfType ? 'active' : '' %>">
+                        <%= perfType %>
+                      </a>
+                    <% }); %>
+                  <% } %>
+                </div>
+              </div>
+              
+              <!-- Style Filter Mobile -->
+              <% if (availableStyles && availableStyles.length > 0) { %>
+              <div class="bottom-sheet__section">
+                <h4 class="bottom-sheet__section-title">Stílus</h4>
+                <div class="bottom-sheet__options">
+                  <% const buildStyleUrlMobile = (style) => {
+                    const params = new URLSearchParams();
+                    if (search) params.set('search', search);
+                    if (sort && sort !== 'name') params.set('sort', sort);
+                    if (style) params.set('style', style);
+                    if (performanceTypeFilter) params.set('performanceType', performanceTypeFilter);
+                    if (priceMin) params.set('priceMin', priceMin);
+                    if (priceMax) params.set('priceMax', priceMax);
+                    const paramString = params.toString();
+                    return basePath + 'eloadok' + (paramString ? '?' + paramString : '');
+                  }; %>
+                  
+                  <a href="<%= buildStyleUrlMobile() %>" class="bottom-sheet__option <%= !styleFilter ? 'active' : '' %>">
+                    Összes stílus
+                  </a>
+                  <% availableStyles.forEach(style => { %>
+                    <a href="<%= buildStyleUrlMobile(style) %>" class="bottom-sheet__option <%= styleFilter === style ? 'active' : '' %>">
+                      <%= style %>
+                    </a>
+                  <% }); %>
+                </div>
+              </div>
+              <% } %>
+              
+              <!-- Sort Filter Mobile -->
+              <div class="bottom-sheet__section">
+                <h4 class="bottom-sheet__section-title">Rendezés</h4>
+                <div class="bottom-sheet__options">
+                  <a href="<%= buildSortUrl('name') %>" class="bottom-sheet__option <%= (sort || 'name') === 'name' ? 'active' : '' %>">
+                    Név szerint
+                  </a>
+                  <a href="<%= buildSortUrl('price') %>" class="bottom-sheet__option <%= sort === 'price' ? 'active' : '' %>">
+                    Ár szerint növekvő
+                  </a>
+                  <a href="<%= buildSortUrl('price-desc') %>" class="bottom-sheet__option <%= sort === 'price-desc' ? 'active' : '' %>">
+                    Ár szerint csökkenő
+                  </a>
+                </div>
+              </div>
+
+              <!-- Price Range Filter Mobile -->
+              <div class="bottom-sheet__section" 
+                   x-data="{ 
+                     minPrice: <%= typeof minPrice !== 'undefined' && minPrice !== null ? minPrice : 0 %>,
+                     maxPrice: <%= typeof maxPrice !== 'undefined' && maxPrice !== null ? maxPrice : 500000 %>,
+                     currentMin: <%= typeof priceMin !== 'undefined' && priceMin !== null ? priceMin : (typeof minPrice !== 'undefined' && minPrice !== null ? minPrice : 0) %>,
+                     currentMax: <%= typeof priceMax !== 'undefined' && priceMax !== null ? priceMax : (typeof maxPrice !== 'undefined' && maxPrice !== null ? maxPrice : 500000) %>,
+                     hasActiveFilter: false,
+                     init() {
+                       const dbMinPrice = <%= typeof minPrice !== 'undefined' && minPrice !== null ? minPrice : 0 %>;
+                       const dbMaxPrice = <%= typeof maxPrice !== 'undefined' && maxPrice !== null ? maxPrice : 500000 %>;
+                       this.hasActiveFilter = (this.currentMin > dbMinPrice) || (this.currentMax < dbMaxPrice);
+                       this.$nextTick(() => this.updateRange());
+                     },
+                     updateRange() {
+                       const rangeElement = this.$refs.priceRangeMobile;
+                       if (!rangeElement) return;
+                       const range = this.maxPrice - this.minPrice;
+                       if (range === 0) return;
+                       const percentMin = ((this.currentMin - this.minPrice) / range) * 100;
+                       const percentMax = ((this.currentMax - this.minPrice) / range) * 100;
+                       rangeElement.style.left = percentMin + '%';
+                       rangeElement.style.width = (percentMax - percentMin) + '%';
+                     },
+                     formatPrice(value) {
+                       return new Intl.NumberFormat('hu-HU').format(value) + ' Ft';
+                     },
+                     formatInputValue(value) {
+                       return new Intl.NumberFormat('hu-HU').format(value);
+                     },
+                     parseInputValue(input) {
+                       return parseInt(input.replace(/\s/g, '').replace(/\./g, '')) || 0;
+                     },
+                     applyFilter() {
+                       // Update hasActiveFilter flag based on current values
+                       this.hasActiveFilter = (this.currentMin > this.minPrice) || (this.currentMax < this.maxPrice);
+                       
+                       const params = new URLSearchParams(window.location.search);
+                       if (this.currentMin > this.minPrice) {
+                         params.set('priceMin', this.currentMin);
+                       } else {
+                         params.delete('priceMin');
+                       }
+                       if (this.currentMax < this.maxPrice) {
+                         params.set('priceMax', this.currentMax);
+                       } else {
+                         params.delete('priceMax');
+                       }
+                       const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+                       window.location.href = url;
+                     }
+                   }">
+                <h4 class="bottom-sheet__section-title">Ár tartomány</h4>
+                
+                <div class="range-slider">
+                  <div class="range-slider__track">
+                    <div class="range-slider__range" x-ref="priceRangeMobile"></div>
+                    <div class="range-slider__inputs">
+                      <input 
+                        type="range" 
+                        class="range-slider__input"
+                        :min="minPrice"
+                        :max="maxPrice"
+                        x-model.number="currentMin"
+                        step="10000"
+                        @input="if (currentMin >= currentMax) currentMin = currentMax - 10000; updateRange()">
+                      <input 
+                        type="range" 
+                        class="range-slider__input"
+                        :min="minPrice"
+                        :max="maxPrice"
+                        x-model.number="currentMax"
+                        step="10000"
+                        @input="if (currentMax <= currentMin) currentMax = currentMin + 10000; updateRange()">
+                    </div>
+                  </div>
+                  
+                  <div class="range-slider__text-inputs">
+                    <div class="range-slider__input-group">
+                      <label class="range-slider__input-label" for="price-min-mobile">Minimum</label>
+                      <input 
+                        type="text" 
+                        id="price-min-mobile"
+                        class="range-slider__text-input"
+                        :value="formatInputValue(currentMin)"
+                        @input="$event.target.value"
+                        @blur="currentMin = Math.max(minPrice, Math.min(parseInputValue($event.target.value), currentMax - 10000)); updateRange(); $event.target.value = formatInputValue(currentMin)"
+                        placeholder="0">
+                    </div>
+                    <span class="range-slider__separator">—</span>
+                    <div class="range-slider__input-group">
+                      <label class="range-slider__input-label" for="price-max-mobile">Maximum</label>
+                      <input 
+                        type="text" 
+                        id="price-max-mobile"
+                        class="range-slider__text-input"
+                        :value="formatInputValue(currentMax)"
+                        @input="$event.target.value"
+                        @blur="currentMax = Math.min(maxPrice, Math.max(parseInputValue($event.target.value), currentMin + 10000)); updateRange(); $event.target.value = formatInputValue(currentMax)"
+                        :placeholder="formatInputValue(maxPrice)">
+                    </div>
+                  </div>
+                  
+                  <button 
+                    type="button" 
+                    class="btn btn--primary w-full mt-3" 
+                    @click="applyFilter()">
+                    Alkalmaz
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bottom-sheet__footer">
+              <button 
+                type="button"
+                @click="window.location.href = '<%= basePath %>eloadok'"
+                class="btn btn--outline btn--full-width">
+                Szűrők törlése
+              </button>
+              <button 
+                type="button"
+                @click="mobileFiltersOpen = false"
+                class="btn btn--primary btn--full-width">
+                Eredmények megtekintése
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div><!-- /.page-hero__cta -->
+  </div>
+</div><!-- /.page-hero -->
+
+<!-- Performers Grid -->
+<section class="section">
+  <div class="container">
+    <!-- Search Status & Result Count -->
+    <div class="performers__results-bar">
+      <!-- Left: Result Count -->
+      <div class="performers__result-count" id="result-count">
+        <% if (search || category || (sort && sort !== 'name')) { %>
+          <strong><%= totalCount %></strong> találat
+          <% if (search) { %> "<%= search %>" keresésre<% } %>
+          <% if (category) { %> a <%= categoryName %> kategóriában<% } %>
+        <% } else { %>
+          <strong><%= totalCount %></strong> előadó
+        <% } %>
+      </div>
+      
+      <!-- Center: Active Filters Chips -->
+      <% if (search || performanceTypeFilter || styleFilter || priceMin || priceMax) { %>
+        <div class="performers__active-filters" id="active-filters">
+          <span class="active-filters__label">Aktív szűrők:</span>
+          <% if (search) { %>
+            <button type="button" class="filter-chip" onclick="clearSearch()" aria-label="Keresés törlése: <%= search %>">
+              Keresés: "<%= search %>"
+              <svg viewBox="0 0 20 20" fill="currentColor" class="filter-chip__icon">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          <% } %>
+          <% if (performanceTypeFilter) { %>
+            <button type="button" class="filter-chip" onclick="clearPerformanceTypeFilter(event)" aria-label="Típus törlése: <%= performanceTypeFilter %>">
+              Típus: <%= performanceTypeFilter %>
+              <svg viewBox="0 0 20 20" fill="currentColor" class="filter-chip__icon">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          <% } %>
+          <% if (styleFilter) { %>
+            <button type="button" class="filter-chip" onclick="clearStyleFilter(event)" aria-label="Stílus törlése: <%= styleFilter %>">
+              Stílus: <%= styleFilter %>
+              <svg viewBox="0 0 20 20" fill="currentColor" class="filter-chip__icon">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          <% } %>
+          <% if (priceMin || priceMax) { %>
+            <button type="button" class="filter-chip" onclick="clearPriceFilter(event)" aria-label="Ár szűrés törlése">
+              Ár: <%= new Intl.NumberFormat('hu-HU').format(priceMin || 0) %> - <%= new Intl.NumberFormat('hu-HU').format(priceMax || 500000) %> Ft
+              <svg viewBox="0 0 20 20" fill="currentColor" class="filter-chip__icon">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          <% } %>
+        </div>
+      <% } %>
+      
+      <!-- Right: Sort Buttons -->
+      <div class="performers__sort-buttons">
+        <% function buildSortUrl(sortType) {
+          const params = new URLSearchParams();
+          if (search) params.append('search', search);
+          if (performanceTypeFilter) params.append('performanceType', performanceTypeFilter);
+          if (styleFilter) params.append('style', styleFilter);
+          if (priceMin) params.append('priceMin', priceMin);
+          if (priceMax) params.append('priceMax', priceMax);
+          if (sortType !== 'name') params.append('sort', sortType);
+          const paramString = params.toString();
+          if (category) {
+            return basePath + 'eloadok/kategoria/' + category + (paramString ? '?' + paramString : '');
+          } else {
+            return basePath + 'eloadok' + (paramString ? '?' + paramString : '');
+          }
+        } 
+        const currentSort = sort || 'name';
+        const isNameSort = currentSort === 'name' || currentSort === 'name-desc';
+        const isPriceSort = currentSort === 'price' || currentSort === 'price-desc';
+        const nextNameSort = currentSort === 'name-desc' ? 'name' : 'name-desc';
+        const nextPriceSort = currentSort === 'price-desc' ? 'price' : 'price-desc';
+        %>
+        
+        <!-- Name Sort Toggle -->
+        <a href="<%= buildSortUrl(nextNameSort) %>" 
+           class="sort-button <%= isNameSort ? 'active' : '' %>"
+           aria-label="Név szerint rendezés"
+           title="<%= currentSort === 'name' ? 'Kattints a Z-A rendezéshez' : 'Kattints az A-Z rendezéshez' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sort-icon">
+            <% if (currentSort === 'name-desc') { %>
+              <!-- Z-A -->
+              <text x="3" y="10" font-size="14" font-weight="bold" fill="currentColor" stroke="none">Z</text>
+              <path d="M16 19l4 3m0 0l4-3m-4 3V2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="3" y="24" font-size="14" font-weight="bold" fill="currentColor" stroke="none" opacity="0.35">A</text>
+            <% } else { %>
+              <!-- A-Z -->
+              <text x="3" y="10" font-size="14" font-weight="bold" fill="currentColor" stroke="none">A</text>
+              <path d="M16 19l4 3m0 0l4-3m-4 3V2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="3" y="24" font-size="14" font-weight="bold" fill="currentColor" stroke="none" opacity="0.35">Z</text>
+            <% } %>
+          </svg>
+        </a>
+        
+        <!-- Price Sort Toggle -->
+        <a href="<%= buildSortUrl(nextPriceSort) %>" 
+           class="sort-button <%= isPriceSort ? 'active' : '' %>"
+           aria-label="Ár szerint rendezés"
+           title="<%= currentSort === 'price' ? 'Kattints a csökkenő rendezéshez' : 'Kattints a növekvő rendezéshez' %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sort-icon">
+            <% if (currentSort === 'price-desc') { %>
+              <!-- Csökkenő (magas -> alacsony) -->
+              <text x="0" y="16" font-size="14" font-weight="bold" fill="currentColor" stroke="none">Ft</text>
+              <path d="M14 19l4 3m0 0l4-3m-4 3V2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <% } else { %>
+              <!-- Növekvő (alacsony -> magas) -->
+              <text x="0" y="16" font-size="14" font-weight="bold" fill="currentColor" stroke="none">Ft</text>
+              <path d="M14 5l4-3m0 0l4 3m-4-3v20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <% } %>
+          </svg>
+        </a>
+          </svg>
+        </a>
+      </div>
+    </div>
+    
+    <!-- ARIA Live Region for Screen Readers -->
+    <div id="search-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+    
+    <!-- Skeleton Loading (shown on initial load) -->
+    <div class="performers__grid performers__grid--skeleton hidden" id="skeleton-grid">
+      <% for(let i = 0; i < 6; i++) { %>
+        <div class="performer__card performer__card--skeleton">
+          <div class="performer__image skeleton-shimmer">
+            <div class="skeleton-placeholder"></div>
+          </div>
+          <div class="performer__content">
+            <div class="performer__header">
+              <div class="skeleton-badge skeleton-shimmer"></div>
+              <div class="skeleton-badge skeleton-shimmer"></div>
+            </div>
+            <div class="skeleton-title skeleton-shimmer"></div>
+            <div class="skeleton-text skeleton-shimmer"></div>
+            <div class="skeleton-text skeleton-shimmer skeleton--width-80"></div>
+            <div class="performer__actions">
+              <div class="skeleton-button skeleton-shimmer"></div>
+              <div class="skeleton-button skeleton-shimmer"></div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+    
+    <div id="performers-results-container">
+    <% if (performers && performers.length > 0) { %>
+      <div class="performers__grid" id="performers-grid">
+        <% performers.forEach(performer => { %>
+          <div class="performer__card">
+            <div class="performer__image">
+              <a href="<%= basePath %>eloadok/<%= performer.slug %>">
+                <% if (performer.imageUrl) { %>
+                  <img src="<%= performer.imageUrl %>" 
+                       alt="<%= performer.name %>" 
+                       loading="lazy">
+                <% } else { %>
+                  <div class="performer__placeholder">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                <% } %>
+              </a>
+              
+              <!-- Status Badge on Image -->
+              <% if (performer.status) { 
+                let badgeClass = '';
+                let badgeEmoji = '';
+                if (performer.status === 'Kiemelt') {
+                  badgeClass = 'badge--featured';
+                  badgeEmoji = '⭐';
+                } else if (performer.status === 'Népszerű') {
+                  badgeClass = 'badge--popular';
+                  badgeEmoji = '🔥';
+                } else if (performer.status === 'Kedvezményes' || performer.status === 'Akciós') {
+                  badgeClass = 'badge--discount';
+                  badgeEmoji = '💰';
+                }
+              %>
+                <span class="badge <%= badgeClass %> performer__status-badge"><%= badgeEmoji %> <%= performer.status %></span>
+              <% } %>
+            </div>
+            <div class="performer__content">
+              <div class="performer__header">
+                <% if (performer.performanceType) { %>
+                  <div class="performer-category">
+                    <%= performer.performanceType %>
+                  </div>
+                <% } %>
+                <% if (isLoggedIn && user && user.emailVerified && performer.price) { %>
+                  <div class="performer-price-badge">
+                    <%= new Intl.NumberFormat('hu-HU').format(performer.price) %> Ft-tól
+                  </div>
+                <% } %>
+              </div>
+
+              <h2 class="performer__name">
+                <a href="<%= basePath %>eloadok/<%= performer.slug %>">
+                  <%= performer.name %>
+                </a>
+              </h2>
+
+              <% if (performer.shortDescription) { %>
+                <p class="performer__description">
+                  <%= performer.shortDescription %>
+                </p>
+              <% } %>
+
+              <% if (performer.style && Array.isArray(performer.style) && performer.style.length > 0) { %>
+                <div class="performer__styles">
+                  <% performer.style.forEach(function(style) { %>
+                    <span class="badge badge--style"><%= style %></span>
+                  <% }); %>
+                </div>
+              <% } %>
+
+              <div class="performer__actions">
+                <a href="<%= basePath %>eloadok/<%= performer.slug %>" class="btn btn--outline btn--pill">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                  </svg>
+                  Részletek
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+
+      <!-- Loading indicator -->
+      <div id="loading-indicator" class="loading-indicator hidden">
+        <div class="loading__spinner"></div>
+        <p>Előadók betöltése...</p>
+      </div>
+
+      <!-- End of results -->
+      <div id="end-of-results" class="end-of-results hidden">
+        <p>Elértük a lista végét.</p>
+      </div>
+    <% } else { %>
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h2 class="empty-state-title">Nincs találat</h2>
+        <p class="empty-state-message">
+          <% if (search) { %>
+            Nem találtunk előadót a "<%= search %>" keresésre a jelenlegi szűrési feltételek mellett.
+          <% } else { %>
+            Jelenleg nincsenek előadók ebben a kategóriában a megadott feltételeknek megfelelően.
+          <% } %>
+        </p>
+        <p class="empty-state-message mt-3 font-weight-500">
+          Ha olyan előadót keres aki nincs a listában írjon vagy hívjon bennünket!
+        </p>
+        <div class="empty-state-actions mt-4">
+          <div class="flex gap-3 flex-wrap justify-center">
+            <a href="tel:<%= companyPhone.replace(/\s/g, '') %>" class="btn btn--primary gap-2">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="icon--sm">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+              </svg>
+              <%= companyPhone %>
+            </a>
+            <a href="<%= basePath %>kapcsolat" class="btn btn--outline gap-2">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="icon--sm">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+              Írjon nekünk
+            </a>
+          </div>
+        </div>
+      </div>
+    <% } %>
+    </div><!-- /#performers-results-container -->
+  </div>
+</section>
+
+</div><!-- /.performers-page -->
+
+<script src="<%= basePath %>js/pages/performers.js"></script>

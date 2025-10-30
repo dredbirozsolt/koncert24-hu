@@ -1,0 +1,383 @@
+<div class="page-container">
+
+    <% if (messages && (messages.success || messages.error)) { %>
+        <% if (messages.success) { %>
+            <div class="alert alert-success">
+                <%= messages.success %>
+            </div>
+        <% } %>
+        <% if (messages.error) { %>
+            <div class="alert alert-error">
+                <%= messages.error %>
+            </div>
+        <% } %>
+    <% } %>
+
+    <!-- 2-Column Grid Layout -->
+    <div class="admin-two-col">
+        
+        <!-- Left Column: Cron Jobs List -->
+        <div>
+            <div id="cron-jobs-list">
+                <div class="loading-text">Feladatok betöltése...</div>
+            </div>
+        </div>
+
+        <!-- Right Column: Info Boxes -->
+        <div>
+            <!-- Mi az a Cron? -->
+            <div class="card--data">
+                <h3 class="section-title">❓ Mi az a Cron?</h3>
+                <div class="card__info-content">
+                    <p>A <strong>Cron</strong> egy időalapú feladatütemező, amely automatikusan futtat feladatokat megadott időpontokban.</p>
+                    <p><strong>⏰ Formátum:</strong> <code>perc óra nap hónap hét napja</code></p>
+                    <p><strong>📋 Példák:</strong></p>
+                    <ul>
+                        <li><code>0 6 * * *</code> - Minden nap 6:00-kor</li>
+                        <li><code>*/15 * * * *</code> - 15 percenként</li>
+                        <li><code>0 0 * * 0</code> - Vasárnaponként éjfélkor</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Aktív Feladatok -->
+            <div class="card--data">
+                <h3 class="section-title">✅ Aktív Feladatok</h3>
+                <div class="card__info-content">
+                    <p><strong>🔄 Szinkronizációk:</strong></p>
+                    <ul>
+                        <li><strong>🎤 Performer Sync</strong> - Előadók frissítése vTiger-ből</li>
+                        <li><strong>🌍 GeoNames Sync</strong> - Helyszínek frissítése</li>
+                        <li><strong>🎫 Event Sync</strong> - Események szinkronizálása</li>
+                        <li><strong>📅 Booking Sync</strong> - Foglalások frissítése</li>
+                    </ul>
+                    <p><strong>🔧 Karbantartás:</strong></p>
+                    <ul>
+                        <li><strong>🧹 Daily Maintenance</strong> - Napi cleanup</li>
+                        <li><strong>💾 Daily Backup</strong> - Napi mentés</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Manuális Futtatás -->
+            <div class="card--data">
+                <h3 class="section-title">▶️ Manuális Futtatás</h3>
+                <div class="card__info-content">
+                    <p>Egyes feladatokat <strong>azonnal futtathatod</strong> az "▶️ Feladat futtatása" gombbal.</p>
+                    <p><strong>📌 Használd ezt, ha:</strong></p>
+                    <ul>
+                        <li>Azonnal frissíteni szeretnéd az adatokat</li>
+                        <li>Tesztelni szeretnéd a feladatot</li>
+                        <li>Nem akarsz várni a következő ütemezett futásra</li>
+                    </ul>
+                    <p><strong>⚠️ Figyelem:</strong> A futtatás több percig is tarthat!</p>
+                </div>
+            </div>
+
+            <!-- Ütemezés Módosítása -->
+            <div class="card--data">
+                <h3 class="section-title">⚙️ Ütemezés Módosítása</h3>
+                <div class="card__info-content">
+                    <p><strong>🔘 Be/kikapcsolás:</strong></p>
+                    <ul>
+                        <li>A kapcsoló <strong>azonnal menti</strong> az állapotot</li>
+                        <li>Nem kell külön mentés gomb</li>
+                    </ul>
+                    <p><strong>✏️ Ütemezés változtatása:</strong></p>
+                    <ol>
+                        <li>Írd át a Cron kifejezést</li>
+                        <li>Kattints a <strong>💾 Mentés</strong> gombra</li>
+                    </ol>
+                    <p>A rendszer automatikusan ellenőrzi a Cron kifejezés helyességét.</p>
+                    <p><strong>⏭️ Következő futás</strong> - A rendszer kiszámolja, mikor fog legközelebb futni a feladat.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="/js/cron-humanize.js"></script>
+<script>
+    async function loadCronJobs() {
+        const listEl = document.getElementById('cron-jobs-list');
+        try {
+            listEl.innerHTML = '<div class="loading-text">Feladatok betöltése...</div>';
+            
+            const response = await fetch('/admin/cron/status');
+            const data = await response.json();
+            
+            if (data.success) {
+                listEl.innerHTML = '';
+                
+                function formatDateNoSeconds(dateStr) {
+                    if (!dateStr) return 'Ismeretlen';
+                    const d = new Date(dateStr);
+                    const y = d.getFullYear();
+                    const m = (d.getMonth() + 1).toString().padStart(2, '0');
+                    const day = d.getDate().toString().padStart(2, '0');
+                    const h = d.getHours().toString().padStart(2, '0');
+                    const min = d.getMinutes().toString().padStart(2, '0');
+                    return `${y}. ${m}. ${day}. ${h}:${min}`;
+                }
+                
+                // Sort cron jobs alphabetically by name
+                const sortedJobs = [...data.cronJobs].sort((a, b) => 
+                    a.name.localeCompare(b.name, 'hu')
+                );
+                
+                sortedJobs.forEach(job => {
+                    const jobEl = document.createElement('div');
+                    jobEl.className = 'card--data';
+                    const nextRun = formatDateNoSeconds(job.nextRun);
+                    
+                    let human = '';
+                    if (typeof humanizeCron === 'function') {
+                        human = humanizeCron(job.schedule);
+                    }
+                    
+                    // All cron jobs can be run manually
+                    const canRun = true;
+                    
+                    jobEl.innerHTML = `
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="text-lg font-semibold text-primary">${job.name}</div>
+                            <div>
+                                <input type="checkbox" 
+                                       class="form-switch-input" 
+                                       ${job.isActive ? 'checked' : ''} 
+                                       onchange="toggleCronJobStatus('${job.id}', this)">
+                            </div>
+                        </div>
+                        
+                        ${job.description ? `<div class="text-secondary mb-4 text-sm">${job.description}</div>` : ''}
+                        
+                        <div class="form__group">
+                            <label class="form__label">Ütemezés:</label>
+                            <input type="text" 
+                                   class="form-input font-mono"
+                                   value="${job.schedule}" 
+                                   title="Cron kifejezés (pl. 0 6 * * *)" 
+                                   onchange="markAsModified(this)">
+                        </div>
+                        
+                        ${human ? `<div class="text-secondary text-sm mb-2">${human}</div>` : ''}
+                        
+                        <div class="text-secondary text-sm mb-4">
+                            Következő futás: <strong>${nextRun}</strong>
+                        </div>
+                        
+                        <div class="btn__group btn__group--equal">
+                            ${canRun ? `
+                            <button class="btn btn--secondary" onclick="runCronJob('${job.id}', this)">
+                                ▶️ Feladat futtatása
+                            </button>
+                            ` : ''}
+                            <button class="btn btn--primary" onclick="saveCronJob('${job.id}', this)" disabled>
+                                💾 Mentés
+                            </button>
+                        </div>
+                        
+                        <div class="mt-2">
+                            ${canRun ? '<div class="run-status text-sm"></div>' : ''}
+                            <div class="save-status text-sm"></div>
+                            <div class="toggle-status text-sm"></div>
+                        </div>
+                    `;
+                    
+                    listEl.appendChild(jobEl);
+                });
+            } else {
+                Modal.alert({
+                    title: 'Hiba',
+                    message: 'Hiba: ' + data.message,
+                    type: 'error'
+                });
+                listEl.innerHTML = '<div class="loading-text">Betöltési hiba</div>';
+            }
+        } catch (error) {
+            Modal.alert({
+                title: 'Hiba',
+                message: 'Hiba a feladatok betöltése során: ' + error.message,
+                type: 'error'
+            });
+            listEl.innerHTML = '<div class="loading-text">Hálózati hiba</div>';
+        }
+    }
+    
+    async function toggleCronJobStatus(jobId, checkboxEl) {
+        const jobEl = checkboxEl.closest('.card--data');
+        const schedule = jobEl.querySelector('input[type=text]').value;
+        const isActive = checkboxEl.checked;
+        const statusEl = jobEl.querySelector('.toggle-status');
+        
+        // Disable checkbox during save
+        checkboxEl.disabled = true;
+        statusEl.innerHTML = '<span class="text-secondary">Mentés...</span>';
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/admin/cron/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({ id: jobId, schedule, isActive })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('success', isActive ? 'Cron job aktiválva' : 'Cron job deaktiválva');
+                statusEl.innerHTML = '';
+                // Reload to update next run time
+                await loadCronJobs();
+            } else {
+                showAlert('error', result.message || 'Mentési hiba');
+                statusEl.innerHTML = '';
+                // Revert checkbox state
+                checkboxEl.checked = !isActive;
+                checkboxEl.disabled = false;
+            }
+        } catch (error) {
+            console.error('Toggle error:', error);
+            showAlert('error', 'Hiba: ' + error.message);
+            statusEl.innerHTML = '';
+            // Revert checkbox state
+            checkboxEl.checked = !isActive;
+            checkboxEl.disabled = false;
+        }
+    }
+    
+    function markAsModified(element) {
+        const jobEl = element.closest('.card--data');
+        const saveBtn = jobEl.querySelector('.btn--primary');
+        saveBtn.disabled = false;
+    }
+    
+    async function saveCronJob(jobId, btnElement) {
+        const jobEl = btnElement.closest('.card--data');
+        const schedule = jobEl.querySelector('input[type=text]').value;
+        const isActive = jobEl.querySelector('input[type=checkbox]').checked;
+        const statusEl = jobEl.querySelector('.save-status');
+        
+        // Debug
+        console.log('Save cron job:', { id: jobId, schedule, isActive });
+        
+        btnElement.disabled = true;
+        statusEl.innerHTML = '<span class="text-secondary">Mentés...</span>';
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/admin/cron/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify({ id: jobId, schedule, isActive })
+            });
+            
+            console.log('Response status:', response.status);
+            const result = await response.json();
+            console.log('Response:', result);
+            
+            if (result.success) {
+                showAlert('success', 'Sikeres mentés');
+                statusEl.innerHTML = '';
+                loadCronJobs();
+            } else {
+                showAlert('error', result.message || 'Ismeretlen hiba');
+                statusEl.innerHTML = '';
+                btnElement.disabled = false;
+            }
+        } catch (e) {
+            console.error('Save error:', e);
+            showAlert('error', 'Hiba: ' + e.message);
+            statusEl.innerHTML = '';
+            btnElement.disabled = false;
+        }
+    }
+    
+    async function runCronJob(jobId, btnElement) {
+        const statusEl = btnElement.parentElement.querySelector('.run-status');
+        
+        btnElement.disabled = true;
+        btnElement.innerHTML = 'Futtatás...';
+        if (statusEl) {
+            statusEl.innerHTML = '<span class="text-secondary">Folyamatban...</span>';
+        }
+        
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const endpointMap = {
+                'performer-sync': '/admin/cron/sync/performers',
+                'performer-cleanup': '/admin/cleanup/performers',
+                'geonames-sync': '/admin/cron/sync/geonames',
+                'geonames-stats': '/admin/cron/run/geonames-stats',
+                'booking-sync': '/admin/cron/sync/bookings',
+                'event-sync': '/admin/cron/sync/events',
+                'daily-maintenance': '/admin/cron/run/maintenance',
+                'daily-backup': '/admin/cron/run/backup',
+                'chat-session-cleanup': '/admin/cron/run/chat-cleanup',
+                'blog-scheduled-publish': '/admin/cron/run/blog-publish',
+                'admin-heartbeat-cleanup': '/admin/cron/run/admin-heartbeat-cleanup',
+                'security-alert-check': '/admin/cron/run/security-alert-check',
+                'security-log-cleanup': '/admin/cron/run/security-log-cleanup',
+                'infrastructure-health-check': '/admin/cron/run/infrastructure-health',
+                'offline-message-email-retry': '/admin/cron/run/offline-email-retry'
+            };
+            
+            const endpoint = endpointMap[jobId];
+            if (!endpoint) {
+                throw new Error('Ismeretlen feladat típus');
+            }
+            
+            // Prepare request body (for performer-cleanup, allow custom retention)
+            let requestBody = {};
+            if (jobId === 'performer-cleanup') {
+                // Production: 365 days retention (1 year)
+                // For testing, you can temporarily set this to a lower value (e.g., 2)
+                requestBody.retentionDays = 365; // PRODUCTION MODE
+            }
+            
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('A szerver nem JSON választ adott. Lehetséges, hogy nincs jogosultságod vagy a funkció nem elérhető.');
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('success', result.message || 'Feladat sikeresen lefutott');
+                if (statusEl) statusEl.innerHTML = '';
+            } else {
+                showAlert('error', result.message || 'Futtatási hiba');
+                if (statusEl) statusEl.innerHTML = '';
+            }
+        } catch (error) {
+            console.error('Run cron job error:', error);
+            showAlert('error', error.message || 'Hálózati hiba történt');
+            if (statusEl) statusEl.innerHTML = '';
+        } finally {
+            btnElement.disabled = false;
+            btnElement.innerHTML = '▶️ Feladat futtatása';
+        }
+    }
+
+    // ✅ DESIGN SYSTEM: Uses global showAlert() from admin-alerts.js
+    // No local definition needed - automatically available on all admin pages
+    
+    window.addEventListener('DOMContentLoaded', loadCronJobs);
+</script>

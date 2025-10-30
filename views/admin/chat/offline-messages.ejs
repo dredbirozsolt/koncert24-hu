@@ -1,0 +1,453 @@
+<!-- Offline Messages Page -->
+
+
+<div class="page-container">
+
+    <!-- Alert Messages -->
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success mb-3">
+            ✓ <%= success %>
+        </div>
+    <% } %>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error mb-3">
+            ⚠️ <%= error %>
+        </div>
+    <% } %>
+
+    <!-- 2-Column Grid Layout -->
+    <div class="admin-two-col">
+        
+        <!-- Left Column: Main Content -->
+        <div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-auto-fit gap-6 mb-4">
+        
+        <!-- Sent Count -->
+        <div class="card--data card--data--accent border-success">
+            <div class="text-4xl font-bold text-success mb-1">
+                <%= messages.filter(m => m.status === 'sent').length %>
+            </div>
+            <div class="text-secondary text-sm font-semibold uppercase tracking-wider">
+                Elküldve
+            </div>
+        </div>
+
+        <!-- Replied Count -->
+        <div class="card--data card--data--accent border-primary">
+            <div class="text-4xl font-bold text-primary mb-1">
+                <%= messages.filter(m => m.status === 'replied').length %>
+            </div>
+            <div class="text-secondary text-sm font-semibold uppercase tracking-wider">
+                Lezárva
+            </div>
+        </div>
+
+        <!-- Archived Count -->
+        <div class="card--data card--data--accent border-secondary">
+            <div class="text-4xl font-bold text-secondary mb-1">
+                <%= messages.filter(m => m.status === 'archived').length %>
+            </div>
+            <div class="text-secondary text-sm font-semibold uppercase tracking-wider">
+                Elvetve
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Messages Table -->
+    <div class="card--data">
+        <div class="p-6 border-b">
+            <h5 class="m-0 font-semibold">Beérkezett Üzenetek</h5>
+        </div>
+        
+        <% if (messages && messages.length > 0) { %>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Dátum</th>
+                            <th>Küldő</th>
+                            <th>Státusz</th>
+                            <th>Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <% messages.forEach((msg, index) => { 
+                        // Row state classes using design system
+                        let rowClass = '';
+                        if (msg.status === 'pending') {
+                            rowClass = 'row-error'; // Email send failed
+                        } else if (msg.status === 'replied' || msg.status === 'archived') {
+                            rowClass = 'row-inactive'; // Closed message (retention period)
+                        }
+                    %>
+                        <tr class="<%= rowClass %>">
+                            <!-- Dátum -->
+                            <td>
+                                <div class="text-sm text-secondary">
+                                    <% 
+                                    const timestamp = msg.createdAt || msg.created_at;
+                                    if (timestamp) {
+                                        const date = new Date(timestamp);
+                                    %>
+                                        <div class="whitespace-nowrap">
+                                            <%= date.toLocaleDateString('hu-HU', { 
+                                                year: 'numeric', 
+                                                month: 'short', 
+                                                day: 'numeric'
+                                            }) %>
+                                        </div>
+                                        <div class="whitespace-nowrap text-xs opacity-75">
+                                            <%= date.toLocaleTimeString('hu-HU', { 
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            }) %>
+                                        </div>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </div>
+                            </td>
+                            
+                            <!-- Küldő -->
+                            <td>
+                                <div class="font-semibold"><%= msg.name %></div>
+                            </td>
+
+                            <!-- Státusz -->
+                            <td>
+                                <% 
+                                    let badgeClass = 'badge-secondary';
+                                    let statusText = msg.status;
+                                    let statusIcon = '🔵';
+                                    
+                                    if (msg.status === 'pending') {
+                                        badgeClass = 'badge-error';
+                                        statusText = 'Email küldés sikertelen';
+                                        statusIcon = '⚠️';
+                                    } else if (msg.status === 'sent') {
+                                        badgeClass = 'badge-info';
+                                        statusText = 'Email elküldve';
+                                        statusIcon = '✉️';
+                                    } else if (msg.status === 'replied') {
+                                        badgeClass = 'badge-success';
+                                        statusText = 'Lezárva';
+                                        statusIcon = '✅';
+                                    } else if (msg.status === 'archived') {
+                                        badgeClass = 'badge-secondary';
+                                        statusText = 'Elvetve';
+                                        statusIcon = '❌';
+                                    }
+                                %>
+                                <div>
+                                    <span class="badge <%= badgeClass %>">
+                                        <%= statusIcon %>
+                                        <%= statusText %>
+                                    </span>
+                                    
+                                    <% if (msg.email_sent_at) { %>
+                                        <div class="mt-2 text-xs text-secondary">
+                                            ✉️ <%= new Date(msg.email_sent_at).toLocaleString('hu-HU') %>
+                                        </div>
+                                    <% } %>
+                                    
+                                    <% if (msg.replied_at) { %>
+                                        <div class="mt-1 text-xs text-secondary">
+                                            ↩️ <%= new Date(msg.replied_at).toLocaleString('hu-HU') %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </td>
+
+                            <!-- Műveletek -->
+                            <td>
+                                <div class="flex gap-2 items-center">
+                                    <% if (msg.status === 'pending') { %>
+                                        <!-- Email újraküldése gomb pending üzenetekhez -->
+                                        <form method="POST" action="/admin/chat/offline-messages/<%= msg.id %>/resend-email" class="inline resend-email-form">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <button type="button" onclick="confirmResendEmail(this.form)" class="btn btn-icon-only btn--warning" title="Email újraküldése">
+                                                📧
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                    
+                                    <% if (msg.status === 'pending' || msg.status === 'sent') { %>
+                                        <form method="POST" action="/admin/chat/offline-messages/<%= msg.id %>/reply" class="inline reply-form">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <button type="button" onclick="confirmReply(this.form)" class="btn btn-icon-only btn--success" title="Lezárás">
+                                                ✅
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                    
+                                    <% if (msg.status !== 'archived' && msg.status !== 'replied') { %>
+                                        <form method="POST" action="/admin/chat/offline-messages/<%= msg.id %>/archive" class="inline archive-form">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <button type="button" onclick="confirmArchive(this.form)" class="btn btn-icon-only btn-error" title="Elvetés">
+                                                ❌
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                    
+                                    <button 
+                                        class="btn btn-icon-only btn--primary" 
+                                        onclick='showFullMessage(<%= JSON.stringify({
+                                            id: msg.id,
+                                            status: msg.status,
+                                            name: msg.name,
+                                            email: msg.email,
+                                            phone: msg.phone,
+                                            createdAt: msg.createdAt || msg.created_at,
+                                            message: msg.message
+                                        }) %>)'
+                                        title="Részletek"
+                                    >
+                                        👁️
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            </div>
+        <% } else { %>
+            <div class="p-12 text-center text-secondary">
+                📥 <p class="m-0 text-lg">Nincs offline üzenet</p>
+            </div>
+        <% } %>
+    </div>
+
+        </div>
+        <!-- End of Left Column -->
+
+        <!-- Right Column: Info Boxes -->
+        <div>
+            
+            <!-- Info Box 1: Üzenet Státuszok -->
+            <div class="card--data">
+                <h3>📋 Üzenet Státuszok</h3>
+                <div class="card__info-content">
+                    <p><strong>⚠️ Email küldés sikertelen:</strong> Az üzenet automatikus email küldése sikertelen volt. FONTOS: Az admin <strong>nem kapott értesítést</strong>! Kattints a 📧 gombra az email újraküldéséhez, vagy a rendszer automatikusan újrapróbálja 15 percenként.</p>
+                    <p><strong>✉️ Email elküldve:</strong> Az üzenetről értesítő email sikeresen elküldésre került az adminisztrátornak.</p>
+                    <p><strong>✅ Lezárva:</strong> Az üzenetre válasz érkezett (emailben vagy telefonon), a beszélgetés lezárult.</p>
+                    <p><strong>❌ Elvetve:</strong> Az üzenet spam, felesleges, vagy nem igényel választ.</p>
+                    <p class="mt-3 text-sm text-secondary"><strong>📅 Megőrzési idő:</strong> A lezárt és elvett üzenetek <%= retentionDays %> napig láthatóak maradnak (csökkentett átlátszósággal), majd automatikusan eltűnnek a listából. <a href="/admin/chat/settings" class="text-primary">Beállítás módosítása →</a></p>
+                </div>
+            </div>            <!-- Info Box 2: Offline Üzenetek Működése -->
+            <div class="card--data">
+                <h3>ℹ️ Működés</h3>
+                <div class="card__info-content">
+                    <p>Az offline üzenetek akkor érkeznek be, amikor a látogatók a chat widget segítségével üzenetet küldenek, de nincs elérhető operátor vagy a chat rendszer offline módban van.</p>
+                    <p>Az üzenetek automatikusan eltárolásra kerülnek és értesítés érkezik az adminisztrátoroknak az új beérkezett üzenetekről emailben.</p>
+                    <p><strong>Automata újraküldés:</strong> Ha az email küldés sikertelen, a rendszer 15 percenként automatikusan újrapróbálja.</p>
+                </div>
+            </div>
+
+            <!-- Info Box 3: Válaszadás -->
+            <div class="card--data">
+                <h3>↩️ Válaszadás</h3>
+                <div class="card__info-content">
+                    <p>Az offline üzenetekre válaszolni e-mailen vagy telefonon keresztül lehet:</p>
+                    <ul>
+                        <li>Kattints az <strong>e-mail címre</strong> a részletek modalban a válaszadáshoz</li>
+                        <li>Vagy használd a <strong>telefonszámot</strong>, ha elérhető</li>
+                        <li>A <strong>✅ (zöld pipa)</strong> gombbal jelölheted meg az üzenetet lezártként - a lezárt üzenet <%= retentionDays %> napig látható marad csökkentett átlátszósággal</li>
+                        <li>Az <strong>❌ gomb</strong>bal vetheted el a felesleges üzeneteket - az elvett üzenetek szintén <%= retentionDays %> napig láthatóak</li>
+                    </ul>
+                    <p class="mt-2 text-sm text-info">💡 A lezárt üzeneteknél a műveleti gombok eltűnnek, így véletlenül sem módosíthatod a státuszt.</p>
+                </div>
+            </div>
+
+            <!-- Info Box 4: Email Újraküldés -->
+            <div class="card--data">
+                <h3>� Email Újraküldés</h3>
+                <div class="card__info-content">
+                    <p>Ha az email küldés sikertelen (⚠️ státusz), két lehetőséged van:</p>
+                    <ul>
+                        <li><strong>Automata újraküldés:</strong> A rendszer 15 percenként automatikusan újrapróbálja a sikertelen emaileket</li>
+                        <li><strong>Manuális újraküldés:</strong> Kattints a 📧 gombra az azonnali újraküldéshez</li>
+                    </ul>
+                    <p class="text-error font-semibold">FONTOS: Email küldés sikertelen esetén az admin NEM kapott értesítést az üzenetről!</p>
+                </div>
+            </div>
+
+            <!-- Info Box 5: E-mail Értesítések -->
+            <div class="card--data">
+                <h3>✉️ E-mail Értesítések</h3>
+                <div class="card__info-content">
+                    <p>Az offline üzenet rendszer automatikus e-mail értesítést küld az adminoknak:</p>
+                    <ul>
+                        <li><strong>Adminoknak:</strong> Értesítés új offline üzenet érkezésekor a beállított booking email címre</li>
+                        <li><strong>Tartalom:</strong> Küldő neve, email, telefon, üzenet tartalma</li>
+                        <li><strong>Direkt link:</strong> Az emailben link van az admin felületre</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Info Box 6: Látogató Adatok -->
+            <div class="card--data">
+                <h3>👤 Látogató Információk</h3>
+                <div class="card__info-content">
+                    <p>Minden offline üzenet tartalmazza:</p>
+                    <ul>
+                        <li><strong>Név:</strong> A látogató által megadott név</li>
+                        <li><strong>E-mail:</strong> Kötelező mező a visszajelzéshez</li>
+                        <li><strong>Telefon:</strong> Opcionális mező</li>
+                        <li><strong>Üzenet:</strong> A látogató kérdése vagy megjegyzése</li>
+                        <li><strong>Időbélyeg:</strong> Az üzenet beérkezésének pontos ideje</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <!-- End of Right Column -->
+
+    </div>
+    <!-- End of Grid -->
+
+</div>
+
+<script>
+/**
+ * Show offline message details using Design System Modal
+ * Uses design-system/components/modal.css and design-system/modal.js
+ */
+function showFullMessage(data) {
+    // Format date
+    let formattedDate = '';
+    if (data.createdAt) {
+        const date = new Date(data.createdAt);
+        formattedDate = date.toLocaleString('hu-HU', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+    
+    // Build phone row if available
+    const phoneRow = data.phone ? `
+        <div class="flex items-start gap-3">
+            <span class="text-secondary font-semibold min-w-100">Telefon:</span>
+            <a href="tel:${data.phone}" class="text-blue">${data.phone}</a>
+        </div>
+    ` : '';
+    
+    // Build modal content using design system structure
+    const content = `
+        <div class="mb-6 pb-6 border-b">
+            <h6 class="text-sm font-semibold text-secondary mb-3">👤 Küldő adatai</h6>
+            <div class="space-y-2">
+                <div class="flex items-start gap-3">
+                    <span class="text-secondary font-semibold min-w-100">Név:</span>
+                    <span class="text-primary">${data.name}</span>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="text-secondary font-semibold min-w-100">Email:</span>
+                    <a href="mailto:${data.email}" class="text-blue">${data.email}</a>
+                </div>
+                ${phoneRow}
+                <div class="flex items-start gap-3">
+                    <span class="text-secondary font-semibold min-w-100">Időpont:</span>
+                    <span class="text-secondary">${formattedDate}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <h6 class="text-sm font-semibold text-secondary mb-3">📝 Üzenet</h6>
+            <div class="whitespace-pre-wrap leading-relaxed text-primary bg-gray-50 p-4 rounded">${data.message}</div>
+        </div>
+    `;
+    
+    // Build footer with conditional action buttons
+    let footer = `<button type="button" class="btn btn--secondary modal-cancel">Bezárás</button>`;
+    
+    if (data.id && (data.status === 'pending' || data.status === 'sent')) {
+        footer = `
+            <button type="button" class="btn btn--secondary modal-cancel">Bezárás</button>
+            <form method="POST" action="/admin/chat/offline-messages/${data.id}/reply" class="inline m-0">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn--success">✅ Lezárás</button>
+            </form>
+            <form method="POST" action="/admin/chat/offline-messages/${data.id}/archive" class="inline m-0">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-error">❌ Elvetés</button>
+            </form>
+        `;
+    }
+    
+    // Create and open modal using Design System Modal
+    const modal = Modal.create({
+        title: 'Offline Üzenet Részletei',
+        content: content,
+        footer: footer,
+        size: 'md',
+        closeOnBackdrop: true,
+        closeOnEscape: true
+    });
+    modal.open();
+    
+    // Bind cancel button event listener
+    setTimeout(() => {
+        const cancelBtn = modal.modalElement.querySelector('.modal-cancel');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => modal.close());
+        }
+    }, 0);
+}
+
+/**
+ * Confirm reply (lezárás) action with Design System Modal
+ * Uses modal.js showConfirmModal() global helper
+ */
+function confirmReply(form) {
+    showConfirmModal(
+        'Üzenet lezárása',
+        'Biztosan lezárod ezt az offline üzenetet?\n\nEzzel megerősíted, hogy válaszoltál az ügyfélnek emailben vagy telefonon.',
+        'warning'
+    ).then((confirmed) => {
+        if (confirmed) {
+            form.submit();
+        }
+    });
+}
+
+/**
+ * Confirm archive (elvetés) action with Design System Modal
+ * Uses modal.js showConfirmModal() global helper
+ */
+function confirmArchive(form) {
+    showConfirmModal(
+        'Üzenet elvetése',
+        'Biztosan elveted ezt az offline üzenetet?\n\nAz üzenet eltűnik az aktív listából. Ezt a műveletet nem lehet visszavonni.',
+        'error'
+    ).then((confirmed) => {
+        if (confirmed) {
+            form.submit();
+        }
+    });
+}
+
+/**
+ * Confirm email resend action with Design System Modal
+ * Uses modal.js showConfirmModal() global helper
+ */
+function confirmResendEmail(form) {
+    showConfirmModal(
+        'Email újraküldése',
+        'Biztosan újraküldöd az email értesítést?\n\nAz adminisztrátor email címre újra kiküldésre kerül az offline üzenet.',
+        'info'
+    ).then((confirmed) => {
+        if (confirmed) {
+            form.submit();
+        }
+    });
+}
+</script>

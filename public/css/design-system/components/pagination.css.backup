@@ -1,0 +1,413 @@
+/**
+ * Pagination Component
+ * Navigation between pages of content
+ */
+
+/* ==========================================
+   PAGINATION CONTAINER
+   ========================================== */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
+  list-style: none;
+  margin: 0;
+}
+
+/* ==========================================
+   PAGINATION ITEMS
+   ========================================== */
+
+.pagination-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+  user-select: none;
+}
+
+.pagination-item:hover:not(.pagination-item--disabled):not(.pagination-item--active) {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.pagination-item:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.pagination-item:active:not(.pagination-item--disabled) {
+  transform: scale(0.95);
+}
+
+/* ==========================================
+   STATES
+   ========================================== */
+
+/* Active/Current Page */
+.pagination-item--active,
+.pagination-item[aria-current="page"] {
+  background-color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: var(--color-white);
+  pointer-events: none;
+}
+
+/* Disabled State */
+.pagination-item--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ==========================================
+   PREV/NEXT BUTTONS
+   ========================================== */
+
+.pagination-prev,
+.pagination-next {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+}
+
+.pagination-prev svg,
+.pagination-next svg,
+.pagination-prev .icon,
+.pagination-next .icon {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   ELLIPSIS
+   ========================================== */
+
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+/* ==========================================
+   SIZES
+   ========================================== */
+
+/* Small */
+.pagination--sm .pagination-item,
+.pagination--sm .pagination-ellipsis {
+  min-width: 32px;
+  height: 32px;
+  font-size: var(--text-xs);
+}
+
+.pagination--sm .pagination-prev,
+.pagination--sm .pagination-next {
+  padding: 0 var(--space-3);
+}
+
+/* Large */
+.pagination--lg .pagination-item,
+.pagination--lg .pagination-ellipsis {
+  min-width: 48px;
+  height: 48px;
+  font-size: var(--text-base);
+}
+
+.pagination--lg .pagination-prev,
+.pagination--lg .pagination-next {
+  padding: 0 var(--space-5);
+}
+
+/* ==========================================
+   VARIANTS
+   ========================================== */
+
+/* Rounded Pills */
+.pagination--pill .pagination-item {
+  border-radius: var(--radius-full);
+}
+
+/* No Borders */
+.pagination--borderless .pagination-item {
+  border: none;
+  background-color: transparent;
+}
+
+.pagination--borderless .pagination-item:hover:not(.pagination-item--disabled):not(.pagination-item--active) {
+  background-color: var(--bg-surface-hover);
+}
+
+.pagination--borderless .pagination-item--active {
+  background-color: var(--color-primary-600);
+}
+
+/* Compact (no gaps) */
+.pagination--compact {
+  gap: 0;
+}
+
+.pagination--compact .pagination-item {
+  border-radius: 0;
+  border-right-width: 0;
+}
+
+.pagination--compact .pagination-item:first-child {
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.pagination--compact .pagination-item:last-child {
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  border-right-width: 1px;
+}
+
+/* ==========================================
+   PAGINATION INFO
+   ========================================== */
+
+.pagination-info {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ==========================================
+   ALIGNMENT
+   ========================================== */
+
+.pagination--left {
+  justify-content: flex-start;
+}
+
+.pagination--right {
+  justify-content: flex-end;
+}
+
+.pagination--between {
+  justify-content: space-between;
+}
+
+/* ==========================================
+   MOBILE RESPONSIVE
+   ========================================== */
+
+@media (max-width: 640px) {
+  .pagination {
+    gap: var(--space-1);
+  }
+
+  .pagination-item {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 var(--space-2);
+    font-size: var(--text-xs);
+  }
+
+  /* Hide page numbers on mobile, keep prev/next/active */
+  .pagination--responsive .pagination-item:not(.pagination-item--active):not(.pagination-prev):not(.pagination-next) {
+    display: none;
+  }
+
+  /* Show only active and adjacent pages */
+  .pagination--responsive .pagination-item--active,
+  .pagination--responsive .pagination-item--active + .pagination-item,
+  .pagination--responsive .pagination-item:has(+ .pagination-item--active) {
+    display: inline-flex;
+  }
+
+  .pagination-info {
+    font-size: var(--text-xs);
+    padding: 0 var(--space-2);
+  }
+}
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+
+@media (prefers-color-scheme: dark) {
+  .pagination-item {
+    background-color: var(--bg-surface);
+    border-color: var(--border-base);
+    color: var(--text-primary);
+  }
+
+  .pagination-item:hover:not(.pagination-item--disabled):not(.pagination-item--active) {
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-strong);
+  }
+
+  .pagination-item--active {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+  }
+}
+
+[data-theme="dark"] {
+  .pagination-item {
+    background-color: var(--bg-surface);
+    border-color: var(--border-base);
+    color: var(--text-primary);
+  }
+
+  .pagination-item:hover:not(.pagination-item--disabled):not(.pagination-item--active) {
+    background-color: var(--bg-surface-hover);
+    border-color: var(--border-strong);
+  }
+
+  .pagination-item--active {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+  }
+}
+
+/* ==========================================
+   BLOG-SPECIFIC PAGINATION CLASSES
+   (Legacy compatibility)
+   ========================================== */
+
+/* Blog uses .pagination-btn instead of .pagination-item */
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2-5) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.pagination-btn:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+}
+
+.pagination-btn:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.pagination-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Blog page numbers container */
+.pagination-pages {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Blog page number items */
+.pagination-page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.pagination-page:hover:not(.active) {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border-base);
+}
+
+.pagination-page:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.pagination-page.active {
+  background-color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: var(--color-white);
+  pointer-events: none;
+}
+
+/* Blog ellipsis */
+.pagination-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+
+/* Screen reader only text */
+.pagination-item .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .pagination-item,
+  .pagination-btn,
+  .pagination-page {
+    border-width: 2px;
+  }
+
+  .pagination-item--active,
+  .pagination-page.active {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}

@@ -1,0 +1,422 @@
+<!-- AI Behavior Settings Page -->
+<!-- Design system: admin-two-col layout, card--data, form components -->
+
+<div class="page-container">
+    <% if (success) { %>
+        <div class="alert alert-success">
+            <%= decodeURIComponent(success) %>
+        </div>
+    <% } %>
+
+    <% if (error) { %>
+        <div class="alert alert-error">
+            <%= decodeURIComponent(error) %>
+        </div>
+    <% } %>
+
+    <!-- 2 oszlopos grid (design system standard) -->
+    <div class="admin-two-col">
+        
+        <!-- BAL OSZLOP: Settings Form -->
+        <div>
+            <form id="ai-behavior-form" method="POST" action="/admin/ai-behavior/update">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                
+                <% 
+                const categoryMeta = {
+                    systemPrompt: { icon: '🤖', title: 'System Prompt Beállítások', color: 'primary' },
+                    personality: { icon: '🎭', title: 'Személyiség & Hangnem', color: 'primary' },
+                    escalation: { icon: '🔄', title: 'Eszkalációs Szabályok', color: 'warning' },
+                    prohibited: { icon: '⛔', title: 'Tiltott Témák & Viselkedések', color: 'error' },
+                    responseStyle: { icon: '📝', title: 'Válasz Stílus', color: 'info' },
+                    specialCases: { icon: '🎯', title: 'Speciális Helyzetek', color: 'secondary' },
+                    privacy: { icon: '🔒', title: 'Adatvédelem & GDPR', color: 'success' },
+                    salesGuidelines: { icon: '💰', title: 'Értékesítési Irányelvek', color: 'primary' },
+                    knowledgeBase: { icon: '📚', title: 'Tudásbázis Tartalom', color: 'info' }
+                };
+                
+                Object.keys(settingsByCategory).forEach(function(category) {
+                    const meta = categoryMeta[category] || { icon: '⚙️', title: category, color: 'secondary' };
+                    const settings = settingsByCategory[category];
+                %>
+                
+                <!-- <%= meta.title %> -->
+                <div class="card--data">
+                    <h3 class="section-title">
+                        <%= meta.icon %> <%= meta.title %>
+                    </h3>
+                    
+                    <% settings.forEach(function(setting) { 
+                        const inputName = category + '__' + setting.settingKey;
+                        const inputId = 'setting_' + category + '_' + setting.settingKey;
+                        const value = setting.getParsedValue();
+                    %>
+                    
+                    <div class="form__group">
+                        <% if (setting.dataType === 'boolean') { %>
+                            <!-- Toggle Switch (design system standard) -->
+                            <div class="form__label-with-toggle">
+                                <label class="form__label" for="<%= inputId %>">
+                                    <%= setting.label || setting.settingKey %>
+                                </label>
+                                <input 
+                                    type="checkbox" 
+                                    class="form-switch-input"
+                                    name="<%= inputName %>" 
+                                    id="<%= inputId %>"
+                                    value="true"
+                                    <%= value ? 'checked' : '' %>
+                                />
+                            </div>
+                            
+                        <% } else if (setting.dataType === 'array') { %>
+                            <!-- Textarea for arrays (JSON) -->
+                            <label for="<%= inputId %>">
+                                <%= setting.label || setting.settingKey %>
+                            </label>
+                            <textarea 
+                                class="form__control" 
+                                id="<%= inputId %>"
+                                name="<%= inputName %>"
+                                rows="4"
+                                placeholder="Soronként egy elem"
+                                data-type="array"
+                            ><%= Array.isArray(value) ? value.join('\n') : value %></textarea>
+                            
+                        <% } else if (setting.dataType === 'object') { %>
+                            <!-- Textarea for objects (JSON) -->
+                            <label for="<%= inputId %>">
+                                <%= setting.label || setting.settingKey %>
+                            </label>
+                            <textarea 
+                                class="form__control" 
+                                id="<%= inputId %>"
+                                name="<%= inputName %>"
+                                rows="6"
+                                placeholder="JSON formátum"
+                                data-type="object"
+                            ><%= typeof value === 'object' ? JSON.stringify(value, null, 2) : value %></textarea>
+                            
+                        <% } else if (setting.dataType === 'number') { %>
+                            <!-- Number input -->
+                            <label for="<%= inputId %>">
+                                <%= setting.label || setting.settingKey %>
+                            </label>
+                            <input 
+                                type="number" 
+                                class="form__control" 
+                                id="<%= inputId %>"
+                                name="<%= inputName %>"
+                                value="<%= value %>"
+                            />
+                            
+                        <% } else { %>
+                            <!-- Text input or textarea (default) -->
+                            <label for="<%= inputId %>">
+                                <%= setting.label || setting.settingKey %>
+                            </label>
+                            <% if (category === 'knowledgeBase') { %>
+                                <!-- Larger textarea for knowledge base content -->
+                                <textarea 
+                                    class="form__control" 
+                                    id="<%= inputId %>"
+                                    name="<%= inputName %>"
+                                    rows="12"
+                                    placeholder="<%= setting.description || '' %>"
+                                ><%= value %></textarea>
+                            <% } else { %>
+                                <!-- Regular text input -->
+                                <input 
+                                    type="text" 
+                                    class="form__control" 
+                                    id="<%= inputId %>"
+                                    name="<%= inputName %>"
+                                    value="<%= value %>"
+                                />
+                            <% } %>
+                        <% } %>
+                        
+                        <% if (setting.description) { %>
+                            <small class="form__hint"><%= setting.description %></small>
+                        <% } %>
+                    </div>
+                    
+                    <% }); %>
+                </div>
+                
+                <% }); %>
+                
+                <!-- Action Buttons (design system standard) -->
+                <div class="btn__group btn__group--equal">
+                    <button type="submit" class="btn btn--primary">
+                        💾 Mentés
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.bal oszlop -->
+
+        <!-- JOBB OSZLOP: Info Boxok (design system standard) -->
+        <div>
+            
+            <!-- Mi ez? -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    🤖 Mi ez?
+                </h3>
+                <div class="card__info-content">
+                    <p class="mb-3">
+                        Az AI viselkedési szabályok határozzák meg, hogy a chat asszisztens hogyan 
+                        viselkedik, milyen témákról beszél, és mikor továbbít ügyeket az értékesítőknek.
+                    </p>
+                    
+                    <p><strong>Fő kategóriák:</strong></p>
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2">🎭 <strong>Személyiség:</strong> Hangnem, nyelv, stílus</li>
+                        <li class="mb-2">🔄 <strong>Eszkaláció:</strong> Mikor továbbít értékesítőnek</li>
+                        <li class="mb-2">⛔ <strong>Tiltott témák:</strong> Miről NEM beszélhet</li>
+                        <li class="mb-2">📝 <strong>Válasz stílus:</strong> Hogyan formázza a választ</li>
+                        <li class="mb-2">🎯 <strong>Speciális esetek:</strong> Dühös ügyfél, árajánlat, stb.</li>
+                        <li class="mb-2">🔒 <strong>Adatvédelem:</strong> GDPR szabályok</li>
+                        <li>💰 <strong>Értékesítés:</strong> Upselling, kedvezmények</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Hogyan működik? -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⚙️ Hogyan működik?
+                </h3>
+                <div class="card__info-content">
+                    <p><strong>1️⃣ Beállítások mentése:</strong></p>
+                    <p class="text-sm my-2">
+                        A módosítások azonnal életbe lépnek. Az AI a következő beszélgetésekben 
+                        már az új szabályokat használja.
+                    </p>
+                    
+                    <p class="mt-3"><strong>2️⃣ AI Prompt Előnézet:</strong></p>
+                    <p class="text-sm my-2">
+                        A "👁️ AI Prompt Előnézet" gombbal megtekintheted, hogy a beállítások 
+                        hogyan épülnek be az AI rendszerüzenetébe.
+                    </p>
+                    
+                    <p class="mt-3"><strong>3️⃣ Teszt:</strong></p>
+                    <p class="text-sm my-2">
+                        Próbáld ki az AI-t a chat widgetben, és figyeld meg, hogyan 
+                        alkalmazza az új szabályokat.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tippek -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    💡 Tippek
+                </h3>
+                <div class="card__info-content">
+                    <ul class="my-2 pl-5 text-sm">
+                        <li class="mb-2">
+                            <strong>Eszkalációs kulcsszavak:</strong> Add meg azokat a szavakat, 
+                            amelyekre az AI azonnal továbbít értékesítőnek (pl. "foglalni", "szerződés").
+                        </li>
+                        <li class="mb-2">
+                            <strong>Tiltott témák:</strong> Politika, vallás, versenytársak - 
+                            kerülje az AI ezeket a témákat.
+                        </li>
+                        <li class="mb-2">
+                            <strong>Hangnem:</strong> Barátságos, professzionális, vagy 
+                            formális - válaszd ki a céged stílusát.
+                        </li>
+                        <li class="mb-2">
+                            <strong>GDPR:</strong> Az AI nem kér személyes adatokat közvetlenül, 
+                            csak az űrlapon keresztül.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Biztonsági figyelmeztetés -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    ⚠️ Fontos!
+                </h3>
+                <div class="card__info-content">
+                    <p class="text-error font-bold mb-2">
+                        Ezek a szabályok NEM láthatóak a felhasználók számára!
+                    </p>
+                    <p class="text-sm">
+                        A viselkedési szabályok belső irányelvek az AI számára. 
+                        A felhasználók csak a válaszokat látják, nem a szabályokat.
+                    </p>
+                </div>
+            </div>
+
+            <!-- AI Prompt Preview -->
+            <div class="card--data">
+                <h3 class="section-title">
+                    👁️ AI Prompt Előnézet
+                </h3>
+                <div class="card__info-content">
+                    <button type="button" class="btn btn--secondary btn--block" onclick="previewPrompt()">
+                        🔍 Teljes Prompt Megtekintése
+                    </button>
+                    <small class="form__hint mt-2 block">
+                        Nézd meg, hogy a viselkedési szabályok hogyan épülnek be az AI prompt-ba.
+                    </small>
+                </div>
+            </div>
+        </div>
+        <!-- /.jobb oszlop -->
+    </div>
+</div>
+
+<!-- JavaScript (design system standard - admin-alerts.js használata) -->
+<script>
+// Form submission (AJAX with admin-alerts feedback)
+document.getElementById('ai-behavior-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const csrfToken = form.querySelector('input[name="_csrf"]').value;
+    const data = {};
+    
+    // Collect ALL inputs, not just FormData (checkboxes need special handling)
+    const inputs = form.querySelectorAll('input[type="text"], input[type="number"], input[type="checkbox"], textarea');
+    
+    inputs.forEach(input => {
+        const name = input.name;
+        if (!name || name === '_csrf') return;
+        
+        if (input.type === 'checkbox') {
+            // CRITICAL: Always send boolean for checkboxes (not just when checked)
+            data[name] = input.checked;
+        } else if (input.tagName === 'TEXTAREA') {
+            const value = input.value.trim();
+            const dataType = input.getAttribute('data-type');
+            
+            // Check data-type attribute first (most reliable)
+            if (dataType === 'array') {
+                // Convert line-separated text to array
+                data[name] = value ? value.split('\n').map(line => line.trim()).filter(line => line) : [];
+            } else if (dataType === 'object') {
+                // Parse as JSON object
+                try {
+                    data[name] = JSON.parse(value);
+                } catch (e) {
+                    console.error(`Failed to parse object for ${name}:`, e);
+                    data[name] = value; // Fallback to string
+                }
+            } else if (value.startsWith('{') || value.startsWith('[')) {
+                // Legacy: Check if it looks like JSON (for backward compatibility)
+                try {
+                    data[name] = JSON.parse(value);
+                } catch (e) {
+                    data[name] = value;
+                }
+            } else {
+                // Plain text (knowledgeBase fields, etc.)
+                data[name] = value;
+            }
+        } else {
+            // Regular text/number input
+            data[name] = input.value;
+        }
+    });
+    
+    try {
+        const response = await fetch('/admin/ai-behavior/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Use admin-alerts.js (design system standard)
+            if (typeof window.showAlert === 'function') {
+                window.showAlert('success', result.message || 'Beállítások sikeresen mentve!');
+            } else {
+                alert('✅ ' + (result.message || 'Beállítások sikeresen mentve!'));
+            }
+        } else {
+            if (typeof window.showAlert === 'function') {
+                window.showAlert('error', result.message || 'Hiba történt a mentés során');
+            } else {
+                alert('❌ ' + (result.message || 'Hiba történt a mentés során'));
+            }
+        }
+    } catch (error) {
+        if (typeof window.showAlert === 'function') {
+            window.showAlert('error', 'Hiba történt: ' + error.message);
+        } else {
+            alert('❌ Hiba történt: ' + error.message);
+        }
+        return false;
+    }
+});
+
+// Preview full AI prompt
+async function previewPrompt() {
+    try {
+        const csrfToken = document.querySelector('input[name="_csrf"]').value;
+        const response = await fetch('/admin/ai-behavior/test', {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+            // Open modal with prompt preview (design system modal)
+            const modal = document.createElement('div');
+            modal.className = 'modal-backdrop';
+            modal.innerHTML = `
+                <div class="modal modal-lg">
+                    <div class="modal__header">
+                        <h3>🤖 AI System Prompt Preview</h3>
+                        <button class="modal__close" onclick="this.closest('.modal-backdrop').remove()"></button>
+                    </div>
+                    <div class="modal__body">
+                        <h4>📋 Viselkedési Szabályok:</h4>
+                        <pre>${result.behaviorRules}</pre>
+                        
+                        <h4 class="mt-4">📚 Tudásbázis:</h4>
+                        <pre>${result.knowledgeBase}</pre>
+                        
+                        <p class="mt-3 text-sm text-secondary">
+                            Teljes prompt hossz: <strong>${result.combinedLength}</strong> karakter
+                        </p>
+                    </div>
+                    <div class="modal__footer">
+                        <button class="btn btn--secondary" onclick="this.closest('.modal-backdrop').remove()">Bezárás</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.add('modal-closing');
+                    setTimeout(() => modal.remove(), 200);
+                }
+            });
+        }
+    } catch (error) {
+        if (typeof window.showAlert === 'function') {
+            window.showAlert('error', 'Hiba történt: ' + error.message);
+        }
+    }
+}
+</script>
