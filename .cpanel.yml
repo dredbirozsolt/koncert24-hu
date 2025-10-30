@@ -2,7 +2,7 @@
 deployment:
   tasks:
     # Node.js dependencies telepítése
-    - export DEPLOYPATH=/home/USERNAME/public_html
+    - export DEPLOYPATH=/home/dmf/public_html
     - /bin/cp -R * $DEPLOYPATH
     - cd $DEPLOYPATH
     - npm install --production
