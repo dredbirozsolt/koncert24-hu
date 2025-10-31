@@ -55,6 +55,10 @@ const sitemapService = require('./services/sitemapService');
 const app = express();
 const PORT = process.env.PORT || serverConfig.port || 3000;
 
+// Trust proxy - REQUIRED for cPanel/Passenger deployment
+// This ensures req.ip correctly identifies the client IP behind reverse proxy
+app.set('trust proxy', true);
+
 // Auto-detect BASE_PATH from URL structure or environment
 const BASE_PATH = (() => {
   // Check if running in a subdirectory (e.g., /var/www/html/koncert24/)
