@@ -47,7 +47,19 @@ class AuthService {
    */
   async handleSuccessfulLogin(user, ipAddress, userAgent) {
     await user.resetLoginAttempts();
-    await user.updateLastLogin();
+    
+    // Try to update last login, but don't fail login if it errors
+    try {
+      await user.updateLastLogin();
+    } catch (error) {
+      logger.warn({
+        service: 'authService',
+        operation: 'updateLastLogin',
+        userId: user.id,
+        error: error.message,
+        msg: 'Failed to update last login time (non-critical)'
+      });
+    }
 
     await SecurityLog.log('login_success', {
       userId: user.id,
