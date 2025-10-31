@@ -244,9 +244,32 @@ User.prototype.resetLoginAttempts = async function () {
 };
 
 User.prototype.updateLastLogin = async function () {
-  return await this.update({
-    lastLoginAt: new Date()
-  });
+  // Retry logic for MySQL prepared statement errors
+  const MAX_RETRIES = 3;
+  let lastError;
+  
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await this.update({
+        lastLoginAt: new Date()
+      });
+    } catch (error) {
+      lastError = error;
+      
+      // Retry on prepared statement errors (common with connection pooling)
+      if (error.original?.code === 'ER_NEED_REPREPARE' && attempt < MAX_RETRIES) {
+        // Wait briefly before retry
+        await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      
+      // For other errors or max retries reached, throw
+      throw error;
+    }
+  }
+  
+  throw lastError;
 };
 
 // Password reset rate limiting methods
