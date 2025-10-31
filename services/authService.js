@@ -282,7 +282,7 @@ class AuthService {
    * @param {string} ipAddress - Request IP
    * @returns {Promise<Object>} Result object
    */
-  async changePassword(user, oldPassword, newPassword, ipAddress) {
+  async changePassword(user, oldPassword, newPassword, ipAddress, userAgent) {
     const isOldPasswordValid = await user.comparePassword(oldPassword);
 
     if (!isOldPasswordValid) {
@@ -291,12 +291,15 @@ class AuthService {
 
     // Set plain text password - Sequelize hook will hash it automatically
     user.password = newPassword;
-    await user.save();
+    
+    // Save with retry logic for MySQL prepared statement errors
+    await this._saveWithRetry(user);
 
     await SecurityLog.log('password_changed', {
       userId: user.id,
       email: user.email,
       ipAddress,
+      userAgent,
       severity: 'medium'
     });
 
@@ -416,6 +419,27 @@ class AuthService {
       userId: user.id,
       email: user.email
     }, 'User logged out');
+  }
+
+  /**
+   * Helper: Save model with retry logic for MySQL prepared statement errors
+   * @private
+   */
+  async _saveWithRetry(model, maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await model.save();
+        return;
+      } catch (error) {
+        // Retry on prepared statement errors
+        if (error.original?.code === 'ER_NEED_REPREPARE' && attempt < maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+        throw error;
+      }
+    }
   }
 }
 
