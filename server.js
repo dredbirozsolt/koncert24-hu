@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const expressStaticGzip = require('express-static-gzip');
 
 const compression = require('compression');
-// const rateLimit = require('express-rate-limit'); // DISABLED for Node 16 compatibility
+const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
@@ -146,16 +146,18 @@ app.use(helmet({
   }
 }));
 
-// Rate limiting - DISABLED for Node 16 + Passenger compatibility
-// TODO: Reinstall when proxy configuration is working properly
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000,
-//   max: 500,
-//   message: 'Túl sok kérés érkezett erről az IP címről, kérjük próbálja újra később.',
-//   standardHeaders: true,
-//   legacyHeaders: false,
-// });
-// app.use(limiter);
+// Rate limiting - v6.11.2 (Node 16 compatible)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: serverConfig.isProduction ? 500 : 2000,
+  message: 'Túl sok kérés érkezett erről az IP címről, kérjük próbálja újra később.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Skip for development
+  skip: () => serverConfig.isDevelopment
+});
+
+app.use(limiter);
 
 // Compression
 app.use(compression());
