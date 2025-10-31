@@ -60,3 +60,5 @@ build/
 # Test files
 test-*.html
 test-*.js
+koncert24_export.sql
+app.js

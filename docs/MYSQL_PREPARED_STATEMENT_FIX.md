@@ -11,24 +11,38 @@ Code: ER_NEED_REPREPARE
 
 ## 🎯 Globális Megoldás (Automatikus)
 
-**Sequelize-szintű retry logic** lett beállítva a `config/database.js`-ben:
+**Sequelize query-szintű retry wrapper** lett beállítva a `config/database.js`-ben:
+
+- ✅ **Minden SQL műveletet automatikusan újrapróbál** (save, update, create, destroy)
+- ✅ 3 újrapróbálkozás exponenciális visszalépéssel
+- ✅ Működik connection pool limitációkkal (pool.max = 2)
+
+**Connection Pool Optimalizáció:**
 
 ```javascript
-const sequelize = new Sequelize(database.database, database.user, database.password, {
-  // ... other config
-  retry: {
-    max: 3,
-    match: [
-      /ER_NEED_REPREPARE/,
-      /Prepared statement needs to be re-prepared/
-    ]
-  }
-});
+pool: {
+  max: 2,           // REDUCED from 5 (kevesebb prepared statement)
+  min: 0,
+  acquire: 30000,
+  idle: 5000,       // REDUCED from 10000 (gyorsabb újrahasznosítás)
+  evict: 3000       // ADDED: Idle connection ellenőrzés 3 mp-enként
+}
 ```
 
-✅ **Ez automatikusan kezeli az ÖSSZES `save()` és `update()` műveletet!**
-✅ Nincs szükség kód módosításra
-✅ Központi konfiguráció
+**Connection Rotation Service:**
+
+Óránként automatikusan újraindítja a connection pool-t:
+
+- Elkerüli a prepared statement cache túlcsordulást
+- Shared hosting megoldás (nem tudunk MySQL szerver változókat módosítani)
+- Lásd: `services/connectionRotationService.js`
+- Indul automatikusan: `server.js` startup során
+
+```javascript
+// Start connection rotation service (1 óránként)
+const connectionRotation = new ConnectionRotationService(sequelize, 3600000);
+connectionRotation.start();
+```
 
 ## Manuális Megoldás (Opcionális)
 

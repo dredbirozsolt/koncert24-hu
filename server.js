@@ -23,6 +23,9 @@ const {
   additionalSecurityHeaders
 } = require('./middleware/advancedSecurity');
 
+// Connection rotation service for prepared statement cache management
+const ConnectionRotationService = require('./services/connectionRotationService');
+
 // Auto-detect application root directory
 const APP_ROOT = __dirname;
 
@@ -554,6 +557,15 @@ async function startServer() {
       operation: 'startup',
       component: 'cronJobs'
     }, 'Cron jobs started');
+
+    // Start connection rotation service (1 óránként)
+    const connectionRotation = new ConnectionRotationService(sequelize, 3600000);
+    connectionRotation.start();
+    logger.info({
+      service: 'server',
+      operation: 'startup',
+      component: 'connectionRotation'
+    }, 'Connection rotation service started (interval: 1 hour)');
 
     // Generate initial sitemap
     try {
