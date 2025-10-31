@@ -292,8 +292,32 @@ class AuthService {
     // Set plain text password - Sequelize hook will hash it automatically
     user.password = newPassword;
     
-    // Save with retry logic for MySQL prepared statement errors
-    await this._saveWithRetry(user);
+    // Use raw query to avoid prepared statement cache issues
+    try {
+      const bcrypt = require('bcrypt');
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const { sequelize } = require('../models');
+      
+      await sequelize.query(
+        'UPDATE users SET password = ?, updatedAt = NOW() WHERE id = ?',
+        {
+          replacements: [hashedPassword, user.id],
+          type: sequelize.QueryTypes.UPDATE
+        }
+      );
+      
+      // Update local model instance
+      user.password = hashedPassword;
+      user.changed('password', true);
+    } catch (error) {
+      logger.error({
+        service: 'authService',
+        operation: 'changePassword',
+        error: error.message,
+        msg: 'Failed to update password'
+      });
+      throw error;
+    }
 
     await SecurityLog.log('password_changed', {
       userId: user.id,
