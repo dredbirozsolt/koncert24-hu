@@ -9,7 +9,28 @@ Error: Prepared statement needs to be re-prepared
 Code: ER_NEED_REPREPARE
 ```
 
-## Megoldás
+## 🎯 Globális Megoldás (Automatikus)
+
+**Sequelize-szintű retry logic** lett beállítva a `config/database.js`-ben:
+
+```javascript
+const sequelize = new Sequelize(database.database, database.user, database.password, {
+  // ... other config
+  retry: {
+    max: 3,
+    match: [
+      /ER_NEED_REPREPARE/,
+      /Prepared statement needs to be re-prepared/
+    ]
+  }
+});
+```
+
+✅ **Ez automatikusan kezeli az ÖSSZES `save()` és `update()` műveletet!**
+✅ Nincs szükség kód módosításra
+✅ Központi konfiguráció
+
+## Manuális Megoldás (Opcionális)
 
 Használd a központi `withRetry` helper függvényt minden kritikus `save()` és `update()` művelethez.
 
