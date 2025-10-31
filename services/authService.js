@@ -429,8 +429,24 @@ class AuthService {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         await model.save();
+        logger.debug({
+          service: 'authService',
+          operation: '_saveWithRetry',
+          attempt,
+          msg: 'Model saved successfully'
+        });
         return;
       } catch (error) {
+        logger.warn({
+          service: 'authService',
+          operation: '_saveWithRetry',
+          attempt,
+          maxRetries,
+          errorCode: error.original?.code,
+          willRetry: error.original?.code === 'ER_NEED_REPREPARE' && attempt < maxRetries,
+          msg: 'Save attempt failed'
+        });
+        
         // Retry on prepared statement errors
         if (error.original?.code === 'ER_NEED_REPREPARE' && attempt < maxRetries) {
           await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
