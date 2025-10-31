@@ -208,39 +208,33 @@ User.prototype.isLocked = function () {
   return Boolean(this.lockUntil && this.lockUntil > new Date());
 };
 
+// Instance methods for login tracking
 User.prototype.incrementLoginAttempts = async function () {
-  // Reset attempts if lock has expired
-  if (this.lockUntil && this.lockUntil < new Date()) {
-    return await this.update({
+  const { withRetry } = require('./index');
+  
+  if (this.lockUntil && this.lockUntil < Date.now()) {
+    return await withRetry(() => this.update({
       loginAttempts: 1,
-      lockUntil: null,
-      lastLoginAttempt: new Date()
-    });
+      lockUntil: null
+    }));
   }
 
-  // Increment attempts
-  const updates = {
-    loginAttempts: this.loginAttempts + 1,
-    lastLoginAttempt: new Date()
-  };
-
-  // Lock account after 5 failed attempts (30 minutes lock)
+  const updates = { loginAttempts: this.loginAttempts + 1 };
   const MAX_LOGIN_ATTEMPTS = 5;
-  const LOCK_TIME = 30 * 60 * 1000; // 30 minutes
 
-  if (this.loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS) {
-    updates.lockUntil = new Date(Date.now() + LOCK_TIME);
+  if (this.loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS && !this.isLocked()) {
+    updates.lockUntil = Date.now() + (2 * 60 * 60 * 1000);
   }
 
-  return await this.update(updates);
+  return await withRetry(() => this.update(updates));
 };
 
 User.prototype.resetLoginAttempts = async function () {
-  return await this.update({
+  const { withRetry } = require('./index');
+  return await withRetry(() => this.update({
     loginAttempts: 0,
-    lockUntil: null,
-    lastLoginAttempt: null
-  });
+    lockUntil: null
+  }));
 };
 
 User.prototype.updateLastLogin = async function () {
