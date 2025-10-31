@@ -17,7 +17,15 @@ const sequelize = new Sequelize(
       acquire: 30000,
       idle: 10000
     },
-    timezone: '+01:00'
+    timezone: '+01:00',
+    // Retry logic for prepared statement errors
+    retry: {
+      max: 3,
+      match: [
+        /ER_NEED_REPREPARE/,
+        /Prepared statement needs to be re-prepared/
+      ]
+    }
   }
 );
 
