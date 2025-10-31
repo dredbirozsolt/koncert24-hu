@@ -17,16 +17,45 @@ const sequelize = new Sequelize(
       acquire: 30000,
       idle: 10000
     },
-    timezone: '+01:00',
-    // Retry logic for prepared statement errors
-    retry: {
-      max: 3,
-      match: [
-        /ER_NEED_REPREPARE/,
-        /Prepared statement needs to be re-prepared/
-      ]
-    }
+    timezone: '+01:00'
   }
 );
+
+// Global retry logic for MySQL prepared statement errors
+const originalQuery = sequelize.query.bind(sequelize);
+sequelize.query = async function queryWithRetry(...args) {
+  const maxRetries = 3;
+  let lastError;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await originalQuery(...args);
+    } catch (error) {
+      lastError = error;
+      
+      // Retry on prepared statement errors
+      if (error.original?.code === 'ER_NEED_REPREPARE' && attempt < maxRetries) {
+        logger.warn({
+          service: 'database',
+          operation: 'query',
+          attempt,
+          maxRetries,
+          error: error.message,
+          msg: 'Retrying query due to prepared statement error'
+        });
+        
+        // Wait before retry
+        await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      
+      // For other errors or max retries reached, throw
+      throw error;
+    }
+  }
+  
+  throw lastError;
+};
 
 module.exports = { sequelize, Sequelize };
