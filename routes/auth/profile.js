@@ -213,7 +213,14 @@ router.post('/profile/change-password', requireAuth, [
     }, 'Password changed successfully');
     res.redirect('/auth/profile?success=password_changed');
   } catch (error) {
-    logger.error('Change password error:', error);
+    logger.error({
+      service: 'authProfile',
+      operation: 'changePassword',
+      error: error.message,
+      stack: error.stack,
+      code: error.code,
+      originalCode: error.original?.code
+    }, 'Change password error');
     res.redirect('/auth/profile/change-password?error=server');
   }
 });
