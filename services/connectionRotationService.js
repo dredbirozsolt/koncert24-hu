@@ -49,6 +49,46 @@ class ConnectionRotationService {
   }
 
   /**
+   * Clear prepared statements from all connections
+   */
+  async clearPreparedStatements(pool) {
+    const connections = [];
+    
+    // Acquire all connections
+    for (let i = 0; i < pool.size; i++) {
+      try {
+        const conn = await pool.acquire();
+        connections.push(conn);
+      } catch {
+        // Ignore acquire errors
+      }
+    }
+
+    // Clear statements on each connection
+    for (const conn of connections) {
+      try {
+        if (conn && conn.query) {
+          await conn.query('RESET CONNECTION');
+          logger.debug('Prepared statements cleared on connection');
+        }
+      } catch (err) {
+        logger.warn('Failed to clear statements:', err.message);
+      }
+    }
+
+    // Release all connections
+    for (const conn of connections) {
+      try {
+        await pool.release(conn);
+      } catch {
+        // Ignore release errors
+      }
+    }
+
+    logger.info('Cleared prepared statements from all connections');
+  }
+
+  /**
    * Egyszer lefuttatja a connection rotation logikát
    */
   async rotate() {
@@ -72,6 +112,13 @@ class ConnectionRotationService {
       };
 
       logger.debug('Pool állapot rotation előtt:', beforeStats);
+
+      // CRITICAL: Clear all prepared statements
+      try {
+        await this.clearPreparedStatements(pool);
+      } catch (clearError) {
+        logger.warn('Failed to clear prepared statements:', clearError.message);
+      }
 
       // Lezárjuk az idle kapcsolatokat
       await connectionManager.drain();
