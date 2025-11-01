@@ -29,11 +29,41 @@ const sequelize = new Sequelize(
   }
 );
 
-// IMPORTANT: For ER_NEED_REPREPARE errors, the best solution is to:
-// 1. Increase MySQL server's max_prepared_stmt_count (default: 16382)
-//    SET GLOBAL max_prepared_stmt_count = 50000;
-// 2. Restart connections periodically (handled by pool.idle)
-// 3. Use connection pool eviction (pool.evict)
-// 4. Manual retry logic for critical operations (see models/index.js withRetry)
+// CRITICAL: Wrap sequelize.query() to add retry logic for ER_NEED_REPREPARE errors
+// This is a shared hosting workaround where we cannot modify MySQL server variables
+const originalQuery = sequelize.query.bind(sequelize);
+sequelize.query = async function queryWithRetry(...args) {
+  const MAX_RETRIES = 3;
+  let lastError;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await originalQuery(...args);
+    } catch (error) {
+      lastError = error;
+
+      // Retry on prepared statement errors
+      if (error.original?.code === 'ER_NEED_REPREPARE' && attempt < MAX_RETRIES) {
+        logger.warn({
+          service: 'database',
+          operation: 'queryRetry',
+          attempt,
+          maxRetries: MAX_RETRIES,
+          error: error.message
+        }, `Retrying query due to ER_NEED_REPREPARE (attempt ${attempt}/${MAX_RETRIES})`);
+
+        // Exponential backoff
+        await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      // For other errors or max retries reached, throw
+      throw error;
+    }
+  }
+
+  throw lastError;
+};
 
 module.exports = { sequelize, Sequelize };
