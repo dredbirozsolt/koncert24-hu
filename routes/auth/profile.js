@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const router = express.Router();
-const { User, SecurityLog, withRetry } = require('../../models');
+const { User, SecurityLog } = require('../../models');
 const logger = require('../../config/logger');
 const authService = require('../../services/authService');
 const { requireAuth } = require('../../middleware/auth');
@@ -53,7 +53,7 @@ router.post('/resend-verification', requireAuth, async (req, res) => {
 
     // Generate new verification token
     user.emailVerificationToken = User.generateVerificationToken();
-    await withRetry(() => user.save());
+    await user.save();
 
     try {
       await sendVerificationEmail(user, req);
@@ -122,7 +122,7 @@ router.post('/profile/update-basic-info', requireAuth, [
       return res.redirect('/auth/profile/edit?error=notfound');
     }
 
-    await withRetry(() => user.update({ name, phone }));
+    await user.update({ name, phone });
 
     logger.info({
       service: 'authProfile',
