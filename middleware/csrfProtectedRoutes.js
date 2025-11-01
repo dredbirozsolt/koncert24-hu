@@ -144,7 +144,6 @@ function applyCsrfProtection(req, res, next) {
     }
 
     // Form request: use csurf middleware
-    console.log('🔴 Using csurf middleware for form request');
     return csrfProtection(req, res, next);
   }
 

@@ -16,6 +16,9 @@ logs/
 # Database
 *.sqlite
 *.db
+*.sql
+!migrations/*.sql
+!seeders/*.sql
 
 # OS files
 .DS_Store
@@ -36,6 +39,7 @@ backup/
 # Cookies and sensitive data
 cookies.txt
 fresh_cookies.txt
+*_cookies.txt
 
 # Reports
 eslint-*.json
@@ -60,5 +64,17 @@ build/
 # Test files
 test-*.html
 test-*.js
-koncert24_export.sql
+!__tests__/**
+
+# Temporary scripts and exports
+*.py
+rollback-*.sh
+cleanup-*.sql
+*_export.sql
+
+# Deprecated/backup code
+*.bak
+*.bak2
+*.old
+
 app.js

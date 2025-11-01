@@ -49,22 +49,23 @@ const sendPasswordResetWithUrl = async (user, resetToken, res) => {
   const basePath = res.locals.basePath || '/';
   const resetUrl = `${res.locals.siteDomain}${basePath}auth/reset-password?token=${resetToken}`;
 
-  console.log('🔴 SENDING PASSWORD RESET EMAIL', {
-    email: user.email,
-    resetUrl,
-    siteName: res.locals.siteName
-  });
-
   try {
     await emailService.sendPasswordResetEmail(user, resetUrl, res.locals.siteName);
     logger.info({
       service: 'auth',
       operation: 'passwordResetEmail',
       userId: user.id,
-      email: user.email
+      email: user.email,
+      resetUrl
     }, 'Password reset email sent');
   } catch (error) {
-    console.log('🔴 EMAIL SERVICE ERROR:', error.message);
+    logger.error({
+      err: error,
+      service: 'auth',
+      operation: 'passwordResetEmail',
+      userId: user.id,
+      email: user.email
+    }, 'Email service error');
     throw error;
   }
 };

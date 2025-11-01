@@ -72,11 +72,7 @@ router.get('/:performerSlug', async (req, res) => {
     const basePath = res.locals.basePath || '/';
     const { bookingData } = req.session;
 
-    console.log(`=== GET step=${step} ===`);
-    console.log('bookingData:', bookingData);
-
     const redirectUrl = validateStepData(step, bookingData, performerSlug);
-    console.log('redirectUrl:', redirectUrl);
     if (redirectUrl) {
       return res.redirect(redirectUrl);
     }
@@ -152,8 +148,7 @@ router.post('/:performerSlug', (req, res) => {
         return res.redirect(`/foglalas/${performerSlug}?step=4`);
 
       case '5':
-        console.log('=== STEP 5 POST - Saving step 4 data ===');
-        console.log('req.body:', req.body);
+        // Step 5: just displays step5.ejs (final review), but POST saves step 4 data
         req.session.bookingData = {
           ...req.session.bookingData,
           eventDayContactName: req.body.eventDayContactName,
@@ -163,7 +158,11 @@ router.post('/:performerSlug', (req, res) => {
           techContactPhone: req.body.techContactPhone,
           techContactEmail: req.body.techContactEmail
         };
-        console.log('Session after save:', req.session.bookingData);
+        req.session.save((err) => {
+          if (err) {
+            logger.error({ err }, 'Session save error');
+          }
+        });
         return res.redirect(`/foglalas/${performerSlug}?step=5`);
 
       case '6':
@@ -344,7 +343,9 @@ router.get('/success/:bookingId', async (req, res) => {
 
     // Load contact information from settings
     const contactEmail = await Setting.get('company.email') || 'info@koncert24.hu';
-    const contactPhone = await Setting.get('company.phone') || '+36 30 123 4567';    return res.render('booking/success', {
+    const contactPhone = await Setting.get('company.phone') || '+36 30 123 4567';
+    
+    return res.render('booking/success', {
       title: 'Foglalás elküldve',
       bookingId: booking.id,
       performer,

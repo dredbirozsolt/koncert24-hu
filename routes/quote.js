@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
     }
     return res.redirect('/ajanlat?step=1');
   } catch (error) {
-    console.error('Quote GET error:', error);
+    logger.error({ err: error, service: 'quote', operation: 'getQuote' }, 'Quote GET error');
     res.status(500).send('Hiba történt az ajánlatkérés betöltése során.');
   }
 });
@@ -153,7 +153,7 @@ router.post('/step/:stepNumber', async (req, res) => {
     }
     return res.status(400).json({ success: false, message: 'Invalid step' });
   } catch (error) {
-    console.error('Quote POST error:', error);
+    logger.error({ err: error, service: 'quote', operation: 'postQuote' }, 'Quote POST error');
     res.status(500).json({ success: false, message: 'Hiba történt' });
   }
 });
@@ -334,7 +334,7 @@ router.get('/:performerSlug', async (req, res) => {
     }
     return res.redirect(`/ajanlat/${performerSlug}?step=1`);
   } catch (error) {
-    console.error('Quote GET error:', error);
+    logger.error({ err: error, service: 'quote', operation: 'getQuote' }, 'Quote GET error');
     res.status(500).send('Hiba történt az ajánlatkérés betöltése során.');
   }
 });
@@ -396,7 +396,7 @@ router.post('/:performerSlug/step/:stepNumber', async (req, res) => {
     }
     return res.status(400).json({ success: false, message: 'Invalid step' });
   } catch (error) {
-    console.error('Quote POST error:', error);
+    logger.error({ err: error, service: 'quote', operation: 'postQuote' }, 'Quote POST error');
     res.status(500).json({ success: false, message: 'Hiba történt' });
   }
 });
@@ -547,7 +547,7 @@ router.get('/success/:referenceId', async (req, res) => {
       user: req.session.user || null
     });
   } catch (error) {
-    console.error('Quote success page error:', error);
+    logger.error({ err: error, service: 'quote', operation: 'successPage' }, 'Quote success page error');
     res.status(500).send('Hiba történt');
   }
 });

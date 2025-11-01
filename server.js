@@ -360,16 +360,6 @@ async function loadSettings() {
   return { siteName, siteDomain, companyName, companyPhone, companyEmail, flatSettings };
 }
 
-// 🧪 DEBUG TEST ROUTE - Check if settings middleware ran
-app.get('/test-settings', (req, res) => {
-  res.json({
-    message: 'Settings middleware test',
-    siteDomain: res.locals.siteDomain,
-    siteName: res.locals.siteName,
-    allLocals: Object.keys(res.locals)
-  });
-});
-
 // Inject navigation categories
 // Set up global template variables
 app.use((req, res, next) => {
