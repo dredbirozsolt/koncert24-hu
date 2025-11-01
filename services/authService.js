@@ -444,68 +444,6 @@ class AuthService {
       email: user.email
     }, 'User logged out');
   }
-
-  /**
-   * Helper: Save model with retry logic for MySQL prepared statement errors
-   * @private
-   */
-  async _saveWithRetry(model, maxRetries = 3) {
-    // Store changed values before save attempts
-    const changedFields = {};
-    const changed = model.changed();
-    if (changed) {
-      (Array.isArray(changed) ? changed : [changed]).forEach((field) => {
-        changedFields[field] = model.get(field);
-      });
-    }
-    
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        // Reapply changes before retry (in case reload happened)
-        if (attempt > 1) {
-          Object.keys(changedFields).forEach((field) => {
-            model.set(field, changedFields[field]);
-          });
-          logger.debug({
-            service: 'authService',
-            operation: '_saveWithRetry',
-            attempt,
-            changedFields: Object.keys(changedFields),
-            msg: 'Reapplied changes before retry'
-          });
-        }
-        
-        await model.save();
-        logger.debug({
-          service: 'authService',
-          operation: '_saveWithRetry',
-          attempt,
-          msg: 'Model saved successfully'
-        });
-        return;
-      } catch (error) {
-        logger.warn({
-          service: 'authService',
-          operation: '_saveWithRetry',
-          attempt,
-          maxRetries,
-          errorCode: error.original?.code,
-          errorMessage: error.message,
-          willRetry: error.original?.code === 'ER_NEED_REPREPARE' && attempt < maxRetries,
-          msg: 'Save attempt failed'
-        });
-        
-        // Retry on prepared statement errors
-        if (error.original?.code === 'ER_NEED_REPREPARE' && attempt < maxRetries) {
-          // Wait longer between retries
-          await new Promise((resolve) => setTimeout(resolve, 200 * attempt));
-          // eslint-disable-next-line no-continue
-          continue;
-        }
-        throw error;
-      }
-    }
-  }
 }
 
 module.exports = new AuthService();
