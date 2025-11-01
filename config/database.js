@@ -60,6 +60,12 @@ sequelize.connectionManager.connect = async function (...args) {
           if (value === null) {
             return 'NULL';
           }
+          if (typeof value === 'boolean') {
+            return value ? '1' : '0';
+          }
+          if (typeof value === 'number') {
+            return String(value);
+          }
           if (typeof value === 'string') {
             return connection.escape(value);
           }
