@@ -57,21 +57,42 @@ sequelize.connectionManager.connect = async function (...args) {
           const value = values[valueIndex];
           valueIndex += 1;
           
-          if (value === null) {
+          // NULL
+          if (value === null || value === undefined) {
             return 'NULL';
           }
+          
+          // Boolean → 0 or 1 (for TINYINT columns)
           if (typeof value === 'boolean') {
             return value ? '1' : '0';
           }
+          
+          // Number (INTEGER, BIGINT, FLOAT, DECIMAL)
           if (typeof value === 'number') {
             return String(value);
           }
+          
+          // String (VARCHAR, TEXT, ENUM)
           if (typeof value === 'string') {
             return connection.escape(value);
           }
+          
+          // Date → MySQL DATETIME format
           if (value instanceof Date) {
             return connection.escape(value.toISOString().slice(0, 19).replace('T', ' '));
           }
+          
+          // Buffer (BLOB, BINARY)
+          if (Buffer.isBuffer(value)) {
+            return connection.escape(value);
+          }
+          
+          // Object/Array (JSON columns)
+          if (typeof value === 'object') {
+            return connection.escape(JSON.stringify(value));
+          }
+          
+          // Fallback: convert to string and escape
           return connection.escape(String(value));
         });
       }
