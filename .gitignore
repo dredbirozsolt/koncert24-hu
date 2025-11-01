@@ -76,7 +76,12 @@ cleanup-*.sql
 
 # Deprecated/backup code
 *.bak
-*.bak2
+*.bak*
+*.backup
+*.backup*
 *.old
+*.old*
+*.new
+*.new*
 
 app.js
