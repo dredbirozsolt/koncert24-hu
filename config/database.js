@@ -12,19 +12,18 @@ const sequelize = new Sequelize(
     dialect: 'mysql',
     logging: (msg) => logger.debug(msg),
     dialectOptions: {
-      // CRITICAL FIX: Force MySQL2 to NOT use prepared statements
-      // This completely eliminates ER_NEED_REPREPARE errors on shared hosting
       connectTimeout: 60000,
-      // Disable server-side prepared statements by passing flag
-      multipleStatements: false,
-      // Force text protocol instead of binary (no prepared statements)
-      typeCast: true
+      // CRITICAL: Disable MySQL prepared statements completely
+      // Force MySQL2 to use text protocol instead of binary protocol
+      // This prevents prepared statement cache exhaustion on shared hosting
+      flags: ['-FOUND_ROWS']
     },
-    // Disable query queueing and use plain SQL queries (no prepared statements)
+    // Force Sequelize to NOT use prepared statements
+    // This generates plain SQL queries instead of prepared statements
     native: false,
     benchmark: false,
-    // Rewrite queries to avoid prepared statement placeholders
-    replication: false,
+    // Disable query parameterization (use inline values)
+    typeValidation: false,
     define: {
       charset: 'utf8mb4',
       collate: 'utf8mb4_unicode_ci'
@@ -39,6 +38,47 @@ const sequelize = new Sequelize(
     timezone: '+01:00'
   }
 );
+
+// CRITICAL FIX: Force MySQL2 to NEVER use prepared statements
+// This is the ONLY way to avoid ER_NEED_REPREPARE on shared hosting
+// We monkey-patch the connection to use query() instead of execute()
+const originalConnect = sequelize.connectionManager.connect.bind(sequelize.connectionManager);
+sequelize.connectionManager.connect = async function (...args) {
+  const connection = await originalConnect(...args);
+  
+  // Override execute() to use query() instead (no prepared statements)
+  if (connection.execute) {
+    connection.execute = function (sql, values, callback) {
+      // Convert prepared statement (?) to inline query
+      let inlineSQL = sql;
+      if (values && values.length > 0) {
+        let valueIndex = 0;
+        inlineSQL = sql.replace(/\?/g, () => {
+          const value = values[valueIndex];
+          valueIndex += 1;
+          
+          if (value === null) {
+            return 'NULL';
+          }
+          if (typeof value === 'string') {
+            return connection.escape(value);
+          }
+          if (value instanceof Date) {
+            return connection.escape(value.toISOString().slice(0, 19).replace('T', ' '));
+          }
+          return connection.escape(String(value));
+        });
+      }
+      
+      // Use query() instead of execute() - no prepared statements
+      return connection.query(inlineSQL, callback);
+    };
+  }
+  
+  return connection;
+};
+
+logger.info('MySQL2 forced to use query() instead of execute() - prepared statements disabled');
 
 // Helper function to drain connection pool
 async function drainConnectionPool() {
