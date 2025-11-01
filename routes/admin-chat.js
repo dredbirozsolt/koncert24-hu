@@ -295,7 +295,6 @@ router.post('/settings', requireAdminOrSales, async (req, res) => {
     // Normalize keys (mongoSanitize converts dots to underscores)
     const normalized = normalizeSettingsKeys(req.body);
 
-    // DEBUG: Log what we receive
     logger.info({
       rawBody: req.body,
       normalized,
