@@ -12,14 +12,19 @@ const sequelize = new Sequelize(
     dialect: 'mysql',
     logging: (msg) => logger.debug(msg),
     dialectOptions: {
-      // CRITICAL: Disable prepared statements for shared hosting
-      // MySQL shared hosting has limited prepared statement cache (max_prepared_stmt_count)
-      // This prevents ER_NEED_REPREPARE errors completely by not using prepared statements at all
-      connectTimeout: 60000
+      // CRITICAL FIX: Force MySQL2 to NOT use prepared statements
+      // This completely eliminates ER_NEED_REPREPARE errors on shared hosting
+      connectTimeout: 60000,
+      // Disable server-side prepared statements by passing flag
+      multipleStatements: false,
+      // Force text protocol instead of binary (no prepared statements)
+      typeCast: true
     },
     // Disable query queueing and use plain SQL queries (no prepared statements)
     native: false,
     benchmark: false,
+    // Rewrite queries to avoid prepared statement placeholders
+    replication: false,
     define: {
       charset: 'utf8mb4',
       collate: 'utf8mb4_unicode_ci'

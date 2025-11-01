@@ -210,11 +210,13 @@ User.prototype.isLocked = function () {
 
 // Instance methods for login tracking
 User.prototype.incrementLoginAttempts = async function () {
+  const { withRetry } = require('./index');
+  
   if (this.lockUntil && this.lockUntil < Date.now()) {
-    return await this.update({
+    return await withRetry(() => this.update({
       loginAttempts: 1,
       lockUntil: null
-    });
+    }));
   }
 
   const updates = { loginAttempts: this.loginAttempts + 1 };
@@ -224,20 +226,44 @@ User.prototype.incrementLoginAttempts = async function () {
     updates.lockUntil = Date.now() + (2 * 60 * 60 * 1000);
   }
 
-  return await this.update(updates);
+  return await withRetry(() => this.update(updates));
 };
 
 User.prototype.resetLoginAttempts = async function () {
-  return await this.update({
+  const { withRetry } = require('./index');
+  return await withRetry(() => this.update({
     loginAttempts: 0,
     lockUntil: null
-  });
+  }));
 };
 
 User.prototype.updateLastLogin = async function () {
-  return await this.update({
-    lastLoginAt: new Date()
-  });
+  // Retry logic for MySQL prepared statement errors
+  const MAX_RETRIES = 3;
+  let lastError;
+  
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await this.update({
+        lastLoginAt: new Date()
+      });
+    } catch (error) {
+      lastError = error;
+      
+      // Retry on prepared statement errors (common with connection pooling)
+      if (error.original?.code === 'ER_NEED_REPREPARE' && attempt < MAX_RETRIES) {
+        // Wait briefly before retry
+        await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      
+      // For other errors or max retries reached, throw
+      throw error;
+    }
+  }
+  
+  throw lastError;
 };
 
 // Password reset rate limiting methods

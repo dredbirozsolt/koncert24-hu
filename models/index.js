@@ -182,6 +182,31 @@ OfflineMessageModel.associate({ ChatSession: ChatSessionModel, User });
 BookingAvailabilityModel.associate({ User });
 SystemStatusModel.associate({});
 
+/**
+ * Helper function to handle MySQL prepared statement errors with retry logic
+ * Use this for critical save/update operations in production
+ * @param {Function} operation - Async function to execute (e.g., () => model.save())
+ * @param {number} maxRetries - Maximum retry attempts (default: 3)
+ * @returns {Promise<any>} - Result of the operation
+ */
+async function withRetry(operation, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      // Retry on prepared statement errors (common with MySQL connection pooling)
+      if (error.original?.code === 'ER_NEED_REPREPARE' && attempt < maxRetries) {
+        // Exponential backoff
+        await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      // For other errors or max retries reached, throw
+      throw error;
+    }
+  }
+}
+
 module.exports = {
   sequelize,
   Performer,
@@ -206,5 +231,7 @@ module.exports = {
   OfflineMessage: OfflineMessageModel,
   BookingAvailability: BookingAvailabilityModel,
   SystemStatus: SystemStatusModel,
-  Quote: QuoteModel
+  Quote: QuoteModel,
+  // Helper for retry logic
+  withRetry
 };
